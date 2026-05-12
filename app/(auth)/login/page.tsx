@@ -1,5 +1,5 @@
 import { CheckCircle } from "lucide-react";
-import LoginForm from "../_components/LoginForm";
+import LoginForm from "./_components/LoginForm";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 

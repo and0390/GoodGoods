@@ -1,5 +1,4 @@
 "use client";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,26 +8,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/authClient";
 import { useRouter } from "next/navigation";
 import { ComponentProps, useState } from "react";
-import { Session } from "../_types";
+import { AuthSession } from "../../../(shared)/_types/auth";
 
-type UserAvatarMenuProps = {
-  session: Session;
-};
-
-const LogoutMenu = (
+export const LogoutMenuItem = (
   props: Omit<ComponentProps<typeof DropdownMenuItem>, "variant" | "onSelect">
 ) => {
   const [open, setOpen] = useState(false);
@@ -70,31 +56,5 @@ const LogoutMenu = (
         </AlertDialogContent>
       </AlertDialog>
     </>
-  );
-};
-
-export const UserAvatarMenu = ({ session }: UserAvatarMenuProps) => {
-  const { user } = session;
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="rounded-full">
-          <Avatar>
-            <AvatarImage src={user.image ?? undefined} alt={user.name} />
-            <AvatarFallback>{user.name[0]}</AvatarFallback>
-          </Avatar>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuGroup>
-          <DropdownMenuItem>Profile</DropdownMenuItem>
-          <DropdownMenuItem>Settings</DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <LogoutMenu />
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
   );
 };

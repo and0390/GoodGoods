@@ -10,9 +10,9 @@ import {
 import { authClient } from "@/lib/authClient";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AuthForm, AuthFormRootProps } from "../_components/AuthForm";
-import { FormInputFieldListProps } from "../_components/FormInputField";
-import { loginSchema, LoginSchema } from "../_schemas/auth";
+import { AuthForm, AuthFormRootProps } from "../../_components/AuthForm";
+import { FormInputFieldListProps } from "../../_components/FormInputFieldList";
+import { loginSchema, LoginSchema } from "../_schemas";
 import { ComponentProps } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
@@ -74,7 +74,7 @@ export default function LoginForm({
               </AlertDescription>
             </Alert>
           )}
-          <AuthForm.Error title="Log In failed" />
+          <AuthForm.ErrorAlert title="Log In failed" />
           <AuthForm.Fields formFields={formFields} />
         </FieldGroup>
         <Button variant="link" asChild className="self-end">

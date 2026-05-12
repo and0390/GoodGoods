@@ -7,9 +7,9 @@ import { Field, FieldGroup, FieldSeparator } from "@/components/ui/field";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ComponentProps } from "react";
-import { AuthForm, AuthFormRootProps } from "../_components/AuthForm";
-import { type FormInputFieldListProps } from "../_components/FormInputField";
-import { SignupSchema, signupSchema } from "../_schemas/auth";
+import { AuthForm, AuthFormRootProps } from "../../_components/AuthForm";
+import { type FormInputFieldListProps } from "../../_components/FormInputFieldList";
+import { SignupSchema, signupSchema } from "../_schema";
 
 export default function SignupForm({
   className,
@@ -66,7 +66,7 @@ export default function SignupForm({
       className={className}
     >
       <FieldGroup>
-        <AuthForm.Error title="Sign Up failed" />
+        <AuthForm.ErrorAlert title="Sign Up failed" />
         <AuthForm.Fields formFields={formFields} />
       </FieldGroup>
       <FieldGroup>

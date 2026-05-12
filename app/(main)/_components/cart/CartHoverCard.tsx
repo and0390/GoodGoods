@@ -1,4 +1,4 @@
-"use client";
+"use server";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -6,15 +6,20 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { auth } from "@/lib/auth";
 import { ShoppingCart } from "lucide-react";
+import { headers } from "next/headers";
 import Link from "next/link";
+import { CartPreview } from "./CartPreview";
+import { CartPreviewEmpty } from "./CartPreviewEmpty";
 
-type CartButtonMenuProps = {
-  isLoggedIn: boolean;
-  href: string;
-};
+export const CartHoverCard = async () => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-export const CartButtonMenu = ({ href, isLoggedIn }: CartButtonMenuProps) => {
+  const href = session ? `/cart/${session.user.id}` : `/login?next=/cart`;
+
   return (
     <HoverCard openDelay={100} closeDelay={200}>
       <HoverCardTrigger asChild>
@@ -25,9 +30,12 @@ export const CartButtonMenu = ({ href, isLoggedIn }: CartButtonMenuProps) => {
           </Link>
         </Button>
       </HoverCardTrigger>
-      <HoverCardContent className="flex flex-col items-center gap-4">
-        <ShoppingCart />
-        <span>Your cart is empty</span>
+      <HoverCardContent className="w-100">
+        {session ? (
+          <CartPreview userId={session.user.id} />
+        ) : (
+          <CartPreviewEmpty />
+        )}
       </HoverCardContent>
     </HoverCard>
   );

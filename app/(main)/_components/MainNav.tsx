@@ -14,43 +14,10 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { Separator } from "@/components/ui/separator";
-import { auth } from "@/lib/auth";
 import { MapPin, SearchIcon } from "lucide-react";
-import { headers } from "next/headers";
 import Link from "next/link";
-import { CartButtonMenu } from "./CartButtonMenu";
-import { UserAvatarMenu } from "./UserAvatarMenu";
-
-const CartButton = async () => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  const href = session ? `/cart/${session.user.id}` : `/login?next=/cart`;
-
-  return <CartButtonMenu href={href} isLoggedIn={!!session} />;
-};
-
-const AuthButtons = async () => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (session) {
-    return <UserAvatarMenu session={session} />;
-  }
-
-  return (
-    <div className="flex flex-none gap-2">
-      <Button size="lg" asChild>
-        <Link href="/signup">Sign Up</Link>
-      </Button>
-      <Button size="lg" variant="secondary" asChild>
-        <Link href="/login">Log In</Link>
-      </Button>
-    </div>
-  );
-};
+import { UserMenuOrAuthButtons } from "./avatar/UserMenuOrAuthButtons";
+import { CartHoverCard } from "./cart/CartHoverCard";
 
 const TopNav = () => {
   return (
@@ -65,11 +32,11 @@ const TopNav = () => {
         </InputGroupAddon>
       </InputGroup>
 
-      <CartButton />
+      <CartHoverCard />
 
       <Separator orientation="vertical" />
 
-      <AuthButtons />
+      <UserMenuOrAuthButtons />
     </div>
   );
 };
