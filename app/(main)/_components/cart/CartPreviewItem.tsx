@@ -28,7 +28,7 @@ export const CartPreviewItem = ({
       {...props}
     >
       <div className="row-span-2">
-        <Image src="" alt="Product" className="size-14" />
+        <Image src="" alt="Product" width={56} height={56} />
       </div>
       <div className="min-w-0">
         <Button variant="plain" asChild>

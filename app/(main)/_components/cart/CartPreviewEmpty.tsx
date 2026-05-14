@@ -9,7 +9,7 @@ export const CartPreviewEmpty = ({
   return (
     <div
       className={cn(
-        "flex h-64 w-full flex-col items-center justify-center gap-4",
+        "flex h-56 w-full flex-col items-center justify-center gap-4",
         className
       )}
       {...props}

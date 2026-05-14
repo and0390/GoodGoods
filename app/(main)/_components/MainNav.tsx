@@ -43,7 +43,7 @@ const TopNav = () => {
 
 export default function MainNav() {
   return (
-    <header className="flex w-full">
+    <header className="text-background-foreground sticky flex w-full bg-muted/75">
       <div className="container mx-auto w-full flex-1 py-4">
         {/* Branding Navbar */}
         <div className="grid grid-cols-[auto_1fr] grid-rows-[auto_1fr] gap-x-4 gap-y-2">

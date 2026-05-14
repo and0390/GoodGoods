@@ -109,3 +109,13 @@ model Cart {
 
   @@map("cart")
 }
+
+model Banner {
+  id        String   @id @default(cuid())
+  title     String
+  imageId   String
+  link      String?
+  active    Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}

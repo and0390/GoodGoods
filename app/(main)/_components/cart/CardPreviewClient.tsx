@@ -9,6 +9,7 @@ import { CartWithItems } from "@/app/(shared)/_types";
 import { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 import { ButtonWithLoader } from "@/components/ui/ButtonWithLoader";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 type CardPreviewProps = {
   cartWithItems: CartWithItems["items"];
@@ -34,7 +35,7 @@ export const CartPreviewClient = ({
   if (isError) {
     console.error("Unexpected error:", error);
     return (
-      <div className="flex h-64 w-full flex-col items-center justify-center gap-3">
+      <div className="flex h-56 w-full flex-col items-center justify-center gap-3">
         <p>Something went wrong</p>
         <ButtonWithLoader
           isLoading={isFetching}
@@ -53,17 +54,20 @@ export const CartPreviewClient = ({
 
   return (
     <div className={cn("flex flex-col gap-3", className)} {...props}>
-      <div className="flex w-full flex-col gap-4">
-        {data?.map(({ product, quantity }) => (
-          <CartPreviewItem
-            key={product.id}
-            id={product.id}
-            name={product.name}
-            price={product.price}
-            quantity={quantity}
-          />
-        ))}
-      </div>
+      <ScrollArea>
+        <div className="flex max-h-56 w-full flex-col gap-4">
+          {data?.map(({ product, quantity }) => (
+            <CartPreviewItem
+              key={product.id}
+              id={product.id}
+              name={product.name}
+              price={product.price}
+              quantity={quantity}
+            />
+          ))}
+        </div>
+        <ScrollBar />
+      </ScrollArea>
       <Button variant="default" size="lg" asChild>
         <Link href="/cart">See more</Link>
       </Button>

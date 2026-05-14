@@ -10,7 +10,7 @@ const prisma = new PrismaClient({
   adapter,
 });
 
-async function main() {
+const findUser = async () => {
   const user = await prisma.user.findUnique({
     where: { email: "andreasjonathan132@gmail.com" },
   });
@@ -19,50 +19,48 @@ async function main() {
     throw new Error("User not found");
   }
 
-  // 2. Create some Products
-  const product1 = await prisma.product.create({
-    data: {
-      name: "Mechanical Keyboard G613",
-      price: 1200000,
-    },
+  return user;
+};
+
+const findCart = async () => {
+  const user = await findUser();
+
+  const cart = await prisma.cart.findUnique({
+    where: { userId: user.id },
   });
 
-  const product2 = await prisma.product.create({
-    data: {
-      name: "Logitech MX Master 3S",
-      price: 1500000,
-    },
-  });
+  if (!cart) {
+    throw new Error("Cart not found");
+  }
+  return cart;
+};
 
-  const product3 = await prisma.product.create({
-    data: {
-      name: "satu",
-      price: 1,
-    },
-  });
+const deleteCartItems = async () => {
+  await prisma.cartItem.deleteMany({});
+};
 
-  // 3. Create a Cart for the user
-  const cart = await prisma.cart.create({
-    data: {
-      userId: user.id,
-    },
-  });
-
-  // 4. Add items to the Cart
-  await prisma.cartItem.createMany({
+async function main() {
+  await prisma.banner.createMany({
     data: [
       {
-        cartId: cart.id,
-        productId: product1.id,
-        quantity: 1,
+        title: "Yuk belanja di GoodGoods",
+        imageId: "banner-1_psamz3",
+        order: 1,
       },
       {
-        cartId: cart.id,
-        productId: product2.id,
-        quantity: 2,
+        title: "Malas belanja ke mal?",
+        imageId: "banner-2_yajqyd",
+        order: 2,
+      },
+      {
+        title: "Mau transaksi lebih hemat?",
+        imageId: "banner-3_wco4xy",
+        order: 3,
       },
     ],
   });
+
+  //   await prisma.cartItem.deleteMany({});
 }
 
 main()

@@ -9,3 +9,5 @@ export type CartWithItems = Prisma.CartGetPayload<{
     };
   };
 }>;
+
+export type BannerList = Prisma.BannerGetPayload<{}>[];
