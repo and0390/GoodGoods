@@ -1,31 +1,22 @@
-import {
-  Carousel,
-  CarouselContent,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import prisma from "@/lib/prisma";
-import { CarouselItemList } from "./CarouselItemList";
-import { ComponentProps } from "react";
+import { unstable_cache } from "next/cache";
+import { CarouselBannerClient } from "./CarouselBannerClient";
 
-export const CarouselBanner = async (
-  props: ComponentProps<typeof Carousel>
-) => {
-  const banners = await prisma.banner.findMany({
-    where: {
-      active: true,
-    },
-    orderBy: {
-      order: "asc",
-    },
-  });
-  return (
-    <Carousel {...props}>
-      <CarouselContent>
-        <CarouselItemList bannerList={banners} />
-      </CarouselContent>
-      <CarouselPrevious variant="ghost" size="icon-lg" />
-      <CarouselNext variant="ghost" size="icon-lg" />
-    </Carousel>
-  );
+export const getBanners = unstable_cache(
+  async () => {
+    return prisma.banner.findMany({
+      where: { active: true },
+      orderBy: { order: "asc" },
+    });
+  },
+  undefined,
+  {
+    revalidate: 3600,
+    tags: ["banners"],
+  }
+);
+
+export const CarouselBanner = async () => {
+  const banners = await getBanners();
+  return <CarouselBannerClient bannerList={banners} />;
 };

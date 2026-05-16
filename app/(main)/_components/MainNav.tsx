@@ -14,14 +14,14 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { Separator } from "@/components/ui/separator";
-import { MapPin, SearchIcon } from "lucide-react";
+import { Bell, MapPin, SearchIcon } from "lucide-react";
 import Link from "next/link";
 import { UserMenuOrAuthButtons } from "./avatar/UserMenuOrAuthButtons";
 import { CartHoverCard } from "./cart/CartHoverCard";
 
 const TopNav = () => {
   return (
-    <div className="flex items-center gap-5">
+    <div className="flex w-full items-center justify-between px-4 sm:justify-stretch sm:gap-5 sm:px-0">
       <InputGroup className="me-3">
         <InputGroupInput placeholder="Search..." />
         <InputGroupAddon align="inline-end">
@@ -32,9 +32,16 @@ const TopNav = () => {
         </InputGroupAddon>
       </InputGroup>
 
+      <Button variant="ghost" size="icon-lg" asChild>
+        <Link href="/notifications">
+          <Bell />
+          <span className="sr-only">notification</span>
+        </Link>
+      </Button>
+
       <CartHoverCard />
 
-      <Separator orientation="vertical" />
+      <Separator orientation="vertical" className="hidden sm:block" />
 
       <UserMenuOrAuthButtons />
     </div>
@@ -43,11 +50,12 @@ const TopNav = () => {
 
 export default function MainNav() {
   return (
-    <header className="text-background-foreground sticky flex w-full bg-muted/75">
+    <header className="sticky top-0 z-40 flex w-full bg-background">
+      <div className="absolute inset-0 -z-10 bg-muted/75" />
       <div className="container mx-auto w-full flex-1 py-4">
         {/* Branding Navbar */}
-        <div className="grid grid-cols-[auto_1fr] grid-rows-[auto_1fr] gap-x-4 gap-y-2">
-          <div className="row-span-2 place-self-center">
+        <div className="flex w-full grid-cols-[auto_1fr] grid-rows-[auto_1fr] sm:grid sm:gap-x-4 sm:gap-y-2">
+          <div className="row-span-2 hidden place-self-center sm:block">
             <Link href="/">
               <h1 className="text-2xl font-bold">GoodGoods</h1>
             </Link>
@@ -57,12 +65,15 @@ export default function MainNav() {
           <TopNav />
 
           {/* Botton Navbar */}
-          <div className="col-start-2 justify-self-end">
+          <div className="col-start-2 hidden justify-self-end sm:block">
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="ghost" size="sm">
                   <MapPin />
-                  <span>Sent to Central Jakarta</span>
+                  <p>
+                    Sent to{" "}
+                    <span className="font-semibold">Central Jakarta</span>
+                  </p>
                 </Button>
               </DialogTrigger>
               <DialogContent>

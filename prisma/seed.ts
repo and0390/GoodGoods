@@ -40,23 +40,23 @@ const deleteCartItems = async () => {
 };
 
 async function main() {
-  await prisma.banner.createMany({
+  await prisma.product.createMany({
     data: [
-      {
-        title: "Yuk belanja di GoodGoods",
-        imageId: "banner-1_psamz3",
-        order: 1,
-      },
-      {
-        title: "Malas belanja ke mal?",
-        imageId: "banner-2_yajqyd",
-        order: 2,
-      },
-      {
-        title: "Mau transaksi lebih hemat?",
-        imageId: "banner-3_wco4xy",
-        order: 3,
-      },
+      { name: "Wireless Headphones", price: 299000 },
+      { name: "Gaming Mouse", price: 185000 },
+      { name: "Mechanical Keyboard", price: 450000 },
+      { name: "Smart Watch", price: 799000 },
+      { name: "Bluetooth Speaker", price: 259000 },
+      { name: "Laptop Stand", price: 120000 },
+      { name: "USB-C Hub", price: 99000 },
+      { name: "Webcam HD", price: 349000 },
+      { name: "Portable SSD", price: 899000 },
+      { name: "Gaming Chair", price: 1250000 },
+      { name: "Monitor 24 Inch", price: 1750000 },
+      { name: "Desk Lamp LED", price: 89000 },
+      { name: "Tablet Android", price: 2300000 },
+      { name: "Power Bank 20000mAh", price: 275000 },
+      { name: "Noise Cancelling Earbuds", price: 499000 },
     ],
   });
 

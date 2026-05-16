@@ -23,7 +23,11 @@ const UserAvatarMenu = ({ authUser }: UserAvatarMenuProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="rounded-full">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hidden rounded-full sm:flex"
+        >
           <Avatar>
             <AvatarImage src={image ?? undefined} alt={name} />
             <AvatarFallback>{name[0]}</AvatarFallback>
@@ -54,7 +58,7 @@ export const UserMenuOrAuthButtons = async () => {
   }
 
   return (
-    <div className="flex flex-none gap-2">
+    <div className="hidden flex-none gap-2 sm:flex">
       <Button size="lg" asChild>
         <Link href="/signup">Sign Up</Link>
       </Button>

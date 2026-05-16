@@ -1,26 +1,22 @@
 "use client";
 
+import { CartWithItems } from "@/app/(shared)/_types";
 import { Button } from "@/components/ui/button";
+import { ButtonWithLoader } from "@/components/ui/ButtonWithLoader";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { CartPreviewEmpty } from "./CartPreviewEmpty";
 import { CartPreviewItem } from "./CartPreviewItem";
-import { CartWithItems } from "@/app/(shared)/_types";
-import { ComponentProps } from "react";
-import { cn } from "@/lib/utils";
-import { ButtonWithLoader } from "@/components/ui/ButtonWithLoader";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { CartPreviewSkeleton } from "./CardSkeleton";
 
 type CardPreviewProps = {
   cartWithItems: CartWithItems["items"];
-} & Omit<ComponentProps<"div">, "children">;
+};
 
-export const CartPreviewClient = ({
-  cartWithItems,
-  className,
-  ...props
-}: CardPreviewProps) => {
-  const { data, isError, error, isFetching, refetch } = useQuery({
+export const CartPreviewClient = ({ cartWithItems }: CardPreviewProps) => {
+  const { data, isError, error, isPending, isFetching, refetch } = useQuery({
     queryKey: ["cart-items"],
     queryFn: async () => {
       const res = await fetch("/api/cart");
@@ -48,14 +44,30 @@ export const CartPreviewClient = ({
     );
   }
 
+  if (isPending) {
+    return <CartPreviewSkeleton />;
+  }
+
   if (data?.length === 0) {
     return <CartPreviewEmpty />;
   }
 
   return (
-    <div className={cn("flex flex-col gap-3", className)} {...props}>
-      <ScrollArea>
-        <div className="flex max-h-56 w-full flex-col gap-4">
+    <div className="flex flex-col">
+      <div className="flex flex-1 items-center justify-between p-3">
+        <h1 className="text-lg font-semibold">
+          Items{" "}
+          <span className="text-muted-foreground">
+            ({cartWithItems.length})
+          </span>
+        </h1>
+        <Button variant="link" size="lg" asChild className="px-0">
+          <Link href="/cart">See more</Link>
+        </Button>
+      </div>
+      <Separator />
+      <ScrollArea classNameViewport="max-h-64" classNameScrollbar="me-0.5">
+        <div className="flex w-full flex-col gap-4 p-3 pe-4">
           {data?.map(({ product, quantity }) => (
             <CartPreviewItem
               key={product.id}
@@ -66,11 +78,7 @@ export const CartPreviewClient = ({
             />
           ))}
         </div>
-        <ScrollBar />
       </ScrollArea>
-      <Button variant="default" size="lg" asChild>
-        <Link href="/cart">See more</Link>
-      </Button>
     </div>
   );
 };

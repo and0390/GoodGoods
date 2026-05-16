@@ -1,5 +1,3 @@
-"use server";
-
 import { Button } from "@/components/ui/button";
 import {
   HoverCard,
@@ -12,6 +10,8 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { CartPreview } from "./CartPreview";
 import { CartPreviewEmpty } from "./CartPreviewEmpty";
+import { Suspense } from "react";
+import { CartPreviewSkeleton } from "./CardSkeleton";
 
 export const CartHoverCard = async () => {
   const session = await auth.api.getSession({
@@ -30,9 +30,15 @@ export const CartHoverCard = async () => {
           </Link>
         </Button>
       </HoverCardTrigger>
-      <HoverCardContent className="w-100">
+      <HoverCardContent
+        className="w-100 rounded-sm rounded-t-none p-0"
+        side="bottom"
+        sideOffset={52}
+      >
         {session ? (
-          <CartPreview userId={session.user.id} />
+          <Suspense fallback={<CartPreviewSkeleton />}>
+            <CartPreview userId={session.user.id} />
+          </Suspense>
         ) : (
           <CartPreviewEmpty />
         )}
