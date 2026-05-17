@@ -1,4 +1,4 @@
-import { CartWithItems } from "@/app/(shared)/_types";
+import { CartWithItems } from "@/app/(shared)/_types/prisma";
 import prisma from "@/lib/prisma";
 import { CartPreviewClient } from "./CardPreviewClient";
 import { CartPreviewEmpty } from "./CartPreviewEmpty";
@@ -26,5 +26,15 @@ export const CartPreview = async ({ userId }: CartPreviewProps) => {
 
   if (!cartWithItems) return <CartPreviewEmpty />;
 
-  return <CartPreviewClient cartWithItems={cartWithItems.items} />;
+  const totalQuantity = cartWithItems.items.reduce(
+    (acc, item) => acc + item.quantity,
+    0
+  );
+
+  return (
+    <CartPreviewClient
+      cartWithItems={cartWithItems.items}
+      totalQuantity={totalQuantity}
+    />
+  );
 };

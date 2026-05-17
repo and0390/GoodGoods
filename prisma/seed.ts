@@ -1,6 +1,7 @@
-import { PrismaClient, Prisma } from "../app/generated/prisma/client";
+import { faker } from "@faker-js/faker";
 import { PrismaPg } from "@prisma/adapter-pg";
 import "dotenv/config";
+import { PrismaClient } from "../app/generated/prisma/client";
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
@@ -10,57 +11,57 @@ const prisma = new PrismaClient({
   adapter,
 });
 
-const findUser = async () => {
-  const user = await prisma.user.findUnique({
-    where: { email: "andreasjonathan132@gmail.com" },
-  });
+const CATEGORIES = [
+  "laptop",
+  "smartphone",
+  "headphone",
+  "sneakers",
+  "watch",
+  "backpack",
+  "camera",
+  "keyboard",
+];
 
-  if (!user) {
-    throw new Error("User not found");
-  }
-
-  return user;
+const generateSlug = (name: string, id: string) => {
+  return `${name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")}-${id.slice(0, 6)}`;
 };
 
-const findCart = async () => {
-  const user = await findUser();
+const generateProducts = (count: number) => {
+  return Array.from({ length: count }, () => {
+    const category = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
+    const id = faker.string.uuid();
+    const name = faker.commerce.productName();
 
-  const cart = await prisma.cart.findUnique({
-    where: { userId: user.id },
+    // picsum kasih foto random, seed dari id supaya fotonya konsisten
+    // (foto yang sama tiap kali seeder dijalanin buat produk yang sama)
+    const seed = Math.floor(Math.random() * 1000);
+    const imageUrl = `https://picsum.photos/seed/${seed}/400/400`;
+
+    return {
+      id,
+      name,
+      description: faker.commerce.productDescription(),
+      price: parseInt(
+        faker.commerce.price({ min: 50000, max: 10000000, dec: 0 })
+      ),
+      imageUrl,
+      slug: generateSlug(name, id),
+      stock: faker.number.int({ min: 0, max: 500 }),
+    };
   });
-
-  if (!cart) {
-    throw new Error("Cart not found");
-  }
-  return cart;
-};
-
-const deleteCartItems = async () => {
-  await prisma.cartItem.deleteMany({});
 };
 
 async function main() {
-  await prisma.product.createMany({
-    data: [
-      { name: "Wireless Headphones", price: 299000 },
-      { name: "Gaming Mouse", price: 185000 },
-      { name: "Mechanical Keyboard", price: 450000 },
-      { name: "Smart Watch", price: 799000 },
-      { name: "Bluetooth Speaker", price: 259000 },
-      { name: "Laptop Stand", price: 120000 },
-      { name: "USB-C Hub", price: 99000 },
-      { name: "Webcam HD", price: 349000 },
-      { name: "Portable SSD", price: 899000 },
-      { name: "Gaming Chair", price: 1250000 },
-      { name: "Monitor 24 Inch", price: 1750000 },
-      { name: "Desk Lamp LED", price: 89000 },
-      { name: "Tablet Android", price: 2300000 },
-      { name: "Power Bank 20000mAh", price: 275000 },
-      { name: "Noise Cancelling Earbuds", price: 499000 },
-    ],
-  });
+  await prisma.product.deleteMany();
 
-  //   await prisma.cartItem.deleteMany({});
+  const products = generateProducts(20);
+
+  const x = await prisma.product.createMany({
+    data: products,
+  });
 }
 
 main()

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn, formatNumber } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { ComponentProps } from "react";
@@ -44,11 +44,11 @@ export const CartPreviewItem = ({
       <div className="col-start-3 row-start-1 flex min-w-0 items-center gap-1 justify-self-end font-semibold">
         <span>{quantity}</span>
         <span>x</span>
-        <span className="truncate text-sm">{formatCurrency(price)}</span>
+        <span className="truncate text-sm">{formatNumber(price)}</span>
       </div>
       <div className="col-start-3 flex items-center gap-1.5 justify-self-end">
         <p className="text-muted-foreground">
-          {formatCurrency(quantity * price)}
+          {formatNumber(quantity * price)}
         </p>
       </div>
     </div>

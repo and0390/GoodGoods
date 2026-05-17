@@ -1,4 +1,4 @@
-import { BannerList } from "@/app/(shared)/_types";
+import { BannerList } from "@/app/(shared)/_types/prisma";
 import { CarouselItem } from "@/components/ui/carousel";
 import { CldImage } from "next-cloudinary";
 import { ComponentProps } from "react";

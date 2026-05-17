@@ -1,38 +1,72 @@
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatCurrency } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { formatNumber } from "@/lib/utils";
+import { Dot, Ellipsis, Star } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
+import { AddToCartDropdownItem } from "./AddToCartDropdownItem";
 
 export type ProductCardProps = {
   id: string;
-  title: string;
+  name: string;
   price: number;
   rating: number;
-  imageId: string;
+  imageUrl: string | null;
 };
 
 export const ProductCard = ({
   id,
-  title,
+  name,
   price,
   rating,
-  imageId,
+  imageUrl,
 }: ProductCardProps) => {
   return (
-    <Link href={`/products/${id}`}>
-      <Card className="rounded-md">
-        <CardContent>
-          <div className="aspect-square w-full bg-red-50" />
-          <div className="mt-3 flex flex-col gap-1">
-            <h1 className="truncate text-base">{title}</h1>
-            <p className="text-base font-semibold">{formatCurrency(price)}</p>
-            <div className="flex gap-1">
-              <span>⭐ {rating}+</span>
-              <span>&middot;</span>
-              <span>2k+ sold</span>
-            </div>
+    <Card className="relative rounded-[4px] transition-all duration-200 ease-out hover:-translate-y-1">
+      <Link href={`/products/${id}`} className="absolute inset-0 z-10">
+        <span className="sr-only">{name}</span>
+      </Link>
+      <CardContent className="relative">
+        <Image
+          src={imageUrl as string}
+          alt={name}
+          width={300}
+          height={300}
+          className="mb-2 aspect-square w-full rounded-xs object-cover"
+        />
+        <h1 className="mb-2 truncate text-sm">{name}</h1>
+        <p className="mb-2 text-sm font-semibold">{formatNumber(price)}</p>
+        <div className="flex items-center text-sm text-muted-foreground">
+          <div className="flex items-center gap-1">
+            <Star className="size-3.5 fill-amber-400 text-amber-400" />
+            <span>4.8</span>
           </div>
-        </CardContent>
-      </Card>
-    </Link>
+          <Dot />
+          <span>2k+ sold</span>
+        </div>
+        <div className="relative z-20 flex w-full justify-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-auto! p-0">
+                <Ellipsis />
+                <span className="sr-only">options</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuGroup>
+                <AddToCartDropdownItem productId={id} />
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </CardContent>
+    </Card>
   );
 };

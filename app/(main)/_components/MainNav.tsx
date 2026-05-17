@@ -32,7 +32,7 @@ const TopNav = () => {
         </InputGroupAddon>
       </InputGroup>
 
-      <Button variant="ghost" size="icon-lg" asChild>
+      <Button variant="ghost" size="icon-lg" className="flex sm:hidden" asChild>
         <Link href="/notifications">
           <Bell />
           <span className="sr-only">notification</span>

@@ -53,15 +53,13 @@ export const CartPreviewEmpty = () => {
   return (
     <div className="flex w-full flex-col items-center pb-7">
       <EmptyWishlist />
-      <div className="flex flex-col gap-2 text-center">
-        <h1 className="text-lg font-semibold">Your cart seems empty</h1>
-        <p className="text-base text-muted-foreground">
-          let&apos;s start shopping!
-        </p>
-        <Button size="lg" asChild>
-          <Link href="/">Start Shopping</Link>
-        </Button>
-      </div>
+      <h1 className="mb-2.5 text-lg font-semibold">Your cart seems empty</h1>
+      <p className="mb-2.5 text-base text-muted-foreground">
+        Let&apos;s start shopping!
+      </p>
+      <Button asChild>
+        <Link href="/">Start Shopping</Link>
+      </Button>
     </div>
   );
 };

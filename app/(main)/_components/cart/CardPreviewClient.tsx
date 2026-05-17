@@ -1,6 +1,6 @@
 "use client";
 
-import { CartWithItems } from "@/app/(shared)/_types";
+import { CartWithItems } from "@/app/(shared)/_types/prisma";
 import { Button } from "@/components/ui/button";
 import { ButtonWithLoader } from "@/components/ui/ButtonWithLoader";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -13,9 +13,13 @@ import { CartPreviewSkeleton } from "./CardSkeleton";
 
 type CardPreviewProps = {
   cartWithItems: CartWithItems["items"];
+  totalQuantity: number;
 };
 
-export const CartPreviewClient = ({ cartWithItems }: CardPreviewProps) => {
+export const CartPreviewClient = ({
+  cartWithItems,
+  totalQuantity,
+}: CardPreviewProps) => {
   const { data, isError, error, isPending, isFetching, refetch } = useQuery({
     queryKey: ["cart-items"],
     queryFn: async () => {
@@ -56,10 +60,7 @@ export const CartPreviewClient = ({ cartWithItems }: CardPreviewProps) => {
     <div className="flex flex-col">
       <div className="flex flex-1 items-center justify-between p-3">
         <h1 className="text-lg font-semibold">
-          Items{" "}
-          <span className="text-muted-foreground">
-            ({cartWithItems.length})
-          </span>
+          Items <span className="text-muted-foreground">({totalQuantity})</span>
         </h1>
         <Button variant="link" size="lg" asChild className="px-0">
           <Link href="/cart">See more</Link>

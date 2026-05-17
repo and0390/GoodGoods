@@ -1,4 +1,4 @@
-import { CartWithItems } from "@/app/(shared)/_types";
+import { CartWithItems } from "@/app/(shared)/_types/prisma";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { headers } from "next/headers";

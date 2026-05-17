@@ -33,7 +33,7 @@ export default function RootLayout({
         <ThemeProvider>
           <QueryProvider>
             <TooltipProvider>{children}</TooltipProvider>
-            <Toaster position="top-center" />
+            <Toaster position="top-center" offset={130} />
           </QueryProvider>
         </ThemeProvider>
       </body>

@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatCurrency(
+export function formatNumber(
   amount: number,
   currency: string = "IDR",
   locale: string = "id-ID"
