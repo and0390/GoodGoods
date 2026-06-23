@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { ProductTabSkeleton } from "./_components/tabs/ProductTabSkeleton";
 import { Suspense } from "react";
 import { TriggerToast } from "./_components/TriggerToast";
+import { Separator } from "@/components/ui/separator";
 
 const CategoryAction = () => {
   const config = [
@@ -59,14 +60,14 @@ export default function Page() {
 
   return (
     <div className="flex flex-1 flex-col gap-3">
-      <div className="w-full bg-muted/75 py-2 sm:py-6">
+      <div className="w-full bg-muted py-2 sm:py-6">
         <div className="container mx-auto space-y-6 px-4 sm:px-0">
           <CarouselBanner />
           <CategoryAction />
         </div>
       </div>
-      <div className="w-full bg-muted/75">
-        <div className="container mx-auto px-4 py-7 sm:px-0">
+      <div className="w-full bg-muted">
+        <div className="py-7">
           <Suspense fallback={<ProductTabSkeleton />}>
             <ProductTabs />
           </Suspense>

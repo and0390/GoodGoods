@@ -1,49 +1,45 @@
-import { CartWithItems } from "@/app/(shared)/_types/prisma";
+import { getCart } from "@/app/(shared)/_lib/getCart";
+import { getSession } from "@/app/(shared)/_lib/getSession";
 import { auth } from "@/lib/auth";
-import prisma from "@/lib/prisma";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+    const session = await getSession();
 
     if (!session) {
       return NextResponse.json(
         {
           success: false,
           code: "UNAUTHORIZED",
-          message: "You must be logged in to access cart items.",
+          message: "Authentication is required to access this resource",
           body: null,
         },
         { status: 401 }
       );
     }
 
-    const cart: CartWithItems | null = await prisma.cart.findUnique({
-      where: {
-        userId: session.user.id,
-      },
-      include: {
-        items: {
-          include: {
-            product: true,
-          },
-          orderBy: {
-            createdAt: "desc",
-          },
+    const cart = await getCart(session.user.id);
+
+    if (!cart) {
+      return NextResponse.json(
+        {
+          success: false,
+          code: "NOT_FOUND",
+          message: "Unable to find the requested cart",
+          body: null,
         },
-      },
-    });
+        { status: 404 }
+      );
+    }
 
     return NextResponse.json(
       {
         success: true,
         code: "SUCCESS",
         message: "Cart items fetched successfully.",
-        body: cart?.items ?? [],
+        body: cart,
       },
       {
         status: 200,
