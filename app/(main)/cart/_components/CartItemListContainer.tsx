@@ -1,31 +1,75 @@
 "use client";
 
 import { HttpError } from "@/app/(shared)/_lib/api";
-import { CartPreviewError } from "../../_components/cartHoverCard/CartPreviewError";
-import { useCartContext } from "../contexts/CartContext";
+import { CartPreviewError } from "../../_components/cart/CartPreviewError";
 import { CartItemList } from "./CartItemList";
+import { useCartQuery } from "../../_hooks/useCartQuery";
+import React from "react";
+import { Cart } from "@/app/(shared)/_types/cart";
 
-const CartItemListView = () => {
-  const { isSuccess, error, refetch } = useCartContext();
+type CartItemListViewProps = {
+  cartPromise: Promise<Cart>;
+  setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>;
+  handleToggleItem: (itemId: string) => void;
+  selectedItems: string[];
+};
+
+const CartItemListView = ({
+  cartPromise,
+  selectedItems,
+  setSelectedItems,
+  handleToggleItem,
+}: CartItemListViewProps) => {
+  const initialCart = React.use(cartPromise);
+
+  const {
+    data: cart,
+    error,
+    isSuccess,
+    refetch,
+  } = useCartQuery({
+    enabled: true, // allowing fetch on mount
+    initialData: initialCart,
+  });
+
+  const allItemsSelected =
+    selectedItems.length === cart.items.length
+      ? true
+      : selectedItems.length === 0
+        ? false
+        : "indeterminate";
+
+  const handleSetAllItems = () => {
+    if (allItemsSelected === true || allItemsSelected === "indeterminate") {
+      setSelectedItems([]);
+    } else {
+      // `optimisticCart` is guaranteed to exist here because the "Select All"
+      // action is only available after the cart query has resolved.
+      // Before that, the UI renders a loading skeleton instead.
+      setSelectedItems(cart.items.map((item) => item.id));
+    }
+  };
 
   const statusCode =
     (error instanceof HttpError && error.statusCode) || undefined;
 
-  return (
-    <div className="flex flex-col">
-      <h1 className="my-4 text-2xl font-semibold">Your Cart</h1>
-      {isSuccess ? (
-        <CartItemList />
-      ) : (
-        <CartPreviewError
-          className="h-auto w-full rounded-2xl bg-muted py-20"
-          variant="grid"
-          statusCode={statusCode}
-          size="lg"
-          onRetry={refetch}
-        />
-      )}
-    </div>
+  return isSuccess ? (
+    <CartItemList
+      selectedItems={selectedItems}
+      setSelectedItems={setSelectedItems}
+      cart={cart}
+      handleToggleItem={handleToggleItem}
+      allItemsSelected={allItemsSelected}
+      handleSetAllItems={handleSetAllItems}
+    />
+  ) : (
+    <CartPreviewError
+      className="h-auto w-full rounded-2xl bg-muted py-20"
+      variant="grid"
+      statusCode={statusCode}
+      size="lg"
+      onRetry={refetch}
+    />
   );
 };
 

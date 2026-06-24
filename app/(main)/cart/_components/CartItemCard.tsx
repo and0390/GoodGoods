@@ -5,7 +5,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { cn, formatCurrency } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { useSelectedItemsContext } from "../contexts/SelectedItemsContext";
 import { DeleteItemButton } from "./DeleteItemButton";
 import { QuantityInputGroup } from "./QuantityInputGroup";
 import { ToggleFavoriteButton } from "./ToggleFavoriteButton";
@@ -13,16 +12,20 @@ import { ToggleFavoriteButton } from "./ToggleFavoriteButton";
 type CartItemCardProps = {
   cartItem: CartItem;
   selectedItemsSet: Set<string>;
+  handleToggleItem: (itemId: string) => void;
+  selectedItems: string[];
+  setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>;
 } & React.ComponentProps<typeof Card>;
 
 export const CartItemCard = ({
   cartItem,
   selectedItemsSet,
+  selectedItems,
+  setSelectedItems,
+  handleToggleItem,
   className,
   ...props
 }: CartItemCardProps) => {
-  const { handleToggleItem } = useSelectedItemsContext();
-
   return (
     <Card className={cn("w-full rounded-none", className)} {...props}>
       <CardContent className="w-full">
@@ -75,7 +78,11 @@ export const CartItemCard = ({
                     isFavorited={cartItem.isFavorited}
                     productId={cartItem.product.id}
                   />
-                  <DeleteItemButton cartItemId={cartItem.id} />
+                  <DeleteItemButton
+                    cartItemId={cartItem.id}
+                    selectedItems={selectedItems}
+                    setSelectedItems={setSelectedItems}
+                  />
                   <QuantityInputGroup
                     key={cartItem.quantity}
                     cartItemId={cartItem.id}

@@ -6,10 +6,19 @@ import useDeleteItems from "../_hooks/useDeleteItems";
 
 type DeleteItemButtonProps = {
   cartItemId: string;
+  selectedItems: string[];
+  setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
-export const DeleteItemButton = ({ cartItemId }: DeleteItemButtonProps) => {
-  const { mutate, isPending } = useDeleteItems();
+export const DeleteItemButton = ({
+  cartItemId,
+  selectedItems,
+  setSelectedItems,
+}: DeleteItemButtonProps) => {
+  const { mutate, isPending } = useDeleteItems({
+    selectedItems,
+    setSelectedItems,
+  });
 
   const handleDeleteItem = () => {
     mutate([cartItemId]);

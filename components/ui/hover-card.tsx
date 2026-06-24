@@ -41,12 +41,20 @@ function HoverCardContent({
   );
 }
 
-function HoverCardSlideBottomContent({
-  className,
+function HoverCardContentAnimated({
   sideOffset = 4,
   align = "center",
+  contentClassName,
+  bodyClassName,
+  children,
   ...props
-}: Omit<React.ComponentProps<typeof HoverCardPrimitive.Content>, "side">) {
+}: Omit<
+  React.ComponentProps<typeof HoverCardPrimitive.Content>,
+  "side" | "className"
+> & {
+  contentClassName?: string;
+  bodyClassName?: string;
+}) {
   return (
     <HoverCardPrimitive.Portal data-slot="hover-card-portal">
       <HoverCardPrimitive.Content
@@ -55,11 +63,20 @@ function HoverCardSlideBottomContent({
         side="bottom"
         align={align}
         className={cn(
-          "z-40 w-64 origin-(--radix-hover-card-content-transform-origin) rounded-xl bg-popover p-2.5 text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/10 outline-hidden duration-100 data-open:animate-in data-open:slide-in-from-top-100 data-closed:animate-out data-closed:slide-out-to-top-100",
-          className
+          "z-40 w-64 origin-(--radix-hover-card-content-transform-origin) rounded-xl bg-popover p-2.5 text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/10 outline-hidden duration-200 data-open:animate-in data-open:slide-in-from-top-100 data-closed:animate-out data-closed:slide-out-to-top-100",
+          bodyClassName
         )}
         {...props}
-      />
+      >
+        <div
+          className={cn(
+            "w-full flex-col duration-200 group-data-open:animate-in group-data-open:slide-in-from-bottom-100 group-data-closed:animate-out group-data-closed:slide-out-to-bottom-100",
+            contentClassName
+          )}
+        >
+          {children}
+        </div>
+      </HoverCardPrimitive.Content>
     </HoverCardPrimitive.Portal>
   );
 }
@@ -68,5 +85,5 @@ export {
   HoverCard,
   HoverCardTrigger,
   HoverCardContent,
-  HoverCardSlideBottomContent as HoverCardSlideToTopContent,
+  HoverCardContentAnimated,
 };

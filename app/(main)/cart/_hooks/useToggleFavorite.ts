@@ -56,6 +56,7 @@ export default function useToggleFavorite(cartItemId: string) {
 
       return { previousCart };
     },
+    networkMode: "offlineFirst",
     scope: { id: `toggleFavorite-${cartItemId}` },
     onError: (err, newCart, onMutateResult, context) => {
       context.client.setQueryData(["cart"], onMutateResult?.previousCart);

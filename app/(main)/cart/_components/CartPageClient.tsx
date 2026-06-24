@@ -2,6 +2,8 @@
 
 import { fetcher } from "@/app/(shared)/_lib/api";
 import { apiSchema } from "@/app/(shared)/_lib/apiSchema";
+import { Cart } from "@/app/(shared)/_types/cart";
+import { Product } from "@/app/(shared)/_types/product";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,14 +15,31 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/utils";
 import { skipToken, useQuery } from "@tanstack/react-query";
-import { useSelectedItemsContext } from "../contexts/SelectedItemsContext";
+import React, { Suspense } from "react";
+import CartItemListView from "./CartItemListContainer";
+import { CartItemListSkeleton } from "./CartItemListSkeleton";
+import RecommendedProductsGrid from "./RecommendedProductsGrid";
+import RecommendedProductsGridSkeleton from "./RecommendedProductsGridSkeleton";
 
 type CartPageClientProps = {
-  leftSection: React.ReactNode;
+  cartPromise: Promise<Cart>;
+  productsPromise: Promise<Product[]>;
 };
 
-export const CartPageClient = ({ leftSection }: CartPageClientProps) => {
-  const { selectedItems } = useSelectedItemsContext();
+export const CartPageClient = ({
+  cartPromise,
+  productsPromise,
+}: CartPageClientProps) => {
+  const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
+
+  const handleToggleItem = (itemId: string) => {
+    setSelectedItems((prev) =>
+      prev.includes(itemId)
+        ? prev.filter((id) => id !== itemId)
+        : [...prev, itemId]
+    );
+  };
+
   const { data, isFetching, isSuccess } = useQuery({
     queryKey: ["cart", "totalPrice", selectedItems],
     queryFn:
@@ -44,7 +63,28 @@ export const CartPageClient = ({ leftSection }: CartPageClientProps) => {
 
   return (
     <div className="mx-auto flex w-full gap-6">
-      {leftSection}
+      <div className="flex w-full flex-2 flex-col gap-16">
+        <div className="flex flex-col">
+          <h1 className="my-4 text-2xl font-semibold">Your Cart</h1>
+          <Suspense fallback={<CartItemListSkeleton />} name="cart-provider">
+            <CartItemListView
+              cartPromise={cartPromise}
+              handleToggleItem={handleToggleItem}
+              selectedItems={selectedItems}
+              setSelectedItems={setSelectedItems}
+            />
+          </Suspense>
+        </div>
+        <div className="flex w-full flex-col">
+          <h1 className="mb-6 text-2xl font-semibold">Recommended for You</h1>
+          <Suspense
+            fallback={<RecommendedProductsGridSkeleton />}
+            name="recommended-product-cart"
+          >
+            <RecommendedProductsGrid productsPromise={productsPromise} />
+          </Suspense>
+        </div>
+      </div>
       <div className="flex-1 pt-[64px]">
         <Card className="sticky top-32 rounded-2xl">
           <CardHeader>

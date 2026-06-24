@@ -1,17 +1,20 @@
 "use client";
 
-import { CartItem } from "@/app/(shared)/_types/cart";
 import {
   HoverCard,
-  HoverCardSlideToTopContent,
+  HoverCardContentAnimated,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
 import React from "react";
 import { useCartQuery } from "../../_hooks/useCartQuery";
-import { CartPreview } from "./CartPreview";
-import { CartHoverCardHeader } from "./CartHoverCardHeader";
-import { DefaultError } from "@tanstack/react-query";
+import CartHoverCardItemsSkeleton from "./CardSkeleton";
+import CartHoverCardHeader, {
+  CartHoverCardHeaderSkeleton,
+} from "./CartHoverCardHeader";
+import { CartPreviewEmpty } from "./CartPreviewEmpty";
+import { CartPreviewError } from "./CartPreviewError";
+import CartHoverCardItemList from "./CartPreviewItemList";
 
 type CartHoverCardClient = {
   triggerContent: React.ReactNode;
@@ -23,16 +26,14 @@ export const CartHoverCardClient = ({
   isAuthenticated,
 }: CartHoverCardClient) => {
   const [openHoverCard, setOpenHoverCard] = React.useState(false);
-
   // if user is not logged in, just show it right away, as we're not fetching or preparing any data
   const [pausedLoading, setPausedLoading] = React.useState(isAuthenticated);
 
   const {
     isPending,
-    data: rawData,
-    isError,
-  } = useCartQuery<DefaultError, CartItem[]>({
-    select: (data) => data.items,
+    data: cart,
+    isSuccess,
+  } = useCartQuery({
     enabled: isAuthenticated && openHoverCard,
   });
 
@@ -48,8 +49,6 @@ export const CartHoverCardClient = ({
 
   const isLoading = isPending || pausedLoading;
 
-  const data = rawData ?? [];
-
   return (
     <HoverCard
       openDelay={100}
@@ -59,24 +58,30 @@ export const CartHoverCardClient = ({
     >
       <HoverCardTrigger asChild>{triggerContent}</HoverCardTrigger>
 
-      <HoverCardSlideToTopContent
+      <HoverCardContentAnimated
         key={Number(isLoading)} // make content remount each time loading state changes
-        className="flex w-110 flex-col rounded-t-none p-0"
+        bodyClassName="group w-110 overflow-hidden rounded-t-none rounded-b-2xl p-0"
+        contentClassName="flex w-full flex-col"
         sideOffset={55}
       >
-        <CartHoverCardHeader
-          cartItems={data}
-          isAuthenticated={isAuthenticated}
-          isLoading={isLoading}
-        />
+        {!isAuthenticated ? null : isLoading ? (
+          <CartHoverCardHeaderSkeleton />
+        ) : isSuccess ? (
+          <CartHoverCardHeader totalQuantity={cart.totalQuantity} />
+        ) : (
+          <CartPreviewError />
+        )}
         <Separator />
-        <CartPreview
-          isError={isError}
-          isLoading={isLoading}
-          isAuthenticated={isAuthenticated}
-          cartItems={data}
-        />
-      </HoverCardSlideToTopContent>
+        {!isAuthenticated ? (
+          <CartPreviewEmpty />
+        ) : isLoading ? (
+          <CartHoverCardItemsSkeleton />
+        ) : isSuccess ? (
+          <CartHoverCardItemList cartItems={cart.items} />
+        ) : (
+          <CartPreviewError />
+        )}
+      </HoverCardContentAnimated>
     </HoverCard>
   );
 };

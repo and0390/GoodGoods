@@ -17,18 +17,27 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useCartContext } from "../contexts/CartContext";
-import { Cart } from "@/app/(shared)/_types/cart";
-import { useSelectedItemsContext } from "../contexts/SelectedItemsContext";
 import useDeleteItems from "../_hooks/useDeleteItems";
+import { CheckboxSelection } from "../_types/checkboxSelection";
 
-export const DeleteItemsButton = () => {
-  const { allItemsSelected } = useCartContext();
-  const { selectedItems } = useSelectedItemsContext();
+type DeleteItemsButtonProps = {
+  allItemsSelected: CheckboxSelection;
+  selectedItems: string[];
+  setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>;
+};
+
+export const DeleteItemsButton = ({
+  allItemsSelected,
+  selectedItems,
+  setSelectedItems,
+}: DeleteItemsButtonProps) => {
   const selectedItemsCount = selectedItems.length;
   const hasSelectedItems = selectedItemsCount > 1;
 
-  const { mutate, isPending } = useDeleteItems();
+  const { mutate, isPending } = useDeleteItems({
+    selectedItems,
+    setSelectedItems,
+  });
 
   const handleDeleteItems = () => {
     mutate(selectedItems);

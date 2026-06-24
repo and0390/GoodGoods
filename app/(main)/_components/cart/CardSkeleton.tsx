@@ -1,16 +1,16 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-export const CartPreviewSkeleton = () => {
+const CartHoverCardItemsSkeleton = () => {
   return (
     <div className="flex w-full flex-col gap-4 p-3">
       {Array.from({ length: 4 }).map((_, index) => (
-        <CartPreviewItemSkeleton key={index} />
+        <CartHoverCardItemSkeleton key={index} />
       ))}
     </div>
   );
 };
 
-const CartPreviewItemSkeleton = () => {
+const CartHoverCardItemSkeleton = () => {
   return (
     <div className="grid h-full w-full grid-cols-[auto_1fr] grid-rows-[auto_1fr] gap-x-3 gap-y-3">
       <div className="row-span-2">
@@ -27,3 +27,5 @@ const CartPreviewItemSkeleton = () => {
     </div>
   );
 };
+
+export default CartHoverCardItemsSkeleton;

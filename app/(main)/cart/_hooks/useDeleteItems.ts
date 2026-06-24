@@ -2,10 +2,16 @@ import { Cart } from "@/app/(shared)/_types/cart";
 import { toastWithButton } from "@/components/ui/toastWithButton";
 import useMutationCartBase from "../../_hooks/useMutationCartBase";
 import { deleteCartItems } from "../_actions/deleteCartItems";
-import { useSelectedItemsContext } from "../contexts/SelectedItemsContext";
 
-export default function useDeleteItems() {
-  const { setSelectedItems, selectedItems } = useSelectedItemsContext();
+type UseSelectedItemsOptions = {
+  setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>;
+  selectedItems: string[];
+};
+
+export default function useDeleteItems({
+  selectedItems,
+  setSelectedItems,
+}: UseSelectedItemsOptions) {
   const mutation = useMutationCartBase({
     mutationFn: async (cartItemIds: string[]) => {
       const { data, serverError } = await deleteCartItems(cartItemIds);

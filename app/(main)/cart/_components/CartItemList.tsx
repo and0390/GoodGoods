@@ -1,18 +1,32 @@
 "use client";
 
+import { Cart } from "@/app/(shared)/_types/cart";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
-import { CartPreviewEmpty } from "../../_components/cartHoverCard/CartPreviewEmpty";
-import { useCartContext } from "../contexts/CartContext";
+import React from "react";
+import { CartPreviewEmpty } from "../../_components/cart/CartPreviewEmpty";
 import { CartItemCard } from "./CartItemCard";
 import { DeleteItemsButton } from "./DeleteItemsButton";
-import React from "react";
-import { useSelectedItemsContext } from "../contexts/SelectedItemsContext";
+import { CheckboxSelection } from "../_types/checkboxSelection";
 
-export const CartItemList = () => {
-  const { cart, allItemsSelected, handleSetAllItems } = useCartContext();
-  const { selectedItems } = useSelectedItemsContext();
+type CartItemListProps = {
+  setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>;
+  selectedItems: string[];
+  cart: Cart;
+  allItemsSelected: CheckboxSelection;
+  handleSetAllItems: () => void;
+  handleToggleItem: (itemId: string) => void;
+};
+
+export const CartItemList = ({
+  selectedItems,
+  setSelectedItems,
+  allItemsSelected,
+  cart,
+  handleToggleItem,
+  handleSetAllItems,
+}: CartItemListProps) => {
   const hasCartItems = cart.items.length > 0;
   const selectedItemsSet = React.useMemo(
     () => new Set(selectedItems),
@@ -32,7 +46,11 @@ export const CartItemList = () => {
               <span className="text-sm font-semibold">
                 Select all ({cart.totalQuantity})
               </span>
-              <DeleteItemsButton />
+              <DeleteItemsButton
+                allItemsSelected={allItemsSelected}
+                selectedItems={selectedItems}
+                setSelectedItems={setSelectedItems}
+              />
             </CardContent>
           </Card>
 
@@ -40,10 +58,13 @@ export const CartItemList = () => {
             const isLastItem = index === cart.items.length - 1;
             return (
               <CartItemCard
+                selectedItems={selectedItems}
+                setSelectedItems={setSelectedItems}
                 key={item.id}
                 selectedItemsSet={selectedItemsSet}
                 cartItem={item}
                 className={cn(isLastItem && "rounded-b-2xl")}
+                handleToggleItem={handleToggleItem}
               />
             );
           })}
