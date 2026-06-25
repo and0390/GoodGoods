@@ -15,7 +15,7 @@ type CartHoverCardHeaderProps = {
   totalQuantity?: number;
 };
 
-const CartHoverCardHeader = ({ totalQuantity }: CartHoverCardHeaderProps) => {
+const CartHeader = ({ totalQuantity }: CartHoverCardHeaderProps) => {
   return (
     <div className="flex items-center justify-between p-3">
       <div className="flex items-center gap-1 text-lg font-semibold">
@@ -31,4 +31,4 @@ const CartHoverCardHeader = ({ totalQuantity }: CartHoverCardHeaderProps) => {
   );
 };
 
-export default CartHoverCardHeader;
+export default CartHeader;

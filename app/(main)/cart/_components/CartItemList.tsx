@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import React from "react";
-import { CartPreviewEmpty } from "../../_components/cart/CartPreviewEmpty";
+import { CartPreviewEmpty } from "./CartPreviewEmpty";
 import { CartItemCard } from "./CartItemCard";
 import { DeleteItemsButton } from "./DeleteItemsButton";
 import { CheckboxSelection } from "../_types/checkboxSelection";

@@ -17,7 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { Bell, MapPin, SearchIcon } from "lucide-react";
 import Link from "next/link";
 import { UserMenuOrAuthButtons } from "./avatar/UserMenuOrAuthButtons";
-import { CartHoverCard } from "./cart/CartHoverCard";
+import { CartHoverCard } from "../cart/_components/hover-card/CartHoverCard";
 import { PiSquaresFour } from "react-icons/pi";
 
 const TopNav = () => {

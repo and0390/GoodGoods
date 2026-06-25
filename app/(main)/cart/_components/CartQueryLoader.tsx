@@ -1,25 +1,25 @@
 "use client";
 
 import { HttpError } from "@/app/(shared)/_lib/api";
-import { CartPreviewError } from "../../_components/cart/CartPreviewError";
+import { CartPreviewError } from "./CartPreviewError";
 import { CartItemList } from "./CartItemList";
 import { useCartQuery } from "../../_hooks/useCartQuery";
 import React from "react";
 import { Cart } from "@/app/(shared)/_types/cart";
 
-type CartItemListViewProps = {
+type CartQueryLoaderProps = {
   cartPromise: Promise<Cart>;
   setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>;
   handleToggleItem: (itemId: string) => void;
   selectedItems: string[];
 };
 
-const CartItemListView = ({
+const CartQueryLoader = ({
   cartPromise,
   selectedItems,
   setSelectedItems,
   handleToggleItem,
-}: CartItemListViewProps) => {
+}: CartQueryLoaderProps) => {
   const initialCart = React.use(cartPromise);
 
   const {
@@ -43,9 +43,6 @@ const CartItemListView = ({
     if (allItemsSelected === true || allItemsSelected === "indeterminate") {
       setSelectedItems([]);
     } else {
-      // `optimisticCart` is guaranteed to exist here because the "Select All"
-      // action is only available after the cart query has resolved.
-      // Before that, the UI renders a loading skeleton instead.
       setSelectedItems(cart.items.map((item) => item.id));
     }
   };
@@ -73,4 +70,4 @@ const CartItemListView = ({
   );
 };
 
-export default CartItemListView;
+export default CartQueryLoader;

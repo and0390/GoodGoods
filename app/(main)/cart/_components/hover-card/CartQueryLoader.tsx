@@ -7,21 +7,19 @@ import {
 } from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
 import React from "react";
-import { useCartQuery } from "../../_hooks/useCartQuery";
-import CartHoverCardItemsSkeleton from "./CardSkeleton";
-import CartHoverCardHeader, {
-  CartHoverCardHeaderSkeleton,
-} from "./CartHoverCardHeader";
-import { CartPreviewEmpty } from "./CartPreviewEmpty";
-import { CartPreviewError } from "./CartPreviewError";
-import CartHoverCardItemList from "./CartPreviewItemList";
+import { useCartQuery } from "../../../_hooks/useCartQuery";
+import CartItemListSkeleton from "./CardItemListSkeleton";
+import CartHeader, { CartHoverCardHeaderSkeleton } from "./CartHeader";
+import { CartPreviewEmpty } from "../CartPreviewEmpty";
+import { CartPreviewError } from "../CartPreviewError";
+import CartItemList from "./CartItemList";
 
 type CartHoverCardClient = {
   triggerContent: React.ReactNode;
   isAuthenticated: boolean;
 };
 
-export const CartHoverCardClient = ({
+const CartQueryLoader = ({
   triggerContent,
   isAuthenticated,
 }: CartHoverCardClient) => {
@@ -67,7 +65,7 @@ export const CartHoverCardClient = ({
         {!isAuthenticated ? null : isLoading ? (
           <CartHoverCardHeaderSkeleton />
         ) : isSuccess ? (
-          <CartHoverCardHeader totalQuantity={cart.totalQuantity} />
+          <CartHeader totalQuantity={cart.totalQuantity} />
         ) : (
           <CartPreviewError />
         )}
@@ -75,9 +73,9 @@ export const CartHoverCardClient = ({
         {!isAuthenticated ? (
           <CartPreviewEmpty />
         ) : isLoading ? (
-          <CartHoverCardItemsSkeleton />
+          <CartItemListSkeleton />
         ) : isSuccess ? (
-          <CartHoverCardItemList cartItems={cart.items} />
+          <CartItemList cartItems={cart.items} />
         ) : (
           <CartPreviewError />
         )}
@@ -85,3 +83,5 @@ export const CartHoverCardClient = ({
     </HoverCard>
   );
 };
+
+export default CartQueryLoader;

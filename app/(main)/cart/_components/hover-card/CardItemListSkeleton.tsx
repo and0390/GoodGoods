@@ -1,15 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-const CartHoverCardItemsSkeleton = () => {
-  return (
-    <div className="flex w-full flex-col gap-4 p-3">
-      {Array.from({ length: 4 }).map((_, index) => (
-        <CartHoverCardItemSkeleton key={index} />
-      ))}
-    </div>
-  );
-};
-
 const CartHoverCardItemSkeleton = () => {
   return (
     <div className="grid h-full w-full grid-cols-[auto_1fr] grid-rows-[auto_1fr] gap-x-3 gap-y-3">
@@ -28,4 +18,14 @@ const CartHoverCardItemSkeleton = () => {
   );
 };
 
-export default CartHoverCardItemsSkeleton;
+const CartItemListSkeleton = () => {
+  return (
+    <div className="flex w-full flex-col gap-4 p-3">
+      {Array.from({ length: 4 }).map((_, index) => (
+        <CartHoverCardItemSkeleton key={index} />
+      ))}
+    </div>
+  );
+};
+
+export default CartItemListSkeleton;

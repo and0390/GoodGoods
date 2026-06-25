@@ -5,11 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { ComponentProps } from "react";
 
-export type CartPreviewItemProps = {
+type CartPreviewItemProps = {
   cartItem: CartItem;
 } & ComponentProps<"div">;
 
-export const CartPreviewItem = ({
+const CartItemCard = ({
   cartItem,
   className,
   ...props
@@ -56,3 +56,5 @@ export const CartPreviewItem = ({
     </div>
   );
 };
+
+export default CartItemCard;

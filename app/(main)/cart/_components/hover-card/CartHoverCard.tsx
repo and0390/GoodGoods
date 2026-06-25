@@ -1,27 +1,28 @@
+import { getSessionCached } from "@/app/(shared)/_lib/getSessionCached";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 import Link from "next/link";
 import { Suspense } from "react";
 import { RiShoppingCart2Line } from "react-icons/ri";
-import { CartHoverCardClient } from "./CartHoverCardClient";
-import { CartWithBadge } from "./CartWidthBadge";
-import { getSessionCached } from "@/app/(shared)/_lib/getSessionCached";
+import CartQueryLoader from "./CartQueryLoader";
+import CartIconWithBadge from "./CartWidthBadge";
+import { getCart } from "@/app/(shared)/_lib/getCart";
 
 export const CartHoverCard = async () => {
   const session = await getSessionCached();
 
   const href = session ? "/cart" : "/login?next=/cart";
 
+  const cartPromise = session ? getCart(session.user.id) : null;
+
   return (
-    <CartHoverCardClient
+    <CartQueryLoader
       triggerContent={
         <Button variant="ghost" size="icon-lg">
           <Link href={href}>
-            {session ? (
+            {session && cartPromise ? (
               <Suspense fallback={<Skeleton className="size-6" />}>
-                <CartWithBadge userId={session.user.id} />
+                <CartIconWithBadge cartPromise={cartPromise} />
               </Suspense>
             ) : (
               <RiShoppingCart2Line className="size-6" />

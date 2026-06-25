@@ -16,7 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/utils";
 import { skipToken, useQuery } from "@tanstack/react-query";
 import React, { Suspense } from "react";
-import CartItemListView from "./CartItemListContainer";
+import CartQueryLoader from "./CartQueryLoader";
 import { CartItemListSkeleton } from "./CartItemListSkeleton";
 import RecommendedProductsGrid from "./RecommendedProductsGrid";
 import RecommendedProductsGridSkeleton from "./RecommendedProductsGridSkeleton";
@@ -67,7 +67,7 @@ export const CartPageClient = ({
         <div className="flex flex-col">
           <h1 className="my-4 text-2xl font-semibold">Your Cart</h1>
           <Suspense fallback={<CartItemListSkeleton />} name="cart-provider">
-            <CartItemListView
+            <CartQueryLoader
               cartPromise={cartPromise}
               handleToggleItem={handleToggleItem}
               selectedItems={selectedItems}
