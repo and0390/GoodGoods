@@ -31,9 +31,22 @@ export const toggleFavorite = actionClient
       } catch (err) {
         if (err instanceof Prisma.PrismaClientKnownRequestError) {
           if (err.code === "P2002") {
-            await prisma.favorite.delete({
-              where: { userId_productId: { userId, productId } },
-            });
+            try {
+              await prisma.favorite.delete({
+                where: { userId_productId: { userId, productId } },
+              });
+            } catch (err) {
+              if (
+                err instanceof Prisma.PrismaClientKnownRequestError &&
+                err.code === "P2025"
+              ) {
+                return {
+                  success: true,
+                  message: REMOVE_MESSAGE,
+                  body: null,
+                };
+              }
+            }
 
             return {
               success: true,
