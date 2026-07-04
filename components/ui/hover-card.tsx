@@ -32,7 +32,7 @@ function HoverCardContent({
         align={align}
         sideOffset={sideOffset}
         className={cn(
-          "z-50 w-64 origin-(--radix-hover-card-content-transform-origin) rounded-lg bg-popover p-2.5 text-sm text-popover-foreground shadow-md ring-1 ring-foreground/10 outline-hidden duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          "z-50 w-64 origin-(--radix-hover-card-content-transform-origin) rounded-xl bg-popover p-2.5 text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/10 outline-hidden duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
           className
         )}
         {...props}
@@ -41,4 +41,49 @@ function HoverCardContent({
   );
 }
 
-export { HoverCard, HoverCardTrigger, HoverCardContent };
+function HoverCardContentAnimated({
+  sideOffset = 4,
+  align = "center",
+  contentClassName,
+  bodyClassName,
+  children,
+  ...props
+}: Omit<
+  React.ComponentProps<typeof HoverCardPrimitive.Content>,
+  "side" | "className"
+> & {
+  contentClassName?: string;
+  bodyClassName?: string;
+}) {
+  return (
+    <HoverCardPrimitive.Portal data-slot="hover-card-portal">
+      <HoverCardPrimitive.Content
+        data-slot="hover-card-content"
+        sideOffset={sideOffset}
+        side="bottom"
+        align={align}
+        className={cn(
+          "z-40 w-64 origin-(--radix-hover-card-content-transform-origin) rounded-xl bg-popover p-2.5 text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/10 outline-hidden duration-200 data-open:animate-in data-open:slide-in-from-top-100 data-closed:animate-out data-closed:slide-out-to-top-100",
+          bodyClassName
+        )}
+        {...props}
+      >
+        <div
+          className={cn(
+            "w-full flex-col duration-200 group-data-open:animate-in group-data-open:slide-in-from-bottom-100 group-data-closed:animate-out group-data-closed:slide-out-to-bottom-100",
+            contentClassName
+          )}
+        >
+          {children}
+        </div>
+      </HoverCardPrimitive.Content>
+    </HoverCardPrimitive.Portal>
+  );
+}
+
+export {
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
+  HoverCardContentAnimated,
+};

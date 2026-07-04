@@ -1,60 +1,34 @@
 "use server";
 
-import { auth } from "@/lib/auth";
+import { idSchema } from "@/app/(shared)/_schemas/idSchema";
+import { ActionResponseData } from "@/app/(shared)/_types/actionResponse";
 import prisma from "@/lib/prisma";
+import { actionClient } from "@/lib/safe-action";
 import { refresh } from "next/cache";
-import { headers } from "next/headers";
+import { z } from "zod";
 
-export default async function addToCart(
-  productId: string,
-  quantity: number = 1
-) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+export const addToCart = actionClient
+  .inputSchema(z.tuple([idSchema, z.int().nonnegative().default(1)]))
+  .action(async ({ parsedInput, ctx }): Promise<ActionResponseData> => {
+    const userId = ctx.user.id;
+    const [productId, quantity] = parsedInput;
 
-  if (!session) {
-    return {
-      success: false,
-      code: "UNAUTHORIZED",
-      message: "Operation is not allowed.",
-      body: null,
-    };
-  }
-
-  const res = await prisma.$transaction(async (tx) => {
-    const cart = await tx.cart.upsert({
-      where: { userId: session.user.id },
-      update: {},
-      create: { userId: session.user.id },
+    const cart = await prisma.cart.findUniqueOrThrow({
+      where: { userId },
+      select: { id: true },
     });
 
-    const cartItem = await tx.cartItem.upsert({
-      where: {
-        cartId_productId: {
-          cartId: cart.id,
-          productId,
-        },
-      },
-      update: {
-        quantity: { increment: quantity },
-      },
-      create: {
-        cartId: cart.id,
-        productId,
-        quantity: quantity,
-      },
+    await prisma.cartItem.upsert({
+      where: { cartId_productId: { cartId: cart.id, productId } },
+      create: { cartId: cart.id, productId, quantity },
+      update: { quantity: { increment: quantity } },
     });
+
+    refresh();
 
     return {
       success: true,
-      code: "SUCCESS",
       message: "Product was added successfully",
-      body: cartItem,
+      body: null,
     };
   });
-
-  refresh();
-
-  return res;
-}

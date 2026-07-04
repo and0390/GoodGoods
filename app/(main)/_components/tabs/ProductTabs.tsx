@@ -3,10 +3,13 @@ import { ProductGrid } from "./ProductGrid";
 import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 
-const ForYouTab = async (
-  props: Omit<React.ComponentProps<typeof TabsTrigger>, "value">
-) => {
+const ForYouTab = async ({
+  className,
+  ...props
+}: Omit<React.ComponentProps<typeof TabsTrigger>, "value">) => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -14,7 +17,11 @@ const ForYouTab = async (
   const name = session ? session.user.name : "You";
 
   return (
-    <TabsTrigger value="forYou" {...props}>
+    <TabsTrigger
+      value="forYou"
+      className={cn("relative flex-none", className)}
+      {...props}
+    >
       For {name}
     </TabsTrigger>
   );
@@ -28,19 +35,28 @@ export const ProductTabs = async () => {
   }));
 
   return (
-    <Tabs defaultValue="forYou">
-      <TabsList variant="line">
-        <ForYouTab />
-        <TabsTrigger value="mall">Mall</TabsTrigger>
-        <TabsTrigger value="yourProducts">Your Products</TabsTrigger>
+    <Tabs className="" defaultValue="forYou">
+      <TabsList
+        variant="line"
+        className="sticky top-25 z-30 h-13! w-full justify-start border-b bg-muted"
+      >
+        <div className="container mx-auto h-full">
+          <ForYouTab />
+          <TabsTrigger value="mall" className="flex-none">
+            Mall
+          </TabsTrigger>
+          <TabsTrigger value="yourProducts" className="flex-none">
+            Your Products
+          </TabsTrigger>
+        </div>
       </TabsList>
-      <TabsContent value="forYou">
+      <TabsContent value="forYou" className="container mx-auto px-1">
         <ProductGrid products={extendedProducts} />
       </TabsContent>
-      <TabsContent value="mall">
+      <TabsContent value="mall" className="container mx-auto px-1">
         <ProductGrid products={extendedProducts} />
       </TabsContent>
-      <TabsContent value="yourProducts">
+      <TabsContent value="yourProducts" className="container mx-auto px-1">
         <ProductGrid products={extendedProducts} />
       </TabsContent>
     </Tabs>

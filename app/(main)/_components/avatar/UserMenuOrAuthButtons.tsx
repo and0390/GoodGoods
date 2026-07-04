@@ -13,6 +13,8 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { AuthUser } from "../../../(shared)/_types/auth";
 import { LogoutMenuItem } from "./LogoutMenuItem";
+import { getSession } from "better-auth/api";
+import { getSessionCached } from "@/app/(shared)/_lib/getSessionCached";
 
 type UserAvatarMenuProps = {
   authUser: AuthUser;
@@ -34,7 +36,7 @@ const UserAvatarMenu = ({ authUser }: UserAvatarMenuProps) => {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent className="z-110">
         <DropdownMenuGroup>
           <DropdownMenuItem>Profile</DropdownMenuItem>
           <DropdownMenuItem>Settings</DropdownMenuItem>
@@ -49,9 +51,7 @@ const UserAvatarMenu = ({ authUser }: UserAvatarMenuProps) => {
 };
 
 export const UserMenuOrAuthButtons = async () => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getSessionCached();
 
   if (session) {
     return <UserAvatarMenu authUser={session["user"]} />;

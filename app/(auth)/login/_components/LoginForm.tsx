@@ -12,7 +12,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AuthForm, AuthFormRootProps } from "../../_components/AuthForm";
 import { FormInputFieldListProps } from "../../_components/FormInputFieldList";
-import { loginSchema, LoginSchema } from "../_schemas";
+import { loginSchema, LoginSchema } from "../_schema";
 import { ComponentProps } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";

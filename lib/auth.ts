@@ -1,4 +1,4 @@
-import { betterAuth } from "better-auth";
+import { APIError, betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { resend } from "./resend";
@@ -27,5 +27,29 @@ export const auth = betterAuth({
     "http://127.0.0.1:3000",
     "http://127.0.0.1:3001",
   ],
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          try {
+            await prisma.cart.create({
+              data: {
+                userId: user.id,
+              },
+            });
+          } catch (err) {
+            console.error(
+              "[BetterAuth databaseHooks] Failed to create cart:",
+              err
+            );
+            throw new APIError("INTERNAL_SERVER_ERROR", {
+              message:
+                "Unexpected error occured while creating your account, please try again later",
+            });
+          }
+        },
+      },
+    },
+  },
   plugins: [nextCookies()],
 });
