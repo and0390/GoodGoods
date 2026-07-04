@@ -46,7 +46,7 @@ export const CartPageClient = ({
       selectedItems.length > 0 // prevent queryFn from running on mount and when nothing is selected
         ? async ({ signal }) => {
             const { body } = apiSchema.parse(
-              await fetcher.post("/api/cart/calculate-total", {
+              await fetcher.post("/api/cart/summary", {
                 body: JSON.stringify({ itemIds: selectedItems }),
                 signal,
               })
