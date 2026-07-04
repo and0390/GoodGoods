@@ -30,12 +30,12 @@ export default function RootLayout({
       )}
     >
       <body>
-        <QueryProvider>
-          <ThemeProvider>
+        <ThemeProvider>
+          <QueryProvider>
             <TooltipProvider>{children}</TooltipProvider>
-            <Toaster position="top-center" />
-          </ThemeProvider>
-        </QueryProvider>
+            <Toaster position="top-center" offset={130} />
+          </QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

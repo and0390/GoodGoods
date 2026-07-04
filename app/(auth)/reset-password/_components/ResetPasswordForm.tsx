@@ -6,9 +6,9 @@ import { authClient } from "@/lib/authClient";
 import { CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { ComponentProps, useState } from "react";
-import { AuthForm, AuthFormRootProps } from "../_components/AuthForm";
-import { FormInputFieldListProps } from "../_components/FormInputField";
-import { ResetPasswordSchema, resetPasswordSchema } from "../_schemas/auth";
+import { AuthForm, AuthFormRootProps } from "../../_components/AuthForm";
+import { FormInputFieldListProps } from "../../_components/FormInputFieldList";
+import { ResetPasswordSchema, resetPasswordSchema } from "../_schema";
 
 export default function ResetPasswordForm({
   token,
@@ -74,7 +74,7 @@ export default function ResetPasswordForm({
       {...props}
     >
       <FieldGroup>
-        <AuthForm.Error title="Reset password failed" />
+        <AuthForm.ErrorAlert title="Reset password failed" />
         <div className="flex flex-col justify-center gap-2">
           <h1 className="text-2xl font-semibold">Reset Password</h1>
           <p className="text-sm text-muted-foreground">

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import ResetPasswordForm from "./resetPasswordForm";
+import ResetPasswordForm from "./_components/ResetPasswordForm";
 
 export default async function ResetPasswordPage({
   searchParams,

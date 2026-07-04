@@ -3,10 +3,10 @@
 import { FieldGroup } from "@/components/ui/field";
 import { authClient } from "@/lib/authClient";
 import { AuthForm, AuthFormRootProps } from "../_components/AuthForm";
-import { FormInputFieldListProps } from "../_components/FormInputField";
+import { FormInputFieldListProps } from "../_components/FormInputFieldList";
 import { useCountdown } from "../_hooks/useCountdown";
-import { ForgotPasswordSchema, forgotPasswordSchema } from "../_schemas/auth";
-import { formatSecondsToMMSS } from "../_utils";
+import { ForgotPasswordSchema, forgotPasswordSchema } from "./_schema";
+import { formatSecondsToMMSS } from "@/lib/utils";
 
 export default function ForgotPasswordPage() {
   {
@@ -46,7 +46,7 @@ export default function ForgotPasswordPage() {
         className="max-w-md justify-stretch gap-4"
       >
         <FieldGroup>
-          <AuthForm.Error title="Reset password request failed" />
+          <AuthForm.ErrorAlert title="Reset password request failed" />
           <div className="flex flex-col justify-center gap-2">
             <h1 className="text-2xl leading-snug font-semibold">
               Forgot Password

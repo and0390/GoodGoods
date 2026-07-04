@@ -2,9 +2,10 @@
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { ButtonWithLoader } from "@/components/ui/ButtonWithLoader";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { cva } from "class-variance-authority";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { ComponentProps, createContext, useContext } from "react";
 import {
   DefaultValues,
@@ -18,8 +19,7 @@ import { ZodType } from "zod";
 import {
   FormInputFieldList,
   FormInputFieldListProps,
-} from "../_components/FormInputField";
-import { cn } from "@/lib/utils";
+} from "./FormInputFieldList";
 
 type AuthFormContextValue<T extends FieldValues> = {
   form: UseFormReturn<T, unknown, T>;
@@ -92,29 +92,32 @@ function AuthFormFields<T extends FieldValues>({
 
 export type AuthFormSubmitButtonProps = {
   loadingText?: string;
-} & Omit<ComponentProps<typeof Button>, "size" | "type">;
+} & Omit<
+  ComponentProps<typeof ButtonWithLoader>,
+  "size" | "type" | "isLoading"
+>;
 
 function AuthFormSubmitButton<T extends FieldValues>({
   loadingText,
   disabled,
   children,
+  ...props
 }: AuthFormSubmitButtonProps) {
   const {
-    form: { formState },
+    form: {
+      formState: { isSubmitting },
+    },
   } = useAuthFormContext<T>();
 
-  const isSubmitting = formState["isSubmitting"];
   return (
-    <Button size="lg" type="submit" disabled={isSubmitting || disabled}>
-      {isSubmitting ? (
-        <>
-          <Loader2 className="animate-spin" />
-          {loadingText && <span>{loadingText}</span>}
-        </>
-      ) : (
-        children
-      )}
-    </Button>
+    <ButtonWithLoader
+      loadingText={loadingText}
+      isLoading={isSubmitting}
+      disabled={disabled}
+      {...props}
+    >
+      {children}
+    </ButtonWithLoader>
   );
 }
 
@@ -123,7 +126,7 @@ function AuthFormGoogleButton({
   ...props
 }: Omit<ComponentProps<typeof Button>, "variant" | "type" | "size">) {
   return (
-    <Button {...props} variant="secondary" type="button" size="lg">
+    <Button variant="secondary" type="button" size="lg" {...props}>
       <FaGoogle />
       {children}
     </Button>
@@ -135,18 +138,18 @@ function AuthFormFacebookButton({
   ...props
 }: Omit<ComponentProps<typeof Button>, "variant" | "type" | "size">) {
   return (
-    <Button {...props} variant="secondary" type="button" size="lg">
+    <Button variant="secondary" type="button" size="lg" {...props}>
       <FaFacebook />
       {children}
     </Button>
   );
 }
 
-export type AuthFormErrorProps = {
+export type AuthFormErrorAlertProps = {
   title: string;
 } & Omit<ComponentProps<typeof Alert>, "variant" | "children">;
 
-function AuthFormError({ title, ...props }: AuthFormErrorProps) {
+function AuthFormErrorAlert({ title, ...props }: AuthFormErrorAlertProps) {
   const { form } = useAuthFormContext();
   return (
     form.formState.errors.root && (
@@ -169,7 +172,7 @@ export const AuthForm = Object.assign(AuthFormRoot, {
   Root: AuthFormRoot,
   Fields: AuthFormFields,
   SubmitButton: AuthFormSubmitButton,
-  Error: AuthFormError,
+  ErrorAlert: AuthFormErrorAlert,
   GoogleButton: AuthFormGoogleButton,
   FaceBookButton: AuthFormFacebookButton,
 });
