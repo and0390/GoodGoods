@@ -3,7 +3,7 @@
 import { fetcher } from "@/app/(shared)/_lib/api";
 import { apiSchema } from "@/app/(shared)/_lib/apiSchema";
 import { Cart } from "@/app/(shared)/_types/cart";
-import { Product } from "@/app/(shared)/_types/product";
+import { ProductPreview } from "@/app/(shared)/_types/product";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,7 +23,7 @@ import RecommendedProductsGridSkeleton from "./RecommendedProductsGridSkeleton";
 
 type CartPageClientProps = {
   cartPromise: Promise<Cart>;
-  productsPromise: Promise<Product[]>;
+  productsPromise: Promise<ProductPreview[]>;
 };
 
 export const CartPageClient = ({

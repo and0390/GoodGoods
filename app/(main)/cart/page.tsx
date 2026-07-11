@@ -1,6 +1,6 @@
 import { getCart } from "@/app/(shared)/_lib/getCart";
 import { getSessionCached } from "@/app/(shared)/_lib/getSessionCached";
-import { Product } from "@/app/(shared)/_types/product";
+import { ProductPreview } from "@/app/(shared)/_types/product";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { CartPageClient } from "./_components/CartPageClient";
@@ -10,9 +10,9 @@ export default async function CartPage() {
   const products = prisma.product
     .findMany({
       select: {
+        imageUrls: true,
         id: true,
         name: true,
-        imageUrl: true,
         price: true,
         slug: true,
         stock: true,
@@ -21,9 +21,9 @@ export default async function CartPage() {
     })
     .then((rawProducts) => {
       const products = rawProducts.map((rawProduct) => {
-        const product: Product = {
+        const product: ProductPreview = {
           id: rawProduct.id,
-          imageUrl: rawProduct.imageUrl,
+          imageUrl: rawProduct.imageUrls[0],
           name: rawProduct.name,
           price: rawProduct.price,
           slug: rawProduct.slug,

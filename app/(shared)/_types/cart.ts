@@ -1,7 +1,7 @@
-import { Product } from "./product";
+import { ProductPreview } from "./product";
 
 export type CartItem = {
-  product: Product;
+  product: ProductPreview;
   id: string;
   isFavorited: boolean;
   isQuantityAdjusted: boolean;

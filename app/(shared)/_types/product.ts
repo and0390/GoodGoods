@@ -1,8 +1,18 @@
-export type Product = {
+import { Category } from "./Category";
+
+export type ProductBase = {
   id: string;
   name: string;
   price: number;
-  imageUrl: string | null;
-  slug: string;
   stock: number;
+  slug: string;
+};
+
+export type ProductPreview = ProductBase & { imageUrl: string };
+
+export type ProductDetail = ProductBase & {
+  description: string;
+  sold: number;
+  categories: Category[];
+  imageUrls: string[];
 };

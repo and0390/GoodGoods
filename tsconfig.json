@@ -21,7 +21,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@/cart": ["./app/(main)/cart"]
+      "@/cart/*": ["./app/(main)/cart/*"]
     }
   },
   "include": [

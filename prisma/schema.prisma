@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  provider        = "prisma-client"
+  previewFeatures = ["typedSql"]
+  output          = "../app/generated/prisma"
 }
 
 datasource db {
@@ -86,18 +87,26 @@ model CartItem {
 }
 
 model Product {
-  id          String  @id @default(cuid())
+  id          String @id @default(cuid())
   name        String
-  description String?
+  description String
   price       Int
 
-  imageUrl String?
-  slug     String  @unique
+  imageUrls String[]
+  slug      String   @unique
 
   stock Int @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  sold   Int @default(0)
+  weight Int
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  promotions Promotion[]
 
   cartItems CartItem[]
   favorites Favorite[]
@@ -134,4 +143,49 @@ model Favorite {
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([userId, productId])
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  imageUrl    String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  parentId String?
+  parent   Category?  @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: SetNull)
+  children Category[] @relation("CategoryToCategory")
+
+  products Product[]
+
+  @@index([parentId])
+  @@index([slug])
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED_AMOUNT
+}
+
+model Promotion {
+  id          String  @id @default(cuid())
+  name        String
+  code        String? @unique
+  value       Int
+  minPurchase Int
+  maxDiscount Int?
+  usageLimit  Int?
+  usedCount   Int
+
+  type DiscountType
+
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean  @default(true)
+
+  products  Product[]
+  createdAt DateTime  @default(now())
 }

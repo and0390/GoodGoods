@@ -1,11 +1,11 @@
 "use client";
 
-import { Product } from "@/app/(shared)/_types/product";
+import { ProductPreview } from "@/app/(shared)/_types/product";
 import React from "react";
 import ProductCard from "./ProductCard";
 
 type RecommendedProductsSectionProps = {
-  productsPromise: Promise<Product[]>;
+  productsPromise: Promise<ProductPreview[]>;
 };
 
 const RecommendedProductsGrid = ({

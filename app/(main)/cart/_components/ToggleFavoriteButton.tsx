@@ -5,18 +5,16 @@ import useToggleFavorite from "../_hooks/useToggleFavorite";
 type ToggleFavoriteButtonProps = {
   isFavorited: boolean;
   productId: string;
-  cartItemId: string;
 };
 
 export const ToggleFavoriteButton = ({
   isFavorited,
-  cartItemId,
   productId,
 }: ToggleFavoriteButtonProps) => {
-  const { mutate } = useToggleFavorite(cartItemId);
+  const { mutate } = useToggleFavorite(productId);
 
   const handleToggleFavorite = () => {
-    mutate(productId);
+    mutate();
   };
 
   return (

@@ -12,30 +12,22 @@ import { Dot, Ellipsis, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { AddToCartDropdownItem } from "./AddToCartDropdownItem";
+import { ProductPreview } from "@/app/(shared)/_types/product";
 
 export type ProductCardProps = {
-  id: string;
-  name: string;
-  price: number;
-  rating: number;
-  imageUrl: string | null;
+  product: ProductPreview;
 };
 
-export const ProductCard = ({
-  id,
-  name,
-  price,
-  rating,
-  imageUrl,
-}: ProductCardProps) => {
+export const ProductCard = ({ product }: ProductCardProps) => {
+  const { id, imageUrl, name, price, slug } = product;
   return (
     <div className="relative transition-all duration-200 ease-out hover:-translate-y-1">
-      <Link href={`/products/${id}`} className="absolute inset-0 z-10">
+      <Link href={`/products/${id}/${slug}`} className="absolute inset-0 z-10">
         <span className="sr-only">{name}</span>
       </Link>
       <div className="relative">
         <Image
-          src={imageUrl as string}
+          src={imageUrl}
           alt={name}
           width={300}
           height={300}

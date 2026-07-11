@@ -5,10 +5,10 @@ import { useMutation } from "@tanstack/react-query";
 import { toggleFavorite } from "../_actions/toggleFavorite";
 import { Cart } from "@/app/(shared)/_types/cart";
 
-export default function useToggleFavorite(cartItemId: string) {
-  const toasterId = `toasterId-${cartItemId}`;
+export default function useToggleFavorite(productId: string) {
+  const toasterId = `toasterId-${productId}`;
   return useMutation({
-    mutationFn: async (productId: string) => {
+    mutationFn: async () => {
       const { data, serverError } = await toggleFavorite(productId);
 
       if (data) {
@@ -33,7 +33,7 @@ export default function useToggleFavorite(cartItemId: string) {
         });
       }
     },
-    onMutate: async (productId, context) => {
+    onMutate: async (_, context) => {
       await context.client.cancelQueries({ queryKey: ["cart"] });
       const previousCart = context.client.getQueryData<Cart>(["cart"]);
 
@@ -57,7 +57,7 @@ export default function useToggleFavorite(cartItemId: string) {
       return { previousCart };
     },
     networkMode: "offlineFirst",
-    scope: { id: `toggleFavorite-${cartItemId}` },
+    scope: { id: `toggleFavorite-${productId}` },
     onError: (err, newCart, onMutateResult, context) => {
       context.client.setQueryData(["cart"], onMutateResult?.previousCart);
     },

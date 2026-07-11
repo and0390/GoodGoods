@@ -39,7 +39,7 @@ export const CartItemCard = ({
           <div className="grid w-full flex-1 grid-cols-[auto_1fr_auto] gap-x-3 gap-y-1">
             <div className="row-span-3">
               <Image
-                src={cartItem.product.imageUrl as string}
+                src={cartItem.product.imageUrl}
                 alt="Product"
                 width={86}
                 height={86}
@@ -73,7 +73,6 @@ export const CartItemCard = ({
               <div className="flex flex-col items-end gap-1">
                 <div className="flex items-center gap-4">
                   <ToggleFavoriteButton
-                    cartItemId={cartItem.id}
                     key={cartItem.isFavorited ? "key-1" : "key-2"}
                     isFavorited={cartItem.isFavorited}
                     productId={cartItem.product.id}

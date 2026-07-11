@@ -2,10 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import React from "react";
-import { deleteCartItems } from "../_actions/deleteCartItems";
-import { useQueryClient } from "@tanstack/react-query";
-import { toastWithButton } from "@/components/ui/toastWithButton";
-import { CartOptimisticAction } from "../_types/CartOptimisticAction";
 import {
   AlertDialog,
   AlertDialogAction,

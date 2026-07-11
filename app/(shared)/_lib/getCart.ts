@@ -11,7 +11,7 @@ export const getCart = async (userId: string) => {
             product: {
               select: {
                 id: true,
-                imageUrl: true,
+                imageUrls: true,
                 name: true,
                 price: true,
                 slug: true,
@@ -59,7 +59,7 @@ export const getCart = async (userId: string) => {
           id: rawCartItem.id,
           product: {
             id: rawCartItem.product.id,
-            imageUrl: rawCartItem.product.imageUrl,
+            imageUrl: rawCartItem.product.imageUrls[0],
             name: rawCartItem.product.name,
             price: rawCartItem.product.price,
             slug: rawCartItem.product.slug,

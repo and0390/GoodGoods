@@ -1,14 +1,14 @@
 "use client";
 
 import { Cart, CartItem } from "@/app/(shared)/_types/cart";
-import { Product } from "@/app/(shared)/_types/product";
+import { ProductPreview } from "@/app/(shared)/_types/product";
 import { toastWithButton } from "@/components/ui/toastWithButton";
 import { addToCart } from "../_actions/addToCart";
 import useMutationCartBase from "./useMutationCartBase";
 
 export default function useAddToCart() {
   const mutation = useMutationCartBase({
-    mutationFn: async (product: Product) => {
+    mutationFn: async (product: ProductPreview) => {
       const { data, serverError } = await addToCart([product.id]);
       if (data) {
         if (data.success) {

@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
+import { ProductPreview } from "@/app/(shared)/_types/product";
 
 const ForYouTab = async ({
   className,
@@ -28,7 +29,21 @@ const ForYouTab = async ({
 };
 
 export const ProductTabs = async () => {
-  const products = await prisma.product.findMany({});
+  const products = await prisma.product.findMany().then((rawProducts) => {
+    const products = rawProducts.map((rawProduct): ProductPreview => {
+      return {
+        id: rawProduct.id,
+        imageUrl: rawProduct.imageUrls[0],
+        name: rawProduct.name,
+        price: rawProduct.price,
+        slug: rawProduct.slug,
+        stock: rawProduct.stock,
+      };
+    });
+
+    return products;
+  });
+
   const extendedProducts = products.map((product) => ({
     ...product,
     rating: 0,

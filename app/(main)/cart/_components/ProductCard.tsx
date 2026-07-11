@@ -1,6 +1,6 @@
 "use client";
 
-import { Product } from "@/app/(shared)/_types/product";
+import { ProductPreview } from "@/app/(shared)/_types/product";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,7 +19,7 @@ import useAddToCart from "../../_hooks/useAddToCart";
 import useAddToFavorites from "../_hooks/useAddToFavorites";
 
 type ProductCardProps = {
-  product: Product;
+  product: ProductPreview;
 };
 
 const ProductCard = ({ product }: ProductCardProps) => {
@@ -42,7 +42,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           className="absolute inset-0 z-10"
         />
         <Image
-          src={product.imageUrl as string}
+          src={product.imageUrl}
           alt={product.name}
           width={80}
           height={80}
