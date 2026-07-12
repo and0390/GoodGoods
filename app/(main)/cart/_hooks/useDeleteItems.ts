@@ -1,6 +1,6 @@
 import { Cart } from "@/app/(shared)/_types/cart";
 import { toastWithButton } from "@/components/ui/toastWithButton";
-import useMutationCartBase from "../../_hooks/useMutationCartBase";
+import useMutationCartBase from "./useMutationCartBase";
 import { deleteCartItems } from "../_actions/deleteCartItems";
 
 type UseSelectedItemsOptions = {

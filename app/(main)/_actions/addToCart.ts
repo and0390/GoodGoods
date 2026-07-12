@@ -4,7 +4,6 @@ import { idSchema } from "@/app/(shared)/_schemas/idSchema";
 import { ActionResponseData } from "@/app/(shared)/_types/actionResponse";
 import prisma from "@/lib/prisma";
 import { actionClient } from "@/lib/safe-action";
-import { refresh } from "next/cache";
 import { z } from "zod";
 
 export const addToCart = actionClient
@@ -23,8 +22,6 @@ export const addToCart = actionClient
       create: { cartId: cart.id, productId, quantity },
       update: { quantity: { increment: quantity } },
     });
-
-    refresh();
 
     return {
       success: true,

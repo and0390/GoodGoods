@@ -6,7 +6,6 @@ import { ActionResponseData } from "@/app/(shared)/_types/actionResponse";
 import { Cart } from "@/app/(shared)/_types/cart";
 import prisma from "@/lib/prisma";
 import { actionClient } from "@/lib/safe-action";
-import { refresh } from "next/cache";
 import z from "zod";
 
 export const updateQuantity = actionClient
@@ -30,8 +29,6 @@ export const updateQuantity = actionClient
         message: "Unable to update quantity",
       };
     }
-
-    refresh();
 
     return {
       success: true,

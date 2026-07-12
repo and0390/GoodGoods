@@ -13,6 +13,7 @@ export type ProductPreview = ProductBase & { imageUrl: string };
 export type ProductDetail = ProductBase & {
   description: string;
   sold: number;
+  isFavorited: boolean;
   categories: Category[];
   imageUrls: string[];
 };

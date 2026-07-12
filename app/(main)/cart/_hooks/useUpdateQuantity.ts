@@ -7,7 +7,7 @@ import { updateQuantity } from "../_actions/updateQuantity";
 
 export default function useUpdateQuantity(cartItemId: string) {
   return useMutation({
-    onMutate: async ({ cartItemId, value }, context) => {
+    onMutate: async (value, context) => {
       await context.client.cancelQueries({ queryKey: ["cart"] });
       const previousCart = context.client.getQueryData<Cart>(["cart"]);
 
@@ -27,13 +27,7 @@ export default function useUpdateQuantity(cartItemId: string) {
       return { previousCart };
     },
     networkMode: "offlineFirst",
-    mutationFn: async ({
-      cartItemId,
-      value,
-    }: {
-      cartItemId: string;
-      value: number;
-    }) => {
+    mutationFn: async (value: number) => {
       const { data, serverError } = await updateQuantity([cartItemId, value]);
 
       if (data) {

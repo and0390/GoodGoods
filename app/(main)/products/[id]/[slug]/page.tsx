@@ -39,6 +39,11 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { getSessionCached } from "@/app/(shared)/_lib/getSessionCached";
+import ToggleFavoriteButton from "./_components/ToggleFavoriteButton";
+import AddToCartButton from "./_components/AddToCartButton";
+import { QuantityInputGroup } from "@/app/(shared)/_components/QuantityInputGroup";
+import ProductPurchaseAction from "./_components/ProductPurchaseAction";
 
 export async function getProductBreadcrumbs(
   categoryId: string,
@@ -97,9 +102,12 @@ const ProductBreadcrumbs = ({
   );
 };
 
-const getProductById = async (id: string): Promise<ProductDetail | null> => {
+const getProductById = async (
+  productId: string,
+  userId: string | null
+): Promise<ProductDetail | null> => {
   const rawProduct = await prisma.product.findUnique({
-    where: { id },
+    where: { id: productId },
     select: {
       id: true,
       name: true,
@@ -123,6 +131,14 @@ const getProductById = async (id: string): Promise<ProductDetail | null> => {
           },
         },
       },
+      ...(userId
+        ? {
+            favorites: {
+              where: { userId },
+              select: { id: true },
+            },
+          }
+        : {}),
     },
   });
 
@@ -134,6 +150,8 @@ const getProductById = async (id: string): Promise<ProductDetail | null> => {
     rawProduct.slug
   );
 
+  const isFavorited = rawProduct.favorites?.length > 0 ?? false;
+
   return {
     id: rawProduct.id,
     imageUrls: rawProduct.imageUrls,
@@ -142,6 +160,7 @@ const getProductById = async (id: string): Promise<ProductDetail | null> => {
     price: rawProduct.price,
     slug: rawProduct.slug,
     stock: rawProduct.stock,
+    isFavorited,
     categories: breadcrumbs,
     description: rawProduct.description,
   };
@@ -154,7 +173,9 @@ export default async function ProductsPage({
 }) {
   const { id } = await params;
 
-  const product = await getProductById(id);
+  const session = await getSessionCached();
+
+  const product = await getProductById(id, session?.user.id ?? null);
 
   if (!product) {
     notFound();
@@ -169,12 +190,14 @@ export default async function ProductsPage({
           <div className="flex items-center justify-end gap-3.5">
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="plain">
-                  <Heart className="size-6" />
-                </Button>
+                <ToggleFavoriteButton
+                  initialIsFavorited={product.isFavorited}
+                  isAuthenticated={!!session}
+                  productId={product.id}
+                />
               </TooltipTrigger>
-              <TooltipContent>
-                <p>Favourite</p>
+              <TooltipContent side="bottom">
+                <p>Favorite</p>
               </TooltipContent>
             </Tooltip>
 
@@ -184,7 +207,7 @@ export default async function ProductsPage({
                   <Share2 className="size-6" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>
+              <TooltipContent side="bottom">
                 <p>Share</p>
               </TooltipContent>
             </Tooltip>
@@ -207,71 +230,13 @@ export default async function ProductsPage({
             </div>
           </div>
 
-          <span className="mb-4 ps-3.5 text-2xl font-semibold">
+          <span className="mb-4 ps-3.5 text-4xl font-semibold">
             {formatCurrency(product.price)}
           </span>
-
-          <dl className="mb-6 flex flex-col gap-3 ps-3.5 text-sm">
-            <div className="flex items-center">
-              <div className="basis-[100px]">
-                <span className="text-muted-foreground">Shipping</span>
-              </div>
-              <div>
-                <ShippingDetailDialog />
-              </div>
-            </div>
-            <div className="flex items-center">
-              <div className="basis-[100px]">
-                <span className="text-muted-foreground">
-                  GoodGoods
-                  <br /> Guarantee
-                </span>
-              </div>
-              <div className="flex items-center gap-2 ps-2.5">
-                <ShieldCheck className="size-6 text-foreground" />
-                10 - Day Return Policy &middot; 100% Original &middot; Cash On
-                Delivery
-              </div>
-            </div>
-            <div className="flex items-center">
-              <div className="basis-[100px] text-muted-foreground">
-                Quantity
-              </div>
-              <div className="ps-2.5">
-                <InputGroup className="w-fit border-transparent hover:border-input has-disabled:bg-transparent has-disabled:opacity-100 dark:has-disabled:bg-input/30 dark:has-disabled:opacity-100">
-                  <InputGroupInput className="w-7 text-center" value={1} />
-                  <InputGroupAddon align="inline-start">
-                    <InputGroupButton
-                      aria-label="decrease quantity"
-                      title="decrease"
-                      size="icon-xs"
-                    >
-                      <Minus />
-                    </InputGroupButton>
-                  </InputGroupAddon>
-                  <InputGroupAddon align="inline-end">
-                    <InputGroupButton
-                      aria-label="increase quantity"
-                      title="increase"
-                      size="icon-xs"
-                      className=""
-                    >
-                      <Plus />
-                    </InputGroupButton>
-                  </InputGroupAddon>
-                </InputGroup>
-              </div>
-            </div>
-          </dl>
-
-          <div className="flex w-full gap-3">
-            <Button variant="outline" size="lg" className="flex-1">
-              <MdAddShoppingCart /> Add to Cart
-            </Button>
-            <Button variant="default" size="lg" className="flex-1">
-              Buy Now
-            </Button>
-          </div>
+          <ProductPurchaseAction
+            isAuthenticated={!!session}
+            product={product}
+          />
         </div>
       </div>
       <div className="flex w-full flex-col bg-card px-10 py-8">

@@ -3,7 +3,7 @@
 import { HttpError } from "@/app/(shared)/_lib/api";
 import { CartPreviewError } from "./CartPreviewError";
 import { CartItemList } from "./CartItemList";
-import { useCartQuery } from "../../_hooks/useCartQuery";
+import { useCartQuery } from "../_hooks/useCartQuery";
 import React from "react";
 import { Cart } from "@/app/(shared)/_types/cart";
 

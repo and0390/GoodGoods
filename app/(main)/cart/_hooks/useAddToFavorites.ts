@@ -2,7 +2,7 @@
 
 import { Cart } from "@/app/(shared)/_types/cart";
 import { toastWithButton } from "@/components/ui/toastWithButton";
-import useMutationCartBase from "../../_hooks/useMutationCartBase";
+import useMutationCartBase from "./useMutationCartBase";
 import addToFavorites from "../_actions/addToFavorites";
 
 export default function useAddToFavorites() {

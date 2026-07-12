@@ -26,7 +26,7 @@ const CartItemCard = ({
     >
       <div className="row-span-2">
         <Image
-          src={imageUrl[0]}
+          src={imageUrl}
           alt="Product"
           width={56}
           height={56}

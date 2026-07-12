@@ -3,13 +3,21 @@
 import { Cart, CartItem } from "@/app/(shared)/_types/cart";
 import { ProductPreview } from "@/app/(shared)/_types/product";
 import { toastWithButton } from "@/components/ui/toastWithButton";
-import { addToCart } from "../_actions/addToCart";
+import { addToCart } from "../../_actions/addToCart";
 import useMutationCartBase from "./useMutationCartBase";
 
+const DEFAULT_QUANTITY = 1;
+
 export default function useAddToCart() {
-  const mutation = useMutationCartBase({
-    mutationFn: async (product: ProductPreview) => {
-      const { data, serverError } = await addToCart([product.id]);
+  return useMutationCartBase({
+    mutationFn: async ({
+      product,
+      quantity = DEFAULT_QUANTITY,
+    }: {
+      product: ProductPreview;
+      quantity?: number;
+    }) => {
+      const { data, serverError } = await addToCart([product.id, quantity]);
       if (data) {
         if (data.success) {
           toastWithButton({
@@ -30,7 +38,7 @@ export default function useAddToCart() {
       }
     },
     networkMode: "offlineFirst",
-    onMutate: async (product, context) => {
+    onMutate: async ({ product, quantity = DEFAULT_QUANTITY }, context) => {
       await context.client.cancelQueries({ queryKey: ["cart"] });
       const previousCart = context.client.getQueryData<Cart>(["cart"]);
 
@@ -51,7 +59,7 @@ export default function useAddToCart() {
                 ? { ...item, quantity: item.quantity + 1 }
                 : item
             ),
-            totalQuantity: oldCart.totalQuantity + 1,
+            totalQuantity: oldCart.totalQuantity + quantity,
           };
         } else {
           const newCartItem: CartItem = {
@@ -65,7 +73,7 @@ export default function useAddToCart() {
           return {
             ...oldCart,
             items: [newCartItem, ...oldCart.items],
-            totalQuantity: oldCart.totalQuantity + 1,
+            totalQuantity: oldCart.totalQuantity + quantity,
           };
         }
       });
@@ -75,6 +83,4 @@ export default function useAddToCart() {
     onError: (err, newCart, onMutateResult, context) =>
       context.client.setQueryData(["cart"], onMutateResult?.previousCart),
   });
-
-  return mutation;
 }

@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
 import React from "react";
-import { useCartQuery } from "../../../_hooks/useCartQuery";
+import { useCartQuery } from "../../_hooks/useCartQuery";
 import CartItemListSkeleton from "./CardItemListSkeleton";
 import CartHeader, { CartHoverCardHeaderSkeleton } from "./CartHeader";
 import { CartPreviewEmpty } from "../CartPreviewEmpty";

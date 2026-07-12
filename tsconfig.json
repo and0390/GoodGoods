@@ -21,7 +21,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@/cart/*": ["./app/(main)/cart/*"]
+      "@/cart/*": ["./app/(main)/cart/*"],
+      "@/shared/*": ["./app/(shared)/*"]
     }
   },
   "include": [

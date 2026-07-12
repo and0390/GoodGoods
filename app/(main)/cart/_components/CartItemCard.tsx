@@ -29,76 +29,71 @@ export const CartItemCard = ({
   return (
     <Card className={cn("w-full rounded-none", className)} {...props}>
       <CardContent className="w-full">
-        <div className="flex gap-3">
-          <div className="row-span-2">
+        <div className="flex w-full items-center gap-3">
+          {/* SEKTOR KIRI: Checkbox */}
+          <div className="shrink-0">
             <Checkbox
               checked={selectedItemsSet.has(cartItem.id)}
               onCheckedChange={() => handleToggleItem(cartItem.id)}
             />
           </div>
-          <div className="grid w-full flex-1 grid-cols-[auto_1fr_auto] gap-x-3 gap-y-1">
-            <div className="row-span-3">
-              <Image
-                src={cartItem.product.imageUrl}
-                alt="Product"
-                width={86}
-                height={86}
-                objectFit="cover"
-                className="rounded-md"
-              />
-            </div>
 
-            <div className="items-start justify-self-start">
-              <Button variant="plain" size="fit" asChild>
+          <div className="shrink-0">
+            <Image
+              src={cartItem.product.imageUrl}
+              alt="Product"
+              width={86}
+              height={86}
+              className="aspect-square h-full rounded-md object-cover"
+            />
+          </div>
+
+          <div className="flex min-h-[86px] min-w-0 flex-1 flex-col justify-between gap-1">
+            <div className="flex w-full items-start justify-between gap-3">
+              <Button variant="plain" size="fit" asChild className="text-left">
                 <Link
                   href={`/products/${cartItem.product.id}`}
-                  className="line-clamp-2 w-full p-0! text-base"
+                  className="line-clamp-2 p-0! text-base font-normal"
                 >
                   {cartItem.product.name}
                 </Link>
               </Button>
-            </div>
 
-            <div className="col-start-2 row-start-2 flex items-start">
-              <p className="text-base text-muted-foreground">variant</p>
-            </div>
-
-            <div className="col-start-3 row-span-2 row-start-1 flex min-w-0 items-start gap-1 justify-self-end font-semibold">
-              <span className="truncate text-sm">
+              <span className="pt-1 text-sm font-semibold whitespace-nowrap">
                 {formatCurrency(cartItem.product.price)}
               </span>
             </div>
 
-            <div className="col-span-2 col-start-2 row-start-3 justify-self-end">
-              <div className="flex flex-col items-end gap-1">
-                <div className="flex items-center gap-4">
-                  <ToggleFavoriteButton
-                    key={cartItem.isFavorited ? "key-1" : "key-2"}
-                    isFavorited={cartItem.isFavorited}
-                    productId={cartItem.product.id}
-                  />
-                  <DeleteItemButton
-                    cartItemId={cartItem.id}
-                    selectedItems={selectedItems}
-                    setSelectedItems={setSelectedItems}
-                  />
-                  <QuantityInputGroup
-                    key={cartItem.quantity}
-                    cartItemId={cartItem.id}
-                    initialQuantity={cartItem.quantity}
-                    max={cartItem.product.stock}
-                  />
-                </div>
-                {cartItem.isQuantityAdjusted && (
-                  <p className="text-xs text-destructive">
-                    Only {cartItem.product.stock} items left in stock
-                  </p>
-                )}
+            <p className="text-sm text-muted-foreground">variant</p>
+
+            <div className="mt-auto flex w-full flex-col items-end gap-1">
+              <div className="flex items-center gap-4">
+                <ToggleFavoriteButton
+                  key={cartItem.isFavorited ? "key-1" : "key-2"}
+                  isFavorited={cartItem.isFavorited}
+                  productId={cartItem.product.id}
+                />
+                <DeleteItemButton
+                  cartItemId={cartItem.id}
+                  selectedItems={selectedItems}
+                  setSelectedItems={setSelectedItems}
+                />
+                <QuantityInputGroup
+                  key={cartItem.quantity}
+                  cartItemId={cartItem.id}
+                  initialQuantity={cartItem.quantity}
+                  max={cartItem.product.stock}
+                />
               </div>
+
+              {cartItem.isQuantityAdjusted && (
+                <p className="text-xs text-destructive">
+                  Only {cartItem.product.stock} items left in stock
+                </p>
+              )}
             </div>
           </div>
         </div>
-        <div className="col-start-2 flex w-full justify-end"></div>
       </CardContent>
     </Card>
   );

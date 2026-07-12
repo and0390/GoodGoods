@@ -15,7 +15,7 @@ import { formatCurrency } from "@/lib/utils";
 import { Ellipsis, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import useAddToCart from "../../_hooks/useAddToCart";
+import useAddToCart from "../_hooks/useAddToCart";
 import useAddToFavorites from "../_hooks/useAddToFavorites";
 
 type ProductCardProps = {
@@ -27,7 +27,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const addToFavoritesMutation = useAddToFavorites();
 
   const handleAddToCart = () => {
-    addToCartMutation.mutate(product);
+    addToCartMutation.mutate({ product });
   };
 
   const handleAddToFavorites = () => {

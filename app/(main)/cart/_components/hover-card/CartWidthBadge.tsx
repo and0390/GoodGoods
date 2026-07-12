@@ -1,6 +1,6 @@
 "use client";
 
-import { useCartQuery } from "@/app/(main)/_hooks/useCartQuery";
+import { useCartQuery } from "@/app/(main)/cart/_hooks/useCartQuery";
 import { Cart } from "@/app/(shared)/_types/cart";
 import { Badge } from "@/components/ui/badge";
 import prisma from "@/lib/prisma";

@@ -16,11 +16,12 @@ type CartHoverCardHeaderProps = {
 };
 
 const CartHeader = ({ totalQuantity }: CartHoverCardHeaderProps) => {
+  const displayTotalQuantity = totalQuantity && totalQuantity > 0;
   return (
     <div className="flex items-center justify-between p-3">
       <div className="flex items-center gap-1 text-lg font-semibold">
         <span>Your cart</span>
-        {totalQuantity && (
+        {displayTotalQuantity && (
           <span className="text-muted-foreground">({totalQuantity})</span>
         )}
       </div>

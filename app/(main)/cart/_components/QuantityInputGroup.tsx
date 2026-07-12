@@ -9,11 +9,11 @@ import {
 import { Minus, Plus } from "lucide-react";
 import React from "react";
 import useUpdateQuantity from "../_hooks/useUpdateQuantity";
+import QuantityInputGroupBase from "@/shared/_components/QuantityInputGroup";
 
 type QuantityInputGroupProps = {
   cartItemId: string;
   initialQuantity: number;
-  min?: number;
   max: number;
   onChangeValue?: (value: number) => void;
 };
@@ -21,85 +21,15 @@ type QuantityInputGroupProps = {
 export const QuantityInputGroup = ({
   cartItemId,
   initialQuantity,
-  min = 1,
   max,
 }: QuantityInputGroupProps) => {
-  const [quantityInput, setQuantityInput] = React.useState(
-    initialQuantity.toString()
-  );
-  const currentQuantity = parseInt(quantityInput, 10);
-  const inputRef = React.useRef<HTMLInputElement | null>(null);
-
   const { mutate } = useUpdateQuantity(cartItemId);
 
-  const isMinReached = currentQuantity <= min;
-  const isMaxReached = currentQuantity >= max;
-
-  const triggerChange = (value: number) => {
-    const clampedValue = Math.max(min, Math.min(max, value));
-    setQuantityInput(clampedValue.toString());
-    mutate({ cartItemId, value: clampedValue });
-  };
-
-  const handleOnChange = (
-    e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>
-  ) => {
-    const value = e.target.value;
-    const numericValue = value.replace(/\D/g, ""); /// delete the non-digit pattern (e.g: "abc-452" will become "452" after this operation)
-    setQuantityInput(numericValue);
-  };
-
-  const handleOnBlur = () => {
-    triggerChange(currentQuantity);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      inputRef.current?.blur();
-    }
-  };
-
-  const handleIncrement = () => {
-    if (currentQuantity < max) triggerChange(currentQuantity + 1);
-  };
-
-  const handleDecrement = () => {
-    if (currentQuantity > min) triggerChange(currentQuantity - 1);
-  };
-
   return (
-    <InputGroup className="w-fit border-transparent hover:border-input has-disabled:bg-transparent has-disabled:opacity-100 dark:has-disabled:bg-input/30 dark:has-disabled:opacity-100">
-      <InputGroupInput
-        ref={inputRef}
-        className="w-7 text-center"
-        value={quantityInput}
-        onChange={handleOnChange}
-        onBlur={handleOnBlur}
-        onKeyDown={handleKeyDown}
-      />
-      <InputGroupAddon align="inline-start">
-        <InputGroupButton
-          aria-label="decrease quantity"
-          title="decrease"
-          size="icon-xs"
-          onClick={handleDecrement}
-          disabled={isMinReached}
-        >
-          <Minus />
-        </InputGroupButton>
-      </InputGroupAddon>
-      <InputGroupAddon align="inline-end">
-        <InputGroupButton
-          aria-label="increase quantity"
-          title="increase"
-          size="icon-xs"
-          className=""
-          onClick={handleIncrement}
-          disabled={isMaxReached}
-        >
-          <Plus />
-        </InputGroupButton>
-      </InputGroupAddon>
-    </InputGroup>
+    <QuantityInputGroupBase
+      initialQuantity={initialQuantity}
+      max={max}
+      onChangeValue={mutate}
+    />
   );
 };
