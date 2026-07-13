@@ -108,6 +108,8 @@ model Product {
 
   promotions Promotion[]
 
+  specifications ProductSpecification[]
+
   cartItems CartItem[]
   favorites Favorite[]
 }
@@ -159,10 +161,40 @@ model Category {
   parent   Category?  @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: SetNull)
   children Category[] @relation("CategoryToCategory")
 
+  attributeTemplates CategoryAttribute[]
+
   products Product[]
 
   @@index([parentId])
   @@index([slug])
+}
+
+model CategoryAttribute {
+  id         String   @id @default(cuid())
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  
+  name       String   // Contoh: "Merek", "Masa Penyimpanan", "Formulasi"
+  isRequired Boolean  @default(false)
+
+  productValues ProductSpecification[]
+
+  @@index([categoryId])
+}
+
+model ProductSpecification {
+  id                  String            @id @default(cuid())
+  productId           String
+  product             Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  attributeTemplateId String
+  attributeTemplate   CategoryAttribute @relation(fields: [attributeTemplateId], references: [id], onDelete: Cascade)
+  
+  value               String            // Contoh isinya: "TERAGLOW", "Stik", "24 Bulan"
+
+  @@index([productId])
+  @@index([attributeTemplateId])
+  @@unique([productId, attributeTemplateId])
 }
 
 enum DiscountType {

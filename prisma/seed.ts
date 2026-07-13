@@ -1,11 +1,11 @@
 import { faker } from "@faker-js/faker";
 import { PrismaPg } from "@prisma/adapter-pg";
 import "dotenv/config";
-import { PrismaClient } from "../app/generated/prisma/client";
 import slugify from "slugify";
-import { Prisma } from "../app/generated/prisma/client";
+import { PrismaClient } from "../app/generated/prisma/client";
 import { categories } from "./categorySeed";
 import { products } from "./productSeed";
+import { attributeTemplates } from "./productSpecification";
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
@@ -27,6 +27,17 @@ async function seedCategories(prisma: PrismaClient) {
         parentId: cat.parentId,
       },
       update: {},
+    });
+  }
+
+  for (const attr of attributeTemplates) {
+    await prisma.categoryAttribute.create({
+      data: {
+        id: attr.id,
+        name: attr.name,
+        categoryId: attr.categoryId,
+        isRequired: true,
+      },
     });
   }
 }
@@ -57,19 +68,30 @@ const seedProducts = async (prisma: PrismaClient) => {
   }
 };
 
-async function main() {
-  const categorySet = new Set(categories.map((cat) => cat.id));
-
+async function seedSpecifications(prisma: PrismaClient) {
   for (const product of products) {
-    if (!categorySet.has(product.category)) {
-      throw new Error(
-        `${product.category} - ${product.name} has a category that doesn't exist`
-      );
+    const templates = attributeTemplates.filter(
+      (t) => t.categoryId === product.category
+    );
+
+    for (const t of templates) {
+      const randomValue = faker.helpers.arrayElement(t.pool);
+
+      await prisma.productSpecification.create({
+        data: {
+          productId: product.id,
+          attributeTemplateId: t.id,
+          value: randomValue,
+        },
+      });
     }
   }
+}
 
+async function main() {
   await seedCategories(prisma);
   await seedProducts(prisma);
+  await seedSpecifications(prisma);
 }
 
 main()

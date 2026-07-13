@@ -1,3 +1,4 @@
+import { getSessionCached } from "@/app/(shared)/_lib/getSessionCached";
 import { Category } from "@/app/(shared)/_types/Category";
 import { ProductDetail } from "@/app/(shared)/_types/product";
 import { getCategoryAncestors } from "@/app/generated/prisma/sql/getCategoryAncestors";
@@ -9,41 +10,22 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import prisma from "@/lib/prisma";
-import { formatCurrency } from "@/lib/utils";
-import {
-  ChevronRight,
-  Heart,
-  Minus,
-  Plus,
-  Share2,
-  ShieldCheck,
-  Star,
-  Truck,
-} from "lucide-react";
-import { notFound } from "next/navigation";
-import React from "react";
-import ProductCarousel from "./productCarousel";
 import { Button } from "@/components/ui/button";
-import { MdAddShoppingCart } from "react-icons/md";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from "@/components/ui/input-group";
-import ShippingDetailDialog from "./_components/shippingDetailDialog";
+import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { getSessionCached } from "@/app/(shared)/_lib/getSessionCached";
-import ToggleFavoriteButton from "./_components/ToggleFavoriteButton";
-import AddToCartButton from "./_components/AddToCartButton";
-import { QuantityInputGroup } from "@/app/(shared)/_components/QuantityInputGroup";
+import formatCount from "@/lib/formatCount";
+import prisma from "@/lib/prisma";
+import { formatCurrency } from "@/lib/utils";
+import { Share2, Star } from "lucide-react";
+import { notFound } from "next/navigation";
+import React from "react";
 import ProductPurchaseAction from "./_components/ProductPurchaseAction";
+import ProductCarousel from "./productCarousel";
+import ToggleFavoriteButton from "./_components/ToggleFavoriteButton";
 
 export async function getProductBreadcrumbs(
   categoryId: string,
@@ -129,16 +111,31 @@ const getProductById = async (
               slug: true,
             },
           },
+          attributeTemplates: {
+            select: {
+              name: true,
+              productValues: {
+                where: { productId },
+                select: {
+                  value: true,
+                },
+              },
+            },
+          },
         },
       },
-      ...(userId
+      favorites: userId
         ? {
-            favorites: {
-              where: { userId },
-              select: { id: true },
-            },
+            where: { userId },
+            select: { id: true },
+            take: 1,
           }
-        : {}),
+        : false,
+      _count: {
+        select: {
+          favorites: true,
+        },
+      },
     },
   });
 
@@ -152,6 +149,11 @@ const getProductById = async (
 
   const isFavorited = rawProduct.favorites?.length > 0 ?? false;
 
+  const specifications = rawProduct.category.attributeTemplates.map((attr) => ({
+    name: attr.name,
+    value: attr.productValues[0].value,
+  }));
+
   return {
     id: rawProduct.id,
     imageUrls: rawProduct.imageUrls,
@@ -161,8 +163,10 @@ const getProductById = async (
     slug: rawProduct.slug,
     stock: rawProduct.stock,
     isFavorited,
+    favoritesCount: rawProduct._count.favorites,
     categories: breadcrumbs,
     description: rawProduct.description,
+    specifications,
   };
 };
 
@@ -187,20 +191,13 @@ export default async function ProductsPage({
       <div className="mb-6 flex w-full gap-8 bg-card py-4 ps-3 pe-6">
         <div className="flex min-w-0 flex-1 flex-col">
           <ProductCarousel product={product} className="mb-6" />
-          <div className="flex items-center justify-end gap-3.5">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <ToggleFavoriteButton
-                  initialIsFavorited={product.isFavorited}
-                  isAuthenticated={!!session}
-                  productId={product.id}
-                />
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p>Favorite</p>
-              </TooltipContent>
-            </Tooltip>
-
+          <div className="flex items-start justify-end gap-3.5">
+            <ToggleFavoriteButton
+              IsFavorited={product.isFavorited}
+              isAuthenticated={!!session}
+              productId={product.id}
+              favoritesCount={product.favoritesCount}
+            />
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="plain">
@@ -241,13 +238,21 @@ export default async function ProductsPage({
       </div>
       <div className="flex w-full flex-col bg-card px-10 py-8">
         <h2 className="mb-6 text-lg font-semibold">Product specification</h2>
-        <div className="mb-8 flex flex-col">
+        <div className="mb-8 flex flex-col gap-6 text-sm">
           <div className="flex items-center">
             <span className="shrink-0 basis-[200px] text-muted-foreground">
               Category
             </span>
             <ProductBreadcrumbs categories={product.categories} />
           </div>
+          {product.specifications.map((spec, index) => (
+            <div className="flex items-center" key={index}>
+              <span className="shrink-0 basis-[200px] text-muted-foreground">
+                {spec.name}
+              </span>
+              {spec.value}
+            </div>
+          ))}
         </div>
 
         <h2 className="mb-6 text-lg font-semibold">Description</h2>

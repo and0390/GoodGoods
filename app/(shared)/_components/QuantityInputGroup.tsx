@@ -13,7 +13,7 @@ type QuantityInputGroupProps = {
   initialQuantity: number;
   min?: number;
   max: number;
-  onChangeValue?: (value: number) => void;
+  onChangeValue?: (value: number, isOverMax: boolean) => void;
 };
 
 export default function QuantityInputGroup({
@@ -34,7 +34,7 @@ export default function QuantityInputGroup({
   const triggerChange = (value: number) => {
     const clampedValue = Math.max(min, Math.min(max, value));
     setQuantityInput(clampedValue.toString());
-    onChangeValue?.(clampedValue);
+    onChangeValue?.(clampedValue, value > max);
   };
 
   const handleOnChange = (

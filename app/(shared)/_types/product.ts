@@ -14,6 +14,8 @@ export type ProductDetail = ProductBase & {
   description: string;
   sold: number;
   isFavorited: boolean;
+  specifications: { name: string; value: string }[];
+  favoritesCount: number;
   categories: Category[];
   imageUrls: string[];
 };

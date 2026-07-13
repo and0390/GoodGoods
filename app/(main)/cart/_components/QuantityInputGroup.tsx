@@ -29,7 +29,7 @@ export const QuantityInputGroup = ({
     <QuantityInputGroupBase
       initialQuantity={initialQuantity}
       max={max}
-      onChangeValue={mutate}
+      onChangeValue={(value) => mutate(value)}
     />
   );
 };

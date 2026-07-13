@@ -18,6 +18,7 @@ export default function ProductPurchaseAction({
   isAuthenticated,
 }: ProductPurchaseActionProps) {
   const [quantity, setQuantity] = React.useState(1);
+  const [isOverStock, setIsOverStock] = React.useState(false);
 
   return (
     <>
@@ -43,18 +44,29 @@ export default function ProductPurchaseAction({
             Delivery
           </div>
         </div>
-        <div className="flex items-center">
-          <div className="basis-[100px] text-muted-foreground">Quantity</div>
-          <div className="flex items-center gap-5 ps-2.5">
-            <QuantityInputGroup
-              max={product.stock}
-              initialQuantity={quantity}
-              onChangeValue={setQuantity}
-            />
-            <span className="text-xs text-muted-foreground">
-              {product.stock} available
-            </span>
+
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center">
+            <div className="basis-[100px] text-muted-foreground">Quantity</div>
+            <div className="flex items-center gap-5 ps-2.5">
+              <QuantityInputGroup
+                max={product.stock}
+                initialQuantity={quantity}
+                onChangeValue={(value, isOverMax) => {
+                  setQuantity(value);
+                  setIsOverStock(isOverMax);
+                }}
+              />
+              <span className="text-xs text-muted-foreground">
+                {product.stock} available
+              </span>
+            </div>
           </div>
+          {isOverStock && (
+            <p className="ms-28 text-sm text-destructive">
+              Stock is not sufficient
+            </p>
+          )}
         </div>
       </dl>
 

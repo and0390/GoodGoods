@@ -3,31 +3,34 @@
 import { toggleFavorite } from "@/cart/_actions/toggleFavorite";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { toastWithButton } from "@/components/ui/toastWithButton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import formatCount from "@/lib/formatCount";
 import Link from "next/link";
 import React from "react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 
-type ToggleFavoriteProps = {
+type ToggleFavoriteBaseProps = {
   isAuthenticated: boolean;
-  initialIsFavorited: boolean;
+  isFavorited: boolean;
   productId: string;
-} & React.ComponentProps<typeof Button>;
+  setIsFavoritedAction: React.Dispatch<React.SetStateAction<boolean>>;
+  setFavoritesCountAction: React.Dispatch<React.SetStateAction<number>>;
+  setFavoriteStateAction: (value: boolean) => void;
+};
 
-export default function ToggleFavoriteButton({
-  isAuthenticated,
-  initialIsFavorited,
-  productId,
-  ...props
-}: ToggleFavoriteProps) {
-  const [isFavorited, setIsFavorited] = React.useState(initialIsFavorited);
-  const [isFavoritedOpt, setIsFavoritedOpt] = React.useOptimistic(isFavorited);
+export function ToggleFavoriteButtonBase(props: ToggleFavoriteBaseProps) {
   const [, startTransition] = React.useTransition();
 
   const handleToggleFavorite = () => {
     startTransition(async () => {
-      setIsFavoritedOpt((prev) => !prev);
+      const nextIsFavorited = !props.isFavorited;
+      props.setFavoriteStateAction(nextIsFavorited);
       try {
-        const { serverError, data } = await toggleFavorite(productId);
+        const { serverError, data } = await toggleFavorite(props.productId);
 
         if (serverError) {
           toastWithButton({
@@ -42,7 +45,10 @@ export default function ToggleFavoriteButton({
             });
           } else {
             startTransition(() => {
-              setIsFavorited((prev) => !prev);
+              props.setIsFavoritedAction((prev) => !prev);
+              props.setFavoritesCountAction((prev) =>
+                nextIsFavorited ? prev + 1 : prev - 1
+              );
             });
           }
         }
@@ -57,7 +63,7 @@ export default function ToggleFavoriteButton({
     });
   };
 
-  if (!isAuthenticated) {
+  if (!props.isAuthenticated) {
     return (
       <Link href="/login" className={buttonVariants({ variant: "plain" })}>
         <FaRegHeart className="size-5.5" />
@@ -66,17 +72,65 @@ export default function ToggleFavoriteButton({
   }
 
   return (
-    <Button
-      {...props}
-      variant="plain"
-      type="button"
-      onClick={handleToggleFavorite}
-    >
-      {isFavoritedOpt ? (
+    <Button variant="plain" type="button" onClick={handleToggleFavorite}>
+      {props.isFavorited ? (
         <FaHeart className="size-5.5 text-rose-500" />
       ) : (
         <FaRegHeart className="size-5.5" />
       )}
     </Button>
+  );
+}
+
+type ToggleFavoriteButtonProps = {
+  IsFavorited: boolean;
+  favoritesCount: number;
+  isAuthenticated: boolean;
+  productId: string;
+};
+
+export default function ToggleFavoriteButton({
+  IsFavorited: initialIsFavorited,
+  favoritesCount: initialFavoritesCount,
+  isAuthenticated,
+  productId,
+}: ToggleFavoriteButtonProps) {
+  const [favoritesCount, setFavoritesCount] = React.useState(
+    initialFavoritesCount
+  );
+  const [isFavorited, setIsFavorited] = React.useState(initialIsFavorited);
+  const [favoriteStateOpt, setIsFavoriteStateOpt] = React.useOptimistic<
+    {
+      isFavorited: boolean;
+      favoritesCount: number;
+    },
+    boolean
+  >(
+    {
+      isFavorited: isFavorited,
+      favoritesCount: favoritesCount,
+    },
+    (state, newIsFavorited) => ({
+      isFavorited: newIsFavorited,
+      favoritesCount: newIsFavorited
+        ? state.favoritesCount + 1
+        : state.favoritesCount - 1,
+    })
+  );
+
+  return (
+    <div className="flex flex-col items-center">
+      <ToggleFavoriteButtonBase
+        isAuthenticated={isAuthenticated}
+        isFavorited={favoriteStateOpt.isFavorited}
+        productId={productId}
+        setFavoriteStateAction={setIsFavoriteStateOpt}
+        setIsFavoritedAction={setIsFavorited}
+        setFavoritesCountAction={setFavoritesCount}
+      />
+      <p className="text-sm font-light">
+        {formatCount(favoriteStateOpt.favoritesCount)}
+      </p>
+    </div>
   );
 }
