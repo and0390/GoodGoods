@@ -65,14 +65,25 @@ export function ToggleFavoriteButtonBase(props: ToggleFavoriteBaseProps) {
 
   if (!props.isAuthenticated) {
     return (
-      <Link href="/login" className={buttonVariants({ variant: "plain" })}>
+      <Link
+        href="/login"
+        className={buttonVariants({
+          variant: "plain",
+          className: "p-0!",
+        })}
+      >
         <FaRegHeart className="size-5.5" />
       </Link>
     );
   }
 
   return (
-    <Button variant="plain" type="button" onClick={handleToggleFavorite}>
+    <Button
+      variant="plain"
+      type="button"
+      className="p-0!"
+      onClick={handleToggleFavorite}
+    >
       {props.isFavorited ? (
         <FaHeart className="size-5.5 text-rose-500" />
       ) : (
@@ -119,7 +130,7 @@ export default function ToggleFavoriteButton({
   );
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex items-center gap-2">
       <ToggleFavoriteButtonBase
         isAuthenticated={isAuthenticated}
         isFavorited={favoriteStateOpt.isFavorited}
@@ -128,9 +139,10 @@ export default function ToggleFavoriteButton({
         setIsFavoritedAction={setIsFavorited}
         setFavoritesCountAction={setFavoritesCount}
       />
-      <p className="text-sm font-light">
-        {formatCount(favoriteStateOpt.favoritesCount)}
-      </p>
+      <span className="text-base tracking-wide uppercase">Favorite</span>
+      <span className="text-base font-light">
+        ({formatCount(favoriteStateOpt.favoritesCount)})
+      </span>
     </div>
   );
 }

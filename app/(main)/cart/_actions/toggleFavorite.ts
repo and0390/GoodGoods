@@ -5,7 +5,6 @@ import { ActionResponseData } from "@/app/(shared)/_types/actionResponse";
 import { Prisma } from "@/app/generated/prisma/client";
 import prisma from "@/lib/prisma";
 import { actionClient } from "@/lib/safe-action";
-import { revalidatePath } from "next/cache";
 
 const ADD_MESSAGE = "1 Item has been added to your favorites";
 const REMOVE_MESSAGE = "1 Item has been removed from your favorites";

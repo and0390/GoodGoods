@@ -6,6 +6,8 @@ import { PrismaClient } from "../app/generated/prisma/client";
 import { categories } from "./categorySeed";
 import { products } from "./productSeed";
 import { attributeTemplates } from "./productSpecification";
+import { mockUsers } from "./userSeed";
+import { mockReviews } from "./reviewSeed";
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
@@ -14,6 +16,33 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({
   adapter,
 });
+
+async function seedUser(prisma: PrismaClient) {
+  for (const user of mockUsers) {
+    await prisma.user.create({
+      data: {
+        name: user.name,
+        email: user.email,
+        id: user.id,
+        image: user.image,
+      },
+    });
+  }
+}
+
+async function seedReview(prisma: PrismaClient) {
+  for (const review of mockReviews) {
+    await prisma.review.create({
+      data: {
+        id: review.id,
+        rating: review.rating,
+        content: review.content,
+        productId: review.productId,
+        userId: review.userId,
+      },
+    });
+  }
+}
 
 async function seedCategories(prisma: PrismaClient) {
   for (const cat of categories) {
@@ -89,8 +118,10 @@ async function seedSpecifications(prisma: PrismaClient) {
 }
 
 async function main() {
+  await seedUser(prisma);
   await seedCategories(prisma);
   await seedProducts(prisma);
+  await seedReview(prisma);
   await seedSpecifications(prisma);
 }
 

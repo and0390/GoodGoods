@@ -9,17 +9,19 @@ datasource db {
 }
 
 model User {
-  id            String     @id
+  id            String          @id
   name          String
-  email         String     @unique
-  emailVerified Boolean    @default(false)
+  email         String          @unique
+  emailVerified Boolean         @default(false)
   image         String?
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
   accounts      Account[]
   cart          Cart?
   sessions      Session[]
   favorites     Favorite[]
+  reviews       Review[]
+  reviewHelpful ReviewHelpful[]
 
   @@map("user")
 }
@@ -109,6 +111,7 @@ model Product {
   promotions Promotion[]
 
   specifications ProductSpecification[]
+  reviews        Review[]
 
   cartItems CartItem[]
   favorites Favorite[]
@@ -173,9 +176,9 @@ model CategoryAttribute {
   id         String   @id @default(cuid())
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  
-  name       String   // Contoh: "Merek", "Masa Penyimpanan", "Formulasi"
-  isRequired Boolean  @default(false)
+
+  name       String // Contoh: "Merek", "Masa Penyimpanan", "Formulasi"
+  isRequired Boolean @default(false)
 
   productValues ProductSpecification[]
 
@@ -183,18 +186,18 @@ model CategoryAttribute {
 }
 
 model ProductSpecification {
-  id                  String            @id @default(cuid())
-  productId           String
-  product             Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
   attributeTemplateId String
   attributeTemplate   CategoryAttribute @relation(fields: [attributeTemplateId], references: [id], onDelete: Cascade)
-  
-  value               String            // Contoh isinya: "TERAGLOW", "Stik", "24 Bulan"
 
+  value String // Contoh isinya: "TERAGLOW", "Stik", "24 Bulan"
+
+  @@unique([productId, attributeTemplateId])
   @@index([productId])
   @@index([attributeTemplateId])
-  @@unique([productId, attributeTemplateId])
 }
 
 enum DiscountType {
@@ -221,3 +224,39 @@ model Promotion {
   products  Product[]
   createdAt DateTime  @default(now())
 }
+
+model Review {
+  id        String   @id @default(cuid())
+  content   String?
+  rating    Int      @db.SmallInt
+  imageUrls String[]
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  helpfulCount Int @default(0)
+
+  reviewHelpful ReviewHelpful[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, userId])
+}
+
+model ReviewHelpful {
+  id String @id @default(cuid())
+
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reviewId String
+  review   Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, reviewId])
+}
+

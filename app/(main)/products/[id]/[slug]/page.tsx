@@ -1,5 +1,5 @@
 import { getSessionCached } from "@/app/(shared)/_lib/getSessionCached";
-import { Category } from "@/app/(shared)/_types/Category";
+import { Category } from "@/app/(shared)/_types/category";
 import { ProductDetail } from "@/app/(shared)/_types/product";
 import { getCategoryAncestors } from "@/app/generated/prisma/sql/getCategoryAncestors";
 import {
@@ -26,6 +26,20 @@ import React from "react";
 import ProductPurchaseAction from "./_components/ProductPurchaseAction";
 import ProductCarousel from "./productCarousel";
 import ToggleFavoriteButton from "./_components/ToggleFavoriteButton";
+import { FaRegStar, FaStar } from "react-icons/fa";
+import ProductReviews from "./_components/ProductReviews";
+
+const renderStars = (rating: number) => {
+  return Array.from({ length: 5 }).map((_, i) => (
+    <React.Fragment key={i}>
+      {i < Math.round(rating) ? (
+        <FaStar className="size-4 fill-current text-amber-500" />
+      ) : (
+        <FaRegStar className="size-4 text-muted-foreground/40" />
+      )}
+    </React.Fragment>
+  ));
+};
 
 export async function getProductBreadcrumbs(
   categoryId: string,
@@ -198,16 +212,13 @@ export default async function ProductsPage({
               productId={product.id}
               favoritesCount={product.favoritesCount}
             />
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="plain">
-                  <Share2 className="size-6" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p>Share</p>
-              </TooltipContent>
-            </Tooltip>
+
+            <div className="flex items-center">
+              <Button variant="plain">
+                <Share2 className="size-6" />
+              </Button>
+              <span className="text-base tracking-wide uppercase">Share</span>
+            </div>
           </div>
         </div>
         <div className="flex flex-2 flex-col text-sm">
@@ -236,7 +247,8 @@ export default async function ProductsPage({
           />
         </div>
       </div>
-      <div className="flex w-full flex-col bg-card px-10 py-8">
+
+      <div className="mb-6 flex w-full flex-col bg-card px-10 py-8">
         <h2 className="mb-6 text-lg font-semibold">Product specification</h2>
         <div className="mb-8 flex flex-col gap-6 text-sm">
           <div className="flex items-center">
@@ -258,6 +270,11 @@ export default async function ProductsPage({
         <h2 className="mb-6 text-lg font-semibold">Description</h2>
         <p className="text-sm text-muted-foreground">{product.description}</p>
       </div>
+      <ProductReviews
+        productId={product.id}
+        isAuthenticated={!!session}
+        userId={session?.user.id ?? null}
+      />
     </div>
   );
 }
