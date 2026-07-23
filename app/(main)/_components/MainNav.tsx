@@ -19,42 +19,31 @@ import Link from "next/link";
 import { UserMenuOrAuthButtons } from "./avatar/UserMenuOrAuthButtons";
 import { CartHoverCard } from "../cart/_components/hover-card/CartHoverCard";
 import { PiSquaresFour } from "react-icons/pi";
+import { IconCategory } from "@tabler/icons-react";
 
 const TopNav = () => {
   return (
-    <div className="w-full border-b">
-      <div className="container mx-auto w-full py-2.5">
-        <div className="flex w-full items-center justify-stretch gap-5 px-0">
-          {/* Branding Navbar */}
+    <div className="w-full border-b border-sidebar-border">
+      <div className="container mx-auto flex w-full items-center pt-7 pb-4">
+        {/* Branding Navbar */}
 
-          <div className="row-span-2 hidden place-self-center sm:block">
-            <Link href="/">
-              <h1 className="text-2xl font-bold">GoodGoods</h1>
-            </Link>
-          </div>
+        <div className="me-20">
+          <Link href="/">
+            <h1 className="text-3xl font-bold">GoodGoods</h1>
+          </Link>
+        </div>
 
-          <InputGroup className="me-3">
-            <InputGroupInput placeholder="Search on GoodGoods" />
-            <InputGroupAddon align="inline-end">
-              <InputGroupButton size="icon-sm">
-                <SearchIcon />
-                <span className="sr-only">search</span>
-              </InputGroupButton>
-            </InputGroupAddon>
-          </InputGroup>
+        <InputGroup className="me-9">
+          <InputGroupInput placeholder="Search on GoodGoods" />
+          <InputGroupAddon align="inline-end">
+            <InputGroupButton size="icon-sm">
+              <SearchIcon />
+              <span className="sr-only">search</span>
+            </InputGroupButton>
+          </InputGroupAddon>
+        </InputGroup>
 
-          <Button
-            variant="ghost"
-            size="icon-lg"
-            className="flex sm:hidden"
-            asChild
-          >
-            <Link href="/notifications">
-              <Bell />
-              <span className="sr-only">notification</span>
-            </Link>
-          </Button>
-
+        <div className="flex items-center gap-6">
           <CartHoverCard />
 
           <Separator orientation="vertical" className="hidden sm:block" />
@@ -68,16 +57,17 @@ const TopNav = () => {
 
 const BottomNav = () => {
   return (
-    <div className="relative w-full border-b border-border">
-      <div className="container mx-auto w-full pt-2.5">
-        <div className="flex w-full items-baseline justify-between">
-          <Button variant="ghost">
-            <PiSquaresFour className="size-6" />
+    <div className="relative w-full border-b border-sidebar-border">
+      <div className="container mx-auto w-full pt-4">
+        <div className="flex w-full justify-between">
+          <Button variant="ghost" size="lg" className="font-medium">
+            <IconCategory />
             Category
           </Button>
+
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="secondary" size="sm" className="rounded-b-none">
+              <Button variant="secondary" size="lg" className="rounded-b-none">
                 <MapPin />
                 Sent to <span className="font-semibold">Central Jakarta</span>
               </Button>
@@ -99,7 +89,7 @@ const BottomNav = () => {
 
 export default function MainNav() {
   return (
-    <header className="sticky top-0 z-100 flex w-full bg-muted">
+    <header className="sticky top-0 z-100 hidden w-full bg-sidebar text-sidebar-foreground lg:flex">
       <div className="flex w-full flex-col">
         <TopNav />
         <BottomNav />

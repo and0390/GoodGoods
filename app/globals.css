@@ -71,6 +71,7 @@
   --shadow-opacity: var(--shadow-opacity);
   --color-shadow-color: var(--shadow-color);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-rating: var(--rating);
 }
 
 :root {
@@ -137,6 +138,7 @@
     0.25px 8px 10px -1px hsl(236.5829 64.225% 21.4383% / 0.15);
   --shadow-2xl: 0.25px 1px 3px 0px hsl(236.5829 64.225% 21.4383% / 0.38);
   --tracking-normal: 0em;
+  --rating: oklch(86.1% 0.177 94.3);
 }
 
 .dark {
@@ -202,11 +204,28 @@
     0.25px 1px 3px 0px hsl(236.5829 64.225% 21.4383% / 0.15),
     0.25px 8px 10px -1px hsl(236.5829 64.225% 21.4383% / 0.15);
   --shadow-2xl: 0.25px 1px 3px 0px hsl(236.5829 64.225% 21.4383% / 0.38);
+  --rating: oklch(93.9% 0.164 103.1);
 }
 
 @utility container {
+  width: 100%;
+  margin-inline: auto;
+
+  @media (width >= 40rem) {
+    max-width: 80rem;
+  }
+  @media (width >= 48rem) {
+    max-width: 80rem;
+  }
+  @media (width >= 64rem) {
+    max-width: 80rem;
+    padding-inline: 2rem;
+  }
+  @media (width >= 80rem) {
+    max-width: 80rem;
+  }
   @media (width >= 96rem) {
-    max-width: 80rem; /* override 2xl*/
+    max-width: 80rem;
   }
 }
 

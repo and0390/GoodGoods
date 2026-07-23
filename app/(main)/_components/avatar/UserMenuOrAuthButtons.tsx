@@ -58,12 +58,12 @@ export const UserMenuOrAuthButtons = async () => {
   }
 
   return (
-    <div className="hidden flex-none gap-2 sm:flex">
+    <div className="flex gap-1">
       <Button size="lg" asChild>
         <Link href="/signup">Sign Up</Link>
       </Button>
-      <Button size="lg" variant="secondary" asChild>
-        <Link href="/login">Log In</Link>
+      <Button size="lg" variant="outline" asChild>
+        <Link href="/login">Sign In</Link>
       </Button>
     </div>
   );

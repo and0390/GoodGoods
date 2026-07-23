@@ -35,7 +35,7 @@ const CategoryAction = () => {
   return (
     <div className="no-scrollbar flex w-full items-center justify-around overflow-x-auto">
       {config.map(({ Icon, name, className }) => (
-        <Button key={name} variant="plain" className="h-auto! flex-col gap-1">
+        <Button key={name} className="h-auto! flex-col gap-1">
           <Icon className={cn("size-6 sm:size-8", className)} />
           <span className="truncate text-xs sm:text-sm">{name}</span>
         </Button>

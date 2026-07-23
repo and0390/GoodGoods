@@ -1,5 +1,6 @@
 "use client";
 
+import FavoriteButton from "@/app/(shared)/_components/FavoriteButton";
 import { toggleFavorite } from "@/cart/_actions/toggleFavorite";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { toastWithButton } from "@/components/ui/toastWithButton";
@@ -10,6 +11,7 @@ import {
 } from "@/components/ui/tooltip";
 import formatCount from "@/lib/formatCount";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 
@@ -68,7 +70,7 @@ export function ToggleFavoriteButtonBase(props: ToggleFavoriteBaseProps) {
       <Link
         href="/login"
         className={buttonVariants({
-          variant: "plain",
+          variant: "ghost",
           className: "p-0!",
         })}
       >
@@ -79,7 +81,7 @@ export function ToggleFavoriteButtonBase(props: ToggleFavoriteBaseProps) {
 
   return (
     <Button
-      variant="plain"
+      variant="ghost"
       type="button"
       className="p-0!"
       onClick={handleToggleFavorite}
@@ -128,21 +130,61 @@ export default function ToggleFavoriteButton({
         : state.favoritesCount - 1,
     })
   );
+  const [, startTransition] = React.useTransition();
+  const router = useRouter();
+
+  const handleToggleFavorite = () => {
+    startTransition(async () => {
+      const nextIsFavorited = !isFavorited;
+      setIsFavoriteStateOpt(nextIsFavorited);
+      try {
+        const { serverError, data } = await toggleFavorite(productId);
+
+        if (serverError) {
+          toastWithButton({
+            type: "error",
+            message: serverError,
+          });
+        } else if (data) {
+          if (!data.success) {
+            toastWithButton({
+              type: "error",
+              message: data.message,
+            });
+          } else {
+            startTransition(() => {
+              setIsFavorited((prev) => !prev);
+              setFavoritesCount((prev) =>
+                nextIsFavorited ? prev + 1 : prev - 1
+              );
+            });
+          }
+        }
+      } catch (err) {
+        console.warn(err);
+        toastWithButton({
+          type: "error",
+          message:
+            "Something went wrong, Please check your internet connection and try again later",
+        });
+      }
+    });
+  };
 
   return (
-    <div className="flex items-center gap-2">
-      <ToggleFavoriteButtonBase
-        isAuthenticated={isAuthenticated}
+    <div className="ms-auto flex items-center gap-2">
+      <FavoriteButton
         isFavorited={favoriteStateOpt.isFavorited}
-        productId={productId}
-        setFavoriteStateAction={setIsFavoriteStateOpt}
-        setIsFavoritedAction={setIsFavorited}
-        setFavoritesCountAction={setFavoritesCount}
+        onClick={
+          isAuthenticated ? handleToggleFavorite : () => router.push("/login")
+        }
       />
-      <span className="text-base tracking-wide uppercase">Favorite</span>
-      <span className="text-base font-light">
-        ({formatCount(favoriteStateOpt.favoritesCount)})
-      </span>
+      <p className="text-base font-normal text-card-foreground uppercase">
+        Favorite{" "}
+        <span className="text-muted-foreground">
+          ({formatCount(favoriteStateOpt.favoritesCount)})
+        </span>
+      </p>
     </div>
   );
 }

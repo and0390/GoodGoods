@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import MainNav from "./_components/MainNav";
 import { MainFooter } from "./_components/MainFooter";
+import { IconMessage2 } from "@tabler/icons-react";
 
 export default function MainLayout({
   children,
@@ -8,10 +9,9 @@ export default function MainLayout({
   children: Readonly<ReactNode>;
 }) {
   return (
-    <div className="flex min-h-screen w-full flex-col">
-      <MainNav />
+    <div className="relative flex min-h-screen w-full flex-col">
       <main className="flex flex-1 flex-col bg-background">{children}</main>
-      <MainFooter />
+      <MainFooter className="hidden lg:flex" />
     </div>
   );
 }

@@ -5,12 +5,14 @@ import { ProductPreview } from "@/app/(shared)/_types/product";
 import { Button, buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import { MdAddShoppingCart } from "react-icons/md";
+import { IconShoppingCartPlus } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
 
-const BUTTON_VARIANT = buttonVariants({
-  variant: "outline",
-  size: "lg",
-  className: "flex-1 h-10",
-});
+// const BUTTON_VARIANT = buttonVariants({
+//   variant: "outline",
+//   size: "lg",
+//   className: "h-10",
+// });
 
 type AddToCartButtonProps = {
   product: ProductPreview;
@@ -24,23 +26,19 @@ export default function AddToCartButton({
   quantity,
 }: AddToCartButtonProps) {
   const { mutate } = useAddToCart();
+  const router = useRouter();
 
-  if (!isAuthenticated) {
-    return (
-      <Link href="/login" className={BUTTON_VARIANT}>
-        <MdAddShoppingCart /> Add to Cart
-      </Link>
-    );
-  }
+  const handleOnClick = () => {
+    if (isAuthenticated) {
+      mutate({ product, quantity });
+    } else {
+      router.push("/login");
+    }
+  };
 
   return (
-    <Button
-      variant="outline"
-      size="lg"
-      className={BUTTON_VARIANT}
-      onClick={() => mutate({ product, quantity })}
-    >
-      <MdAddShoppingCart /> Add to Cart
+    <Button variant="outline" size="lg" onClick={handleOnClick}>
+      <IconShoppingCartPlus /> Add to Cart
     </Button>
   );
 }

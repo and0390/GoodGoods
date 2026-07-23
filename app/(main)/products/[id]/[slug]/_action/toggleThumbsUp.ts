@@ -10,30 +10,15 @@ import "server-only";
 
 const toggleThumbsUp = actionClient
   .inputSchema(idSchema)
-  .action(
-    async ({
-      ctx,
-      parsedInput: reviewId,
-    }): Promise<
-      ActionResponseData<{ helpfulCount: number; liked: boolean }>
-    > => {
-      const [result] = await prisma.$queryRawTyped(
-        toggleReviewThumbsUp(createId(), ctx.user.id, reviewId)
-      );
+  .action(async ({ ctx, parsedInput: reviewId }) => {
+    const [result] = await prisma.$queryRawTyped(
+      toggleReviewThumbsUp(createId(), ctx.user.id, reviewId)
+    );
 
-      if (!result) {
-        throw new Error("Review not found");
-      }
-
-      return {
-        success: true,
-        message: "This review has been marked as helpful",
-        body: {
-          helpfulCount: result.helpfulCount,
-          liked: result.liked ?? false,
-        },
-      };
-    }
-  );
+    return {
+      helpfulCount: result.helpfulCount,
+      isLikedByUser: result.liked ?? false,
+    };
+  });
 
 export default toggleThumbsUp;

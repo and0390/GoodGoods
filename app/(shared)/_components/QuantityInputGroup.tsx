@@ -64,10 +64,10 @@ export default function QuantityInputGroup({
   };
 
   return (
-    <InputGroup className="w-fit border-transparent hover:border-input has-disabled:bg-transparent has-disabled:opacity-100 dark:has-disabled:bg-input/30 dark:has-disabled:opacity-100">
+    <InputGroup className="w-fit hover:border-input has-disabled:bg-transparent has-disabled:opacity-100 dark:has-disabled:bg-input/30 dark:has-disabled:opacity-100">
       <InputGroupInput
         ref={inputRef}
-        className="w-7 text-center"
+        className="w-13 text-center"
         value={quantityInput}
         onChange={handleOnChange}
         onBlur={handleOnBlur}
@@ -77,7 +77,7 @@ export default function QuantityInputGroup({
         <InputGroupButton
           aria-label="decrease quantity"
           title="decrease"
-          size="icon-xs"
+          size="icon-sm"
           onClick={handleDecrement}
           disabled={isMinReached}
         >
@@ -88,8 +88,7 @@ export default function QuantityInputGroup({
         <InputGroupButton
           aria-label="increase quantity"
           title="increase"
-          size="icon-xs"
-          className=""
+          size="icon-sm"
           onClick={handleIncrement}
           disabled={isMaxReached}
         >

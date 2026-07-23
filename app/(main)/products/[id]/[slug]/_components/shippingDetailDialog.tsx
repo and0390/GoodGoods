@@ -14,11 +14,9 @@ import { ChevronRight, Flame, MoveRight, Truck, Zap } from "lucide-react";
 export default function ShippingDetailDialog() {
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="plain">
-          <Truck className="size-6 text-primary" /> Free Shipping warranty
-          <ChevronRight />
-        </Button>
+      <DialogTrigger className="flex items-center gap-2 text-start text-sm font-normal break-normal">
+        Guaranteed delivery July 19 and July 24
+        <ChevronRight className="size-4 flex-none text-muted-foreground" />
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

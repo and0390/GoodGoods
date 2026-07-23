@@ -1,104 +1,65 @@
 "use client";
 
-import { Review } from "@/app/(shared)/_types/review";
+import { PaginatedReview, Review } from "@/app/(shared)/_types/productReview";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { ThumbsUp } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import toggleThumbsUp from "../_action/toggleThumbsUp";
 import { toastWithButton } from "@/components/ui/toastWithButton";
+import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { FilterValue } from "../_lib/reviewFilter";
+import { cn } from "@/lib/utils";
+import useThumbsUp from "../_hooks/useThumbsUp";
 
 type ThumbsUpButtonProps = {
   review: Review;
   isAuthenticated: boolean;
-  isThumbsUp: boolean;
-};
-
-type ThumbsUpState = {
-  isThumbsUp: boolean;
-  helpfulCount: number;
+  isLikedByUser: boolean;
+  productId: string;
+  filter: FilterValue;
+  page: number;
 };
 
 export default function ThumbsUpButton({
   review,
   isAuthenticated,
-  isThumbsUp,
+  isLikedByUser,
+  filter,
+  page,
+  productId,
 }: ThumbsUpButtonProps) {
-  const [thumbsUpState, setThumbsUpState] = React.useState<ThumbsUpState>({
-    isThumbsUp,
-    helpfulCount: review.helpfulCount,
+  const router = useRouter();
+  const { mutate } = useThumbsUp({
+    filter,
+    page,
+    productId,
   });
-  const [thumbsUpStateOpt, toggleThumbsUpStateOpt] = React.useOptimistic(
-    thumbsUpState,
-    (state, _: void) => {
-      const nextIsThumbsUp = !state.isThumbsUp;
-      return {
-        isThumbsUp: nextIsThumbsUp,
-        helpfulCount: state.helpfulCount + (nextIsThumbsUp ? 1 : -1),
-      };
+
+  const handleOnClick = () => {
+    if (isAuthenticated) {
+      mutate(review.id);
+    } else {
+      router.push("/login");
     }
-  );
-  const [_, startTransition] = React.useTransition();
-
-  const handleToggleThumbsUp = () => {
-    startTransition(async () => {
-      toggleThumbsUpStateOpt();
-      try {
-        const { serverError, data } = await toggleThumbsUp(review.id);
-
-        if (data) {
-          if (data.success) {
-            const { helpfulCount, liked } = data.body;
-
-            startTransition(() => {
-              setThumbsUpState({ helpfulCount, isThumbsUp: liked });
-            });
-          }
-        } else if (serverError) {
-          toastWithButton({
-            type: "error",
-            message: serverError,
-          });
-        }
-      } catch (err) {
-        console.warn(err);
-        toastWithButton({
-          type: "error",
-          message:
-            "Something went wrong, Please check your internet connection and try again later",
-        });
-      }
-    });
   };
 
   return (
-    <div className="flex text-muted-foreground">
-      {isAuthenticated ? (
-        <Button
-          className="h-auto text-muted-foreground"
-          variant="plain"
-          size="icon-lg"
-          onClick={handleToggleThumbsUp}
-        >
-          {!thumbsUpStateOpt.isThumbsUp ? (
-            <ThumbsUp className="size-5" />
-          ) : (
-            <ThumbsUp className="size-5" fill="currentColor" />
+    <div className="flex items-center gap-1">
+      <button className="size-5 flex-none" onClick={handleOnClick}>
+        <ThumbsUp
+          className={cn(
+            "size-full text-muted-foreground",
+            isLikedByUser && "fill-muted-foreground"
           )}
-        </Button>
-      ) : (
-        <Link
-          href="/login"
-          className={buttonVariants({
-            size: "icon-lg",
-            variant: "plain",
-            className: "h-auto text-muted-foreground",
-          })}
-        >
-          <ThumbsUp className="size-5" />
-        </Link>
+        />
+      </button>
+      {review.helpfulCount > 0 && (
+        <p className="text-sm font-normal text-muted-foreground">
+          {review.helpfulCount} People found this Helpful
+        </p>
       )}
-      ({thumbsUpStateOpt.helpfulCount})
     </div>
   );
 }
