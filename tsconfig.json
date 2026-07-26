@@ -22,7 +22,9 @@
     "paths": {
       "@/*": ["./*"],
       "@/cart/*": ["./app/(main)/cart/*"],
-      "@/shared/*": ["./app/(shared)/*"]
+      "@/shared/*": ["./app/(shared)/*"],
+      "@/product/*": ["./features/products/*"],
+      "@/product-reviews/*": ["./features/product-reviews/*"]
     }
   },
   "include": [

@@ -13,7 +13,9 @@ export default function FavoriteButton({
 }: FavoriteButtonProps) {
   return (
     <button className={cn("size-8", className)} {...props}>
-      <Heart className={cn("size-full", isFavorited && "fill-red-600")} />
+      <Heart
+        className={cn("size-full", isFavorited && "fill-red-600 text-red-600")}
+      />
     </button>
   );
 }

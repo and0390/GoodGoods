@@ -25,13 +25,15 @@ export type Rating = {
   reviews: Review[];
 };
 
+export type Pagination = {
+  currentPage: number;
+  totalPages: number;
+  limit: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+};
+
 export type PaginatedReview = {
   reviews: Review[];
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    limit: number;
-    hasNextPage: boolean;
-    hasPrevPage: boolean;
-  };
+  pagination: Pagination;
 };

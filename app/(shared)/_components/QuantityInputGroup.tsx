@@ -6,6 +6,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { cn } from "@/lib/utils";
 import { Minus, Plus } from "lucide-react";
 import React from "react";
 
@@ -13,6 +14,7 @@ type QuantityInputGroupProps = {
   initialQuantity: number;
   min?: number;
   max: number;
+  className?: string;
   onChangeValue?: (value: number, isOverMax: boolean) => void;
 };
 
@@ -21,11 +23,12 @@ export default function QuantityInputGroup({
   min = 1,
   max,
   onChangeValue,
+  className,
 }: QuantityInputGroupProps) {
   const [quantityInput, setQuantityInput] = React.useState(
     initialQuantity.toString()
   );
-  const currentQuantity = parseInt(quantityInput, 10);
+  const currentQuantity = Number(quantityInput);
   const inputRef = React.useRef<HTMLInputElement | null>(null);
 
   const isMinReached = currentQuantity <= min;
@@ -64,10 +67,15 @@ export default function QuantityInputGroup({
   };
 
   return (
-    <InputGroup className="w-fit hover:border-input has-disabled:bg-transparent has-disabled:opacity-100 dark:has-disabled:bg-input/30 dark:has-disabled:opacity-100">
+    <InputGroup
+      className={cn(
+        "w-fit hover:border-input has-disabled:bg-transparent has-disabled:opacity-100 dark:has-disabled:bg-input/30 dark:has-disabled:opacity-100",
+        className
+      )}
+    >
       <InputGroupInput
         ref={inputRef}
-        className="w-13 text-center"
+        className="w-full text-center"
         value={quantityInput}
         onChange={handleOnChange}
         onBlur={handleOnBlur}

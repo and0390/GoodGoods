@@ -6,7 +6,7 @@ import QueryProvider from "./providers/QueryProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 const fontMono = Geist_Mono({
   subsets: ["latin"],
@@ -23,10 +23,11 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
       className={cn(
-        "antialiased",
+        "scroll-smooth antialiased",
+        inter.variable,
+
         fontMono.variable,
-        "font-sans",
-        inter.variable
+        "font-sans"
       )}
     >
       <body>

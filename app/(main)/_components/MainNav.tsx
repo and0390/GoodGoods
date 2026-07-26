@@ -20,6 +20,7 @@ import { UserMenuOrAuthButtons } from "./avatar/UserMenuOrAuthButtons";
 import { CartHoverCard } from "../cart/_components/hover-card/CartHoverCard";
 import { PiSquaresFour } from "react-icons/pi";
 import { IconCategory } from "@tabler/icons-react";
+import { cn } from "@/lib/utils";
 
 const TopNav = () => {
   return (
@@ -87,9 +88,14 @@ const BottomNav = () => {
   );
 };
 
-export default function MainNav() {
+export default function MainNav({ className }: { className?: string }) {
   return (
-    <header className="sticky top-0 z-100 hidden w-full bg-sidebar text-sidebar-foreground lg:flex">
+    <header
+      className={cn(
+        "sticky top-0 z-100 w-full bg-sidebar text-sidebar-foreground",
+        className
+      )}
+    >
       <div className="flex w-full flex-col">
         <TopNav />
         <BottomNav />
