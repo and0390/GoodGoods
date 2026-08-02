@@ -38,7 +38,7 @@ export default function FavoriteButton({
     >
       <Heart
         className={cn(
-          "size-full fill-muted-foreground text-muted-foreground md:size-6 lg:size-8",
+          "size-full text-card-foreground md:size-6 lg:size-7",
           isFavorited && "fill-red-600 text-red-600"
         )}
       />

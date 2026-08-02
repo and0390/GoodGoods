@@ -10,11 +10,13 @@ export type Review = {
   content: string | null;
   isLikedByUser: boolean;
   helpfulCount: number;
+  imageUrls: string[];
 };
 
 export type ReviewSummary = {
   avgRating: number;
   totalReviews: number;
+  totalReviewsWithImages: number;
   ratingDistribution: RatingDistribution;
 };
 

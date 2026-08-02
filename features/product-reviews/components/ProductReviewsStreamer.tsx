@@ -15,7 +15,8 @@ export default async function ProductReviewsStreamer({
   const paginatedProductReview = getPaginatedProductReview(
     productId,
     session?.user.id ?? null,
-    null /// fetch all reviews
+    null, /// fetch all reviews
+    false
   );
   const productReviewSummary = getProductReviewSummaryCached(productId);
 

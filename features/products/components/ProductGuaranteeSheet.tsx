@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -9,6 +11,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import useLg from "@/features/product-reviews/hooks/useLg";
 import { cn } from "@/lib/utils";
 import { Banknote, ChevronRight, RotateCcw, ShieldCheck } from "lucide-react";
 import { VisuallyHidden } from "radix-ui";
@@ -35,8 +38,9 @@ const guarantee = [
 ] as const;
 
 export default function ProductGuaranteeSheet() {
+  const isLg = useLg();
   return (
-    <Sheet>
+    <Sheet key={isLg ? "desktop-close" : "mobile-open"}>
       <SheetTrigger className="flex items-center gap-2 px-3 py-3 md:px-0">
         <ShieldCheck className="size-5 flex-none text-primary" />
         <p className="min-w-0 truncate text-sm font-normal text-card-foreground">

@@ -11,12 +11,12 @@ export default function ProductReviewError({
   ) => Promise<QueryObserverResult<NoInfer<PaginatedReview>, Error>>;
 }) {
   return (
-    <div className="mb-6 flex h-72 w-full flex-col items-center justify-center gap-3">
-      <IconExclamationCircle className="size-[76px] flex-none text-destructive" />
-      <h2 className="text-lg font-bold">
+    <div className="mb-6 flex h-full w-full flex-col items-center justify-center gap-3 md:h-72">
+      <IconExclamationCircle className="size-[46px] flex-none text-destructive md:size-[64px]" />
+      <h2 className="text-base font-semibold md:text-lg">
         Something went wrong while fetching reviews
       </h2>
-      <Button variant="default" size="lg" onClick={() => refetch()}>
+      <Button variant="outline" size="lg" onClick={() => refetch()}>
         Try again
       </Button>
     </div>

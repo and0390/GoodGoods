@@ -2,28 +2,23 @@
 
 import useAddToCart from "@/app/(main)/cart/_hooks/useAddToCart";
 import { ProductPreview } from "@/app/(shared)/_types/product";
-import { Button, buttonVariants } from "@/components/ui/button";
-import Link from "next/link";
-import { MdAddShoppingCart } from "react-icons/md";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { IconShoppingCartPlus } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
-
-// const BUTTON_VARIANT = buttonVariants({
-//   variant: "outline",
-//   size: "lg",
-//   className: "h-10",
-// });
 
 type AddToCartButtonProps = {
   product: ProductPreview;
   quantity: number;
   isAuthenticated: boolean;
-};
+} & React.ComponentProps<typeof Button>;
 
 export default function AddToCartButton({
   product,
   isAuthenticated,
   quantity,
+  className,
+  ...props
 }: AddToCartButtonProps) {
   const { mutate } = useAddToCart();
   const router = useRouter();
@@ -37,8 +32,17 @@ export default function AddToCartButton({
   };
 
   return (
-    <Button variant="outline" className="h-10 px-4" onClick={handleOnClick}>
-      <IconShoppingCartPlus /> Add to Cart
+    <Button
+      {...props}
+      variant="outline"
+      className={cn(
+        "h-12 bg-primary text-primary-foreground hover:bg-primary/80 hover:text-primary-foreground lg:w-fit lg:gap-3 lg:rounded-lg lg:bg-background lg:px-5 lg:text-base lg:text-primary lg:hover:bg-primary-foreground lg:hover:text-primary",
+        className
+      )}
+      onClick={handleOnClick}
+    >
+      <IconShoppingCartPlus className="hidden size-6 lg:inline" />
+      Add to Cart
     </Button>
   );
 }

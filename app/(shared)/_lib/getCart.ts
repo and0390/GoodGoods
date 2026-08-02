@@ -1,11 +1,13 @@
 import prisma from "@/lib/prisma";
 import { Cart, CartItem } from "../_types/cart";
+import { reconcileCart } from "@/app/generated/prisma/sql";
 
 export const getCart = async (userId: string) => {
-  return await prisma.cart
-    .findUniqueOrThrow({
+  const reconcileResult = await prisma.$queryRawTyped(reconcileCart(userId));
+  const [rawCart, cartItemCount] = await prisma.$transaction([
+    prisma.cart.findUniqueOrThrow({
       where: { userId },
-      include: {
+      select: {
         items: {
           select: {
             product: {
@@ -26,64 +28,41 @@ export const getCart = async (userId: string) => {
             createdAt: "desc",
           },
         },
+        id: true,
       },
-      omit: { createdAt: true, updatedAt: true },
-    })
-    .then(async (rawCart) => {
-      const staleItems = rawCart.items.filter(
-        (item) => item.quantity > item.product.stock
-      );
+    }),
+    prisma.cartItem.count({ where: { cart: { userId } } }),
+  ]);
 
-      await prisma.$transaction(
-        staleItems.map((staleItem) =>
-          prisma.cartItem.updateMany({
-            where: {
-              id: staleItem.id,
-              cartId: rawCart.id,
-              productId: staleItem.product.id,
-              quantity: { gt: staleItem.product.stock },
-            },
-            data: { quantity: staleItem.product.stock },
-          })
-        )
-      );
+  const { deleted_items: deletedItems, updated_items: updatedItems } =
+    reconcileResult[0];
 
-      const items = rawCart.items.map((rawCartItem) => {
-        /// update quantity to the latest
-        const adjustedQuantity = Math.min(
-          rawCartItem.quantity,
-          rawCartItem.product.stock
-        );
+  const items = rawCart.items.map((rawCartItem) => {
+    const cartItem: CartItem = {
+      id: rawCartItem.id,
+      product: {
+        id: rawCartItem.product.id,
+        imageUrl: rawCartItem.product.imageUrls[0],
+        name: rawCartItem.product.name,
+        price: rawCartItem.product.price,
+        slug: rawCartItem.product.slug,
+        stock: rawCartItem.product.stock,
+      },
+      quantity: rawCartItem.quantity,
+      isQuantityAdjusted: true,
+      isFavorited: rawCartItem.product.favorites.length === 1,
+    };
+    return cartItem;
+  });
 
-        const cartItem: CartItem = {
-          id: rawCartItem.id,
-          product: {
-            id: rawCartItem.product.id,
-            imageUrl: rawCartItem.product.imageUrls[0],
-            name: rawCartItem.product.name,
-            price: rawCartItem.product.price,
-            slug: rawCartItem.product.slug,
-            stock: rawCartItem.product.stock,
-          },
-          quantity: adjustedQuantity,
-          isQuantityAdjusted: rawCartItem.quantity > rawCartItem.product.stock,
-          isFavorited: rawCartItem.product.favorites.length === 1,
-        };
-        return cartItem;
-      });
+  const cart: Cart = {
+    id: rawCart.id,
+    items,
+    updatedItems: updatedItems ?? [],
+    deletedItems: deletedItems ?? [],
+    totalQuantity: cartItemCount,
+    userId,
+  };
 
-      const totalQuantity = items.reduce(
-        (acc, current) => acc + current.quantity,
-        0
-      );
-
-      const cart: Cart = {
-        id: rawCart.id,
-        items,
-        totalQuantity,
-        userId,
-      };
-
-      return cart;
-    });
+  return cart;
 };

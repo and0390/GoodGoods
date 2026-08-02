@@ -1,4 +1,4 @@
-import { FilterValue } from "./reviewFilter";
+import { ReviewPaginationState } from "./reviewPaginationReducer";
 
 export const reviewKeys = {
   all: ["products"] as const,
@@ -8,11 +8,6 @@ export const reviewKeys = {
   reviews: (productId: string) =>
     [...reviewKeys.product(productId), "reviews"] as const,
 
-  list: (
-    productId: string,
-    params: {
-      filter: FilterValue;
-      page: number;
-    }
-  ) => [...reviewKeys.reviews(productId), params] as const,
+  list: (productId: string, filterState: ReviewPaginationState) =>
+    [...reviewKeys.reviews(productId), filterState] as const,
 };

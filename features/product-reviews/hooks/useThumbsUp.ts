@@ -1,20 +1,18 @@
 import { useMutation } from "@tanstack/react-query";
 import { reviewKeys } from "../utis/reviewKeys";
-import { FilterValue } from "../utis/reviewFilter";
 import { PaginatedReview } from "@/app/(shared)/_types/productReview";
 import toggleThumbsUp from "../../products/actions/toggleThumbsUp";
 import { toastWithButton } from "@/components/ui/toastWithButton";
+import { ReviewPaginationState } from "../utis/reviewPaginationReducer";
 
 export default function useThumbsUp({
   productId,
-  filter,
-  page,
+  filterState,
 }: {
   productId: string;
-  filter: FilterValue;
-  page: number;
+  filterState: ReviewPaginationState;
 }) {
-  const queryKey = reviewKeys.list(productId, { filter, page });
+  const queryKey = reviewKeys.list(productId, filterState);
   return useMutation({
     onMutate: async (reviewId, context) => {
       await context.client.cancelQueries({
@@ -85,7 +83,7 @@ export default function useThumbsUp({
     },
     onError: (err, newReview, onMutateResult, context) => {
       context.client.setQueryData(
-        ["products", productId, "reviews", { filter, page }],
+        ["products", productId, "reviews", filterState],
         onMutateResult?.prevReview
       );
     },

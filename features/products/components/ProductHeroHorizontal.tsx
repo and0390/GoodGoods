@@ -12,6 +12,7 @@ import ProductPurchaseSection from "./ProductPurchaseSection";
 import getProductReviewSummaryCached from "../../product-reviews/services/getReviewSummaryCached";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { FaFacebook, FaInstagram } from "react-icons/fa";
 
 async function ProductReviewSummary({
   productId,
@@ -62,12 +63,21 @@ export default function ProductHeroHorizontal({
     >
       <div className="hidden basis-[480px] flex-col gap-5 p-3 lg:flex">
         <ProductGallery product={product} />
-        <FavoriteButton
-          isFavorited={product.isFavorited}
-          isAuthenticated={isAuthenticated}
-          productId={product.id}
-          favoriteCount={product.favoriteCount}
-        />
+
+        <div className="flex w-full items-center justify-around gap-2">
+          <div className="flex items-center gap-1">
+            <span className="text-base font-normal">Share:</span>
+            <FaInstagram className="size-7" />
+            <FaFacebook className="size-7" />
+          </div>
+          <Separator orientation="vertical" />
+          <FavoriteButton
+            isFavorited={product.isFavorited}
+            isAuthenticated={isAuthenticated}
+            productId={product.id}
+            favoriteCount={product.favoriteCount}
+          />
+        </div>
       </div>
 
       <div className="flex min-w-0 grow flex-col gap-1 px-3 py-2">

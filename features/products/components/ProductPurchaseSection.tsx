@@ -86,10 +86,10 @@ export default function ProductPurchaseSection({
           </label>
 
           <div className="flex items-center gap-3">
-            <InputGroup className="size-fit h-9 hover:border-input has-disabled:bg-transparent has-disabled:opacity-100 dark:has-disabled:bg-input/30 dark:has-disabled:opacity-100">
+            <InputGroup className="size-auto overflow-hidden p-0 hover:border-input has-disabled:bg-transparent has-disabled:opacity-100 has-[[data-slot=input-group-control]:focus-visible]:border-input! has-[[data-slot=input-group-control]:focus-visible]:ring-0! dark:has-disabled:bg-input/30 dark:has-disabled:opacity-100">
               <InputGroupInput
                 ref={inputRef}
-                className="w-13 text-center"
+                className="h-9 w-10 py-0 text-center"
                 value={inputValue}
                 id="quantityInput"
                 onChange={handleOnChange}
@@ -98,20 +98,28 @@ export default function ProductPurchaseSection({
                 aria-invalid={isOverStock}
                 aria-describedby={isOverStock ? "stockError" : undefined}
               />
-              <InputGroupAddon align="inline-start">
+              <InputGroupAddon
+                align="inline-start"
+                className="p-0 has-[>button]:ml-0"
+              >
                 <InputGroupButton
                   aria-label="decrease quantity"
                   title="decrease"
                   onClick={handleDecrement}
+                  className="m-0! size-9 rounded-none border-0 px-0"
                   disabled={isMinReached}
                 >
                   <Minus />
                 </InputGroupButton>
               </InputGroupAddon>
-              <InputGroupAddon align="inline-end">
+              <InputGroupAddon
+                align="inline-end"
+                className="p-0 has-[>button]:mr-0"
+              >
                 <InputGroupButton
                   aria-label="increase quantity"
                   title="increase"
+                  className="size-9 rounded-none border-0"
                   onClick={handleIncrement}
                   disabled={isMaxReached}
                 >
@@ -147,7 +155,7 @@ export default function ProductPurchaseSection({
           isAuthenticated={isAuthenticated}
           product={{ ...product, imageUrl: product.imageUrls[0] }}
         />
-        <Button variant="default" className="h-10 px-4">
+        <Button variant="default" className="h-12 px-15 text-base">
           Buy Now
         </Button>
       </div>

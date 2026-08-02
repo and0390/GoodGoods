@@ -8,12 +8,17 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import React from "react";
-import getProductById from "@/product/services/getProductById";
+import { buttonVariants } from "@/components/ui/button";
+import AddToCartPanel from "@/features/product-reviews/components/AddToCartPanel";
+import ProductDescription from "@/features/product-reviews/components/ProductDescription";
+import { cn } from "@/lib/utils";
+import ProductReviewsStreamer from "@/product-reviews/components/ProductReviewsStreamer";
 import ProductHeroHorizontal from "@/product/components/ProductHeroHorizontal";
 import ProductHeroVertical from "@/product/components/ProductHeroVertical";
+import getProductById from "@/product/services/getProductById";
+import { IconMessage2 } from "@tabler/icons-react";
 import { notFound } from "next/navigation";
-import ProductReviewsStreamer from "@/product-reviews/components/ProductReviewsStreamer";
+import React from "react";
 
 type ProductBreadcrumbsProps = {
   categories: Category[];
@@ -62,7 +67,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   return (
-    <div className="container mx-auto flex w-full flex-1 flex-col gap-4 lg:mb-6">
+    <div className="relative container mx-auto flex w-full flex-1 flex-col gap-4 pb-[72px] lg:mb-6 lg:pb-0">
       <ProductBreadcrumbs
         categories={product.categories}
         className="hidden pt-4 lg:block"
@@ -103,16 +108,32 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </div>
       </div>
 
-      <div className="flex flex-col bg-card p-3 md:p-8">
-        <h2 className="mb-3 text-sm font-bold text-card-foreground md:mb-7 md:text-lg">
-          Description
-        </h2>
-        <p className="text-sm font-normal text-muted-foreground">
-          {product.description}
-        </p>
-      </div>
+      <ProductDescription description={product.description} />
 
       <ProductReviewsStreamer productId={product.id} />
+
+      <section
+        aria-label="Product Actions"
+        className="fixed inset-x-0 bottom-0 z-70 flex items-center gap-3 bg-card p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] lg:hidden"
+      >
+        <button
+          type="button"
+          className={cn(
+            buttonVariants({
+              variant: "outline",
+              className: "size-12 flex-none rounded-full",
+            })
+          )}
+        >
+          <IconMessage2 className="size-8 text-primary" />
+        </button>
+
+        <AddToCartPanel isAuthenticated={!!session} product={product} />
+
+        <button className="flex h-12 w-[216px] flex-1 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground md:flex-none">
+          Buy now
+        </button>
+      </section>
     </div>
   );
 }

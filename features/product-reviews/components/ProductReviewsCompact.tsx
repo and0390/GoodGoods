@@ -1,73 +1,54 @@
 "use client";
 
-import formatCount from "@/lib/formatCount";
-import formatRating from "../utis/formatRating";
-import { ChevronRight, Star } from "lucide-react";
-import useProductReviews from "../hooks/useProductReviews";
-import { FilterValue } from "../utis/reviewFilter";
 import {
   PaginatedReview,
   ReviewSummary,
 } from "@/app/(shared)/_types/productReview";
-import ProductReviewCard from "./ProductReviewCard";
-import { cn } from "@/lib/utils";
-import React, { Suspense } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 import { Skeleton } from "@/components/ui/skeleton";
-
-function ProductReviewsPreviewSkeleton() {
-  return (
-    <div className="flex flex-col gap-3 p-3">
-      <div className="flex w-full justify-between">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2.5">
-            <Skeleton className="size-10 rounded-full" />
-            <Skeleton className="h-4 w-[50px]" />
-          </div>
-          <Skeleton className="h-[18px] w-[116px]" />
-        </div>
-        <Skeleton className="size-[18px]" />
-      </div>
-
-      <div className="flex flex-col gap-2">
-        {Array.from({ length: 3 }).map((_, index, arr) => {
-          const isLastIndex = index === arr.length - 1;
-          return (
-            <Skeleton
-              key={index}
-              className={cn("h-4", isLastIndex ? "w-[80%]" : "w-full")}
-            />
-          );
-        })}
-      </div>
-
-      <div className="ms-auto flex items-center gap-1">
-        <Skeleton className="h-4 w-[70px]" />
-        <Skeleton className="size-[18px]" />
-      </div>
-    </div>
-  );
-}
+import formatCount from "@/lib/formatCount";
+import { cn } from "@/lib/utils";
+import { ChevronRight, Star, X } from "lucide-react";
+import React, { Suspense } from "react";
+import useProductReviews from "../hooks/useProductReviews";
+import useReviewFilter from "../hooks/useReviewFilter";
+import formatRating from "../utis/formatRating";
+import {
+  DEFAULT_STATE,
+  ReviewPaginationState,
+} from "../utis/reviewPaginationReducer";
+import ProductReviewCard from "./ProductReviewCard";
+import ProductReviewEmpty from "./ProductReviewEmpty";
+import ProductReviewError from "./ProductReviewError";
+import ProductReviewsPreviewSkeleton from "./ProductReviewPreviewSkeleton";
+import ProductReviewSummary from "./ProductReviewsSummary";
+import ReviewFilterMultiple from "./ReviewFilterMutiple";
+import ReviewFilters from "./ReviewFilters";
 
 type ProductReviewPreview = {
-  filter: FilterValue;
-  page: number;
   productId: string;
   isAuthenticated: boolean;
   paginatedReview: Promise<PaginatedReview>;
 };
 
 function ProductReviewsPreview({
-  filter,
   isAuthenticated,
-  page,
   paginatedReview,
   productId,
 }: ProductReviewPreview) {
+  const filterState = { ...DEFAULT_STATE };
   const initialData = React.use(paginatedReview);
 
   const { data, isSuccess } = useProductReviews({
-    filter,
-    page,
+    filterState,
     productId,
     initialData,
   });
@@ -81,9 +62,8 @@ function ProductReviewsPreview({
           .map((review) => (
             <ProductReviewCard
               key={review.id}
-              filter={filter}
+              filterState={filterState}
               isAuthenticated={isAuthenticated}
-              page={page}
               productId={productId}
               review={review}
             />
@@ -103,27 +83,148 @@ function ProductReviewsHeaderSkeleton() {
   );
 }
 
-type ProductReviewsHeaderProps = {
-  reviewSummary: Promise<ReviewSummary>;
+type ProductReviewCardListProps = {
+  paginatedReview: Promise<PaginatedReview>;
+  productId: string;
+  filterState: ReviewPaginationState;
+  isAuthenticated: boolean;
 };
 
-function ProductReviewsHeader({ reviewSummary }: ProductReviewsHeaderProps) {
-  const { avgRating, totalReviews } = React.use(reviewSummary);
+function ProductReviewCardList({
+  filterState,
+  isAuthenticated,
+  productId,
+  paginatedReview,
+}: ProductReviewCardListProps) {
+  const initialData = React.use(paginatedReview);
+
+  const { data, isSuccess, isPlaceholderData, refetch } = useProductReviews({
+    filterState,
+    initialData,
+    productId,
+  });
+
+  return isPlaceholderData ? (
+    Array.from({ length: 3 }).map((_, index) => {
+      return <ProductReviewsPreviewSkeleton key={index} />;
+    })
+  ) : isSuccess ? (
+    data.reviews.length > 0 ? (
+      data.reviews.map((review, index) => {
+        return (
+          <ProductReviewCard
+            className="px-0"
+            key={index}
+            filterState={filterState}
+            isAuthenticated={isAuthenticated}
+            productId={productId}
+            review={review}
+          />
+        );
+      })
+    ) : (
+      <ProductReviewEmpty filterState={filterState} />
+    )
+  ) : (
+    <ProductReviewError refetch={refetch} />
+  );
+}
+
+type ProductReviewsDrawerContentProps = {
+  reviewSummary: Promise<ReviewSummary>;
+  productId: string;
+  paginatedReview: Promise<PaginatedReview>;
+  isAuthenticated: boolean;
+};
+
+function ProductReviewsDrawerContent({
+  reviewSummary,
+  isAuthenticated,
+  paginatedReview,
+  productId,
+}: ProductReviewsDrawerContentProps) {
+  const [filterState, dispatch] = useReviewFilter();
+
   return (
-    <button className="flex w-full items-center justify-start gap-1 border-b border-border p-3">
-      <h2 className="text-lg font-semibold">{formatRating(avgRating)}</h2>
-      <Star className="size-[18px] fill-rating text-rating" />
-      <p className="text-sm font-semibold">
-        Reviews ({formatCount(totalReviews)})
-      </p>
-      <ChevronRight className="ms-auto size-4" />
-    </button>
+    <div className="flex h-full flex-col overflow-y-auto px-4">
+      <ProductReviewSummary reviewSummary={reviewSummary} />
+
+      <div className="flex flex-col gap-2">
+        <ReviewFilters
+          className="flex-wrap [&>#with-images]:hidden"
+          dispatch={dispatch}
+          showAll={false}
+          size="sm"
+          reviewSummary={reviewSummary}
+        />
+        <ReviewFilterMultiple
+          size="sm"
+          dispatch={dispatch}
+          reviewSummary={reviewSummary}
+        />
+      </div>
+
+      <ProductReviewCardList
+        filterState={filterState}
+        isAuthenticated={isAuthenticated}
+        productId={productId}
+        paginatedReview={paginatedReview}
+      />
+    </div>
+  );
+}
+
+type ProductReviewsHeaderProps = {
+  reviewSummary: Promise<ReviewSummary>;
+  productId: string;
+  paginatedReview: Promise<PaginatedReview>;
+  isAuthenticated: boolean;
+};
+
+function ProductReviewsHeader({
+  reviewSummary,
+  isAuthenticated,
+  paginatedReview,
+  productId,
+}: ProductReviewsHeaderProps) {
+  const { avgRating, totalReviews } = React.use(reviewSummary);
+
+  return (
+    <Drawer direction="bottom">
+      <DrawerTrigger asChild>
+        <Button className="flex h-fit w-full items-center justify-start gap-1 rounded-none border-x-0 border-t-0 border-b border-border bg-card p-3 hover:bg-card">
+          <h2 className="text-lg font-semibold text-card-foreground">
+            {formatRating(avgRating)}
+          </h2>
+          <Star className="size-[18px] fill-rating text-rating" />
+          <p className="text-sm font-semibold text-card-foreground">
+            Reviews ({formatCount(totalReviews)})
+          </p>
+          <ChevronRight className="ms-auto size-4 text-card-foreground" />
+        </Button>
+      </DrawerTrigger>
+
+      <DrawerContent className="z-100 mt-0! h-dvh max-h-dvh!">
+        <DrawerHeader>
+          <DrawerClose asChild className="absolute top-2 left-2">
+            <Button variant="ghost" size="icon-lg" className="size-9">
+              <X className="size-full" />
+            </Button>
+          </DrawerClose>
+          <DrawerTitle>Review Detail</DrawerTitle>
+        </DrawerHeader>
+        <ProductReviewsDrawerContent
+          isAuthenticated={isAuthenticated}
+          paginatedReview={paginatedReview}
+          productId={productId}
+          reviewSummary={reviewSummary}
+        />
+      </DrawerContent>
+    </Drawer>
   );
 }
 
 type ProductReviewsCompact = {
-  filter: FilterValue;
-  page: number;
   productId: string;
   reviewSummary: Promise<ReviewSummary>;
   isAuthenticated: boolean;
@@ -132,8 +233,6 @@ type ProductReviewsCompact = {
 };
 
 export default function ProductReviewsCompact({
-  filter,
-  page,
   paginatedReview,
   productId,
   reviewSummary,
@@ -146,13 +245,16 @@ export default function ProductReviewsCompact({
         name="review summary compact"
         fallback={<ProductReviewsHeaderSkeleton />}
       >
-        <ProductReviewsHeader reviewSummary={reviewSummary} />
+        <ProductReviewsHeader
+          reviewSummary={reviewSummary}
+          isAuthenticated={isAuthenticated}
+          productId={productId}
+          paginatedReview={paginatedReview}
+        />
       </Suspense>
       <Suspense fallback={<ProductReviewsPreviewSkeleton />}>
         <ProductReviewsPreview
-          filter={filter}
           isAuthenticated={isAuthenticated}
-          page={page}
           paginatedReview={paginatedReview}
           productId={productId}
         />

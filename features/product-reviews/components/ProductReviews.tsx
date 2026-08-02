@@ -2,10 +2,9 @@
 
 import {
   PaginatedReview,
+  Review,
   ReviewSummary,
 } from "@/app/(shared)/_types/productReview";
-import React from "react";
-import { PaginationReducer } from "../utis/reviewPaginationReducer";
 import ProductReviewsCompact from "./ProductReviewsCompact";
 import ProductReviewsDesktop from "./ProductReviewsDesktop";
 
@@ -22,28 +21,18 @@ export default function ProductReviews({
   reviewSummary,
   isAuthenticated,
 }: ProductReviewsProps) {
-  const [{ filter, page }, dispatch] = React.useReducer(PaginationReducer, {
-    page: 1,
-    filter: "all",
-  });
-
   return (
     <>
       <ProductReviewsDesktop
-        filter={filter}
         isAuthenticated={isAuthenticated}
-        page={page}
         paginatedReview={paginatedReview}
-        paginationDispatch={dispatch}
         productId={productId}
         className="hidden md:block"
         reviewSummary={reviewSummary}
       />
 
       <ProductReviewsCompact
-        filter={filter}
         isAuthenticated={isAuthenticated}
-        page={page}
         paginatedReview={paginatedReview}
         productId={productId}
         className="md:hidden"

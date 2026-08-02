@@ -18,7 +18,7 @@ export const CartHoverCard = async () => {
   return (
     <CartQueryLoader
       triggerContent={
-        <Button variant="plain" size="icon-sm">
+        <Button variant="ghost" size="icon-sm">
           <Link href={href}>
             {session && cartPromise ? (
               <Suspense fallback={<Skeleton className="size-6" />}>

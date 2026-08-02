@@ -1,18 +1,35 @@
-import { FilterValue } from "./reviewFilter";
+import { ReviewRating } from "./reviewFilter";
 
-export type PaginationState = {
-  filter: FilterValue;
+export const DEFAULT_STATE = {
+  page: 1,
+  hasImages: false,
+  hasText: false,
+  rating: null,
+} as const;
+
+export type ReviewPaginationState = {
+  rating: ReviewRating;
   page: number;
+  hasImages: boolean;
+  hasText: boolean;
 };
 
-export type PaginationAction =
+export type ReviewPaginationAction =
   | {
-      type: "SET_FILTER";
-      payload: FilterValue;
+      type: "SET_RATING";
+      rating: ReviewRating;
+    }
+  | {
+      type: "SET_HAS_IMAGES";
+      value: boolean;
+    }
+  | {
+      type: "SET_HAS_TEXT";
+      value: boolean;
     }
   | {
       type: "SET_PAGE";
-      payload: number;
+      page: number;
     }
   | {
       type: "NEXT_PAGE";
@@ -22,24 +39,39 @@ export type PaginationAction =
       type: "PREV_PAGE";
     }
   | {
+      type: "RESET_STATE";
+    }
+  | {
       type: "RESET_PAGE";
     };
 
-export function PaginationReducer(
-  state: PaginationState,
-  action: PaginationAction
-): PaginationState {
+export function reviewPaginationReducer(
+  state: ReviewPaginationState,
+  action: ReviewPaginationAction
+): ReviewPaginationState {
   switch (action.type) {
-    case "SET_FILTER":
+    case "SET_RATING":
       return {
-        filter: action.payload,
-        page: 1,
+        ...state,
+        rating: action.rating,
+      };
+
+    case "SET_HAS_IMAGES":
+      return {
+        ...state,
+        hasImages: action.value,
+      };
+
+    case "SET_HAS_TEXT":
+      return {
+        ...state,
+        hasText: action.value,
       };
 
     case "SET_PAGE":
       return {
         ...state,
-        page: action.payload,
+        page: action.page,
       };
 
     case "NEXT_PAGE":
@@ -47,6 +79,9 @@ export function PaginationReducer(
         ...state,
         page: Math.min(state.page + 1, action.totalPages),
       };
+
+    case "RESET_STATE":
+      return { ...DEFAULT_STATE };
 
     case "PREV_PAGE":
       return {

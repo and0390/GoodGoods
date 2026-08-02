@@ -5,6 +5,7 @@ export type CartItem = {
   id: string;
   isFavorited: boolean;
   isQuantityAdjusted: boolean;
+
   quantity: number;
 };
 
@@ -13,4 +14,6 @@ export type Cart = {
   userId: string;
   items: CartItem[];
   totalQuantity: number;
+  updatedItems: string[];
+  deletedItems: string[];
 };

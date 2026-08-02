@@ -1,31 +1,48 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { FilterValue } from "../utis/reviewFilter";
-import { PaginatedReview } from "@/app/(shared)/_types/productReview";
 import { fetcher } from "@/app/(shared)/_lib/api";
 import { apiSchema } from "@/app/(shared)/_lib/apiSchema";
+import { PaginatedReview } from "@/app/(shared)/_types/productReview";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { getRatingFromFilter } from "../utis/reviewFilter";
 import { reviewKeys } from "../utis/reviewKeys";
+import {
+  DEFAULT_STATE,
+  ReviewPaginationState,
+} from "../utis/reviewPaginationReducer";
 
 export default function useProductReviews({
   productId,
-  filter,
-  page,
+  filterState,
   initialData,
 }: {
   productId: string;
-  filter: FilterValue;
-  page: number;
+  filterState: ReviewPaginationState;
   initialData: PaginatedReview;
 }) {
+  const { hasImages, hasText, page, rating } = filterState;
+
+  const hasInitialValue =
+    rating === DEFAULT_STATE.rating &&
+    hasImages === DEFAULT_STATE.hasImages &&
+    page === DEFAULT_STATE.page &&
+    hasText === DEFAULT_STATE.hasText;
+
   return useQuery({
-    queryKey: reviewKeys.list(productId, { filter, page }),
+    queryKey: reviewKeys.list(productId, filterState),
 
     queryFn: async ({ signal }) => {
       const params = new URLSearchParams();
 
       params.set("page", page.toString());
 
-      if (filter !== "all") {
-        params.set("rating", filter);
+      if (hasImages) {
+        params.set("withImages", "true");
+      } else {
+        params.set("withImages", "false");
+      }
+
+      if (rating) {
+        const numericRating = getRatingFromFilter(rating);
+        params.set("rating", numericRating.toString());
       }
 
       const { body } = apiSchema.parse(
@@ -36,10 +53,10 @@ export default function useProductReviews({
 
       return body as PaginatedReview;
     },
-
-    initialData: filter === "all" && page === 1 ? initialData : undefined,
-
+    initialData: hasInitialValue ? initialData : undefined,
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false,
+    retry: false,
+    refetchOnMount: false,
   });
 }

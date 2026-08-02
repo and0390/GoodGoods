@@ -9,6 +9,7 @@ const reviewQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(10).default(LIMIT_PER_PAGE),
   rating: z.coerce.number().int().min(1).max(5).optional(),
+  withImages: z.stringbool(),
 });
 
 export async function GET(
@@ -26,6 +27,7 @@ export async function GET(
       page: searchParams.get("page") ?? undefined,
       limit: searchParams.get("limit") ?? undefined,
       rating: searchParams.get("rating") ?? undefined,
+      withImages: searchParams.get("withImages") ?? undefined,
     });
 
     if (!queryResult.success) {
@@ -40,12 +42,13 @@ export async function GET(
       );
     }
 
-    const { limit, page, rating } = queryResult.data;
+    const { limit, page, rating, withImages } = queryResult.data;
 
     const body = await getPaginatedProductReview(
       id,
       session?.user.id ?? null,
       rating ?? null,
+      withImages,
       page,
       limit
     );
@@ -60,6 +63,7 @@ export async function GET(
       { status: 200 }
     );
   } catch (err) {
+    console.error(err);
     return NextResponse.json(
       {
         success: false,

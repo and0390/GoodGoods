@@ -1,38 +1,37 @@
 "use client";
 
-import React from "react";
-import { FilterValue } from "../utis/reviewFilter";
 import { PaginatedReview } from "@/app/(shared)/_types/productReview";
-import { PaginationAction } from "../utis/reviewPaginationReducer";
+import React from "react";
 import useProductReviews from "../hooks/useProductReviews";
-import ProductReviewListSkeleton from "./ProductReviewListSkeleton";
+import {
+  ReviewPaginationAction,
+  ReviewPaginationState,
+} from "../utis/reviewPaginationReducer";
 import ProductReviewCard from "./ProductReviewCard";
 import ProductReviewEmpty from "./ProductReviewEmpty";
 import ProductReviewError from "./ProductReviewError";
+import ProductReviewListSkeleton from "./ProductReviewListSkeleton";
 import ProductReviewPagination from "./ProductReviewPagination";
 
 type ProductReviewsContentProps = {
-  filter: FilterValue;
-  page: number;
+  filterState: ReviewPaginationState;
   paginatedReview: Promise<PaginatedReview>;
   productId: string;
   isAuthenticated: boolean;
-  paginationDispatch: React.ActionDispatch<[action: PaginationAction]>;
+  paginationDispatch: React.ActionDispatch<[action: ReviewPaginationAction]>;
 };
 
 export default function ProductReviewsContent({
   paginatedReview,
   productId,
-  filter,
-  page,
+  filterState,
   isAuthenticated,
   paginationDispatch,
 }: ProductReviewsContentProps) {
   const initialData = React.use(paginatedReview);
 
   const { data, refetch, isSuccess, isPlaceholderData } = useProductReviews({
-    filter,
-    page,
+    filterState,
     productId,
     initialData,
   });
@@ -48,16 +47,15 @@ export default function ProductReviewsContent({
             {data.reviews.map((review) => (
               <ProductReviewCard
                 key={review.id}
-                filter={filter}
+                filterState={filterState}
                 isAuthenticated={isAuthenticated}
-                page={page}
                 productId={productId}
                 review={review}
               />
             ))}
           </div>
         ) : (
-          <ProductReviewEmpty filter={filter} />
+          <ProductReviewEmpty filterState={filterState} />
         )
       ) : (
         <ProductReviewError refetch={refetch} />

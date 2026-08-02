@@ -10,6 +10,7 @@ export default function MainLayout({
 }) {
   return (
     <div className="relative flex min-h-screen w-full flex-col">
+      <MainNav />
       <main className="flex flex-1 flex-col bg-background">{children}</main>
       <MainFooter className="hidden lg:flex" />
     </div>

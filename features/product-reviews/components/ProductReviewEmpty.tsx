@@ -1,21 +1,25 @@
 import { IconPencilSearch } from "@tabler/icons-react";
-import { FilterValue } from "../utis/reviewFilter";
+import { ReviewPaginationState } from "../utis/reviewPaginationReducer";
 
 export default function ProductReviewEmpty({
-  filter,
+  filterState,
 }: {
-  filter: FilterValue;
+  filterState: ReviewPaginationState;
 }) {
+  const { rating } = filterState;
+
   return (
-    <div className="flex h-72 w-full flex-col items-center justify-center gap-3 bg-card">
-      <IconPencilSearch className="size-[76px] flex-none text-primary" />
-      <h3 className="text-lg font-bold">
-        {filter === "all" ? "No Reviews Yet" : "No Reviews Found"}
+    <div className="flex h-full w-full flex-col items-center justify-center bg-card md:h-72">
+      <div className="rounded-full bg-primary p-3 md:p-4">
+        <IconPencilSearch className="size-[46px] flex-none rounded-full text-primary-foreground md:size-[64px]" />
+      </div>
+      <h3 className="mt-3 text-base font-medium md:text-lg">
+        {rating === null ? "No Reviews Yet" : "No Reviews Found"}
       </h3>
-      <p className="text-base font-semibold text-muted-foreground">
-        {filter === "all"
+      <p className="text-center text-sm font-medium text-muted-foreground md:text-base">
+        {rating === null
           ? "Be the first buyer to leave a review and help others make their choice!"
-          : `There are no ${filter} star reviews for this product yet.`}
+          : "There are no reviews for this filter yet."}
       </p>
     </div>
   );

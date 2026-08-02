@@ -6,9 +6,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { Star } from "lucide-react";
-import React, { Suspense } from "react";
-import { FilterValue } from "@/product-reviews/utis/reviewFilter";
-import { PaginationAction } from "@/product-reviews/utis/reviewPaginationReducer";
+import { Suspense } from "react";
+import useReviewFilter from "../hooks/useReviewFilter";
 import ProductReviewListSkeleton from "./ProductReviewListSkeleton";
 import ProductReviewsContent from "./ProductReviewsContent";
 import ProductReviewSummary from "./ProductReviewsSummary";
@@ -52,26 +51,22 @@ function ReviewFiltersSkeleton() {
 }
 
 type ProductReviewsDesktop = {
-  filter: FilterValue;
-  page: number;
   paginatedReview: Promise<PaginatedReview>;
   productId: string;
   reviewSummary: Promise<ReviewSummary>;
   isAuthenticated: boolean;
   className?: string;
-  paginationDispatch: React.ActionDispatch<[action: PaginationAction]>;
 };
 
 export default function ProductReviewsDesktop({
-  filter,
-  page,
-  paginationDispatch,
   paginatedReview,
   productId,
   reviewSummary,
   isAuthenticated,
   className,
 }: ProductReviewsDesktop) {
+  const [filterState, dispatch] = useReviewFilter();
+
   return (
     <section
       className={cn(
@@ -97,19 +92,17 @@ export default function ProductReviewsDesktop({
 
         <ReviewFilters
           className="mb-4"
-          filter={filter}
-          dispatch={paginationDispatch}
+          dispatch={dispatch}
           reviewSummary={reviewSummary}
         />
       </Suspense>
 
       <Suspense fallback={<ProductReviewListSkeleton />}>
         <ProductReviewsContent
-          filter={filter}
+          filterState={filterState}
           isAuthenticated={isAuthenticated}
-          page={page}
           paginatedReview={paginatedReview}
-          paginationDispatch={paginationDispatch}
+          paginationDispatch={dispatch}
           productId={productId}
         />
       </Suspense>

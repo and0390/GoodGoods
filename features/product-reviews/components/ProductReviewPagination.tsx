@@ -3,7 +3,7 @@ import {
   Pagination as ReviewPagination,
   ReviewSummary,
 } from "@/app/(shared)/_types/productReview";
-import { PaginationAction } from "../utis/reviewPaginationReducer";
+import { ReviewPaginationAction } from "../utis/reviewPaginationReducer";
 import getPaginationItems from "../services/getPaginationItems";
 import {
   Pagination,
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/pagination";
 
 type ProductReviewPaginationProps = {
-  paginationDispatch: React.ActionDispatch<[action: PaginationAction]>;
+  paginationDispatch: React.ActionDispatch<[action: ReviewPaginationAction]>;
   pagination: ReviewPagination;
 };
 
@@ -53,7 +53,7 @@ export default function ProductReviewPagination({
                 onClick={(e) => {
                   e.preventDefault();
 
-                  paginationDispatch({ type: "SET_PAGE", payload: item });
+                  paginationDispatch({ type: "SET_PAGE", page: item });
                 }}
               >
                 {item}

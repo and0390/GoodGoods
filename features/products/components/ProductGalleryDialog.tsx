@@ -16,6 +16,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import ImageWithSkeleton from "@/features/product-reviews/components/ImageWithSkeleton";
+import ThumbnailButton from "@/features/product-reviews/components/ThumbnailButton";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import React from "react";
@@ -52,8 +54,6 @@ export default function ProductGalleryDialog({
     };
   }, [api, current]);
 
-  console.log("Index:", currentIndex);
-
   return (
     <Dialog onOpenChange={setOpen} open={open}>
       <DialogContent className="w-auto! max-w-none!">
@@ -69,16 +69,16 @@ export default function ProductGalleryDialog({
               {product.imageUrls.map((imageUrl, index) => {
                 return (
                   <CarouselItem key={index}>
-                    <div className="relative aspect-square h-full">
-                      <Image
-                        src={imageUrl}
-                        fill
-                        alt={`${product.name} preview ${index + 1}`}
-                        className="object-contain"
-                        priority={index === current}
-                        sizes="504px"
-                      />
-                    </div>
+                    <ImageWithSkeleton
+                      imageProps={{
+                        src: imageUrl,
+                        alt: `${product.name} preview ${index + 1}`,
+                        className: "object-contain size-[504px]",
+                        priority: index === current,
+                        width: 504,
+                        height: 504,
+                      }}
+                    />
                   </CarouselItem>
                 );
               })}
@@ -86,28 +86,29 @@ export default function ProductGalleryDialog({
             <CarouselPrevious className="size-10" />
             <CarouselNext className="size-10" />
           </Carousel>
-          <div className="grid h-fit flex-none grid-cols-[76px_76px_76px_76px]">
+          <div className="grid h-fit flex-none auto-rows-[76px] grid-cols-[76px_76px_76px_76px] gap-1">
             {product.imageUrls.map((imageUrl, index) => {
               const isActiveIndex = currentIndex === index;
               return (
-                <div key={index} className="aspect-square h-full">
-                  <button
-                    onClick={() => api?.scrollTo(index)}
-                    className={cn(
-                      "relative size-full overflow-hidden rounded-md border-2 bg-clip-padding transition-all outline-none focus-visible:ring-2 focus-visible:ring-primary",
-                      isActiveIndex ? "border-primary" : "border-border"
-                    )}
-                    key={index}
-                  >
-                    <Image
-                      src={imageUrl}
-                      alt={`${product.name} preview ${index + 1}`}
-                      fill
-                      className="object-contain"
-                      sizes="76px"
-                    />
-                  </button>
-                </div>
+                <ThumbnailButton
+                  key={index}
+                  onClick={() => api?.scrollTo(index)}
+                  className={cn(
+                    "cursor-pointer",
+                    isActiveIndex ? "border-primary" : "border-border"
+                  )}
+                  asChild
+                >
+                  <ImageWithSkeleton
+                    imageProps={{
+                      src: imageUrl,
+                      alt: `${product.name} preview ${index + 1}`,
+                      className: "object-fill size-[76px]",
+                      width: 76,
+                      height: 76,
+                    }}
+                  />
+                </ThumbnailButton>
               );
             })}
           </div>
