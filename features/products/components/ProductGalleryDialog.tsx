@@ -17,7 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import ImageWithSkeleton from "@/features/product-reviews/components/ImageWithSkeleton";
-import ThumbnailButton from "@/features/product-reviews/components/ThumbnailButton";
+import ButtonPrimitive from "@/components/ui/ButtonPrimitive";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import React from "react";
@@ -90,7 +90,7 @@ export default function ProductGalleryDialog({
             {product.imageUrls.map((imageUrl, index) => {
               const isActiveIndex = currentIndex === index;
               return (
-                <ThumbnailButton
+                <ButtonPrimitive
                   key={index}
                   onClick={() => api?.scrollTo(index)}
                   className={cn(
@@ -108,7 +108,7 @@ export default function ProductGalleryDialog({
                       height: 76,
                     }}
                   />
-                </ThumbnailButton>
+                </ButtonPrimitive>
               );
             })}
           </div>

@@ -17,6 +17,7 @@ export type ReviewSummary = {
   avgRating: number;
   totalReviews: number;
   totalReviewsWithImages: number;
+  totalReviewsWithText: number;
   ratingDistribution: RatingDistribution;
 };
 

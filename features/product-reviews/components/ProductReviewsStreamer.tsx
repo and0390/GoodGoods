@@ -12,12 +12,10 @@ export default async function ProductReviewsStreamer({
   productId,
 }: ProductReviewsStreamerProps) {
   const session = await getSessionCached();
-  const paginatedProductReview = getPaginatedProductReview(
+  const paginatedProductReview = getPaginatedProductReview({
     productId,
-    session?.user.id ?? null,
-    null, /// fetch all reviews
-    false
-  );
+    userId: session?.user.id ?? null,
+  });
   const productReviewSummary = getProductReviewSummaryCached(productId);
 
   return (

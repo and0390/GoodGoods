@@ -18,18 +18,18 @@ export const FILTER_OPTIONS = [
 
 type ReviewFilter = (typeof FILTER_OPTIONS)[number]["value"];
 
-type ReviewFiltersProps = {
+type ReviewFilterSingleProps = {
   reviewSummary: Promise<ReviewSummary>;
   dispatch: React.ActionDispatch<[action: ReviewPaginationAction]>;
   showAll?: boolean;
 } & Pick<React.ComponentProps<typeof ToggleGroup>, "size" | "className">;
 
-export default function ReviewFilters({
+export default function ReviewFilterSingle({
   reviewSummary,
   dispatch,
   showAll = true,
   ...props
-}: ReviewFiltersProps) {
+}: ReviewFilterSingleProps) {
   const { ratingDistribution, totalReviews, totalReviewsWithImages } =
     React.use(reviewSummary);
 
@@ -56,10 +56,6 @@ export default function ReviewFilters({
         if (nextValue === "" && showAll) return;
 
         const value: ReviewFilter = nextValue === "" ? "all" : nextValue;
-
-        dispatch({
-          type: "RESET_STATE",
-        });
 
         if (value === "all") {
           dispatch({

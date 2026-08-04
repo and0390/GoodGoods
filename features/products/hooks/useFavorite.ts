@@ -45,9 +45,20 @@ export default function useFavorite({
           message: serverError,
         });
       } else if (data) {
-        const { isFavorited, favoriteCount } = data;
+        const { isFavorited, favoriteCount, action } = data;
+        const message =
+          action === "ADD_TO_FAVORITE"
+            ? "Added to Favorite"
+            : "Removed from Favorite";
+
         startTransition(() => {
           setFavoriteState({ isFavorited, favoriteCount });
+        });
+        toastWithButton({
+          type: "success",
+          message,
+          position: "bottom-center",
+          id: `toast-favorite-${productId}`,
         });
       }
     });

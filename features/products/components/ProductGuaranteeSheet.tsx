@@ -11,10 +11,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import useLg from "@/features/product-reviews/hooks/useLg";
-import { cn } from "@/lib/utils";
+import useAutoCloseOnBreakpoint from "@/hooks/useAutoCloseOnBreakpoint";
 import { Banknote, ChevronRight, RotateCcw, ShieldCheck } from "lucide-react";
-import { VisuallyHidden } from "radix-ui";
+import React from "react";
 
 const guarantee = [
   {
@@ -38,9 +37,12 @@ const guarantee = [
 ] as const;
 
 export default function ProductGuaranteeSheet() {
-  const isLg = useLg();
+  const [open, setOpen] = React.useState(false);
+
+  useAutoCloseOnBreakpoint(open, setOpen, "desktop");
+
   return (
-    <Sheet key={isLg ? "desktop-close" : "mobile-open"}>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger className="flex items-center gap-2 px-3 py-3 md:px-0">
         <ShieldCheck className="size-5 flex-none text-primary" />
         <p className="min-w-0 truncate text-sm font-normal text-card-foreground">

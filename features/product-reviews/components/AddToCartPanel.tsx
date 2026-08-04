@@ -28,7 +28,7 @@ import useQuantityInputGroup from "@/features/products/hooks/useQuantityInputGro
 import useAddToCart from "@/app/(main)/cart/_hooks/useAddToCart";
 import AddToCartButton from "@/features/products/components/AddToCartButton";
 import { useMediaQuery } from "usehooks-ts";
-import useLg from "../hooks/useLg";
+import useDesktop from "../../../hooks/useDesktop";
 
 type AddToCartPanelProps = {
   product: ProductDetail;
@@ -66,7 +66,7 @@ export default function AddToCartPanel({
   {
     /* lg tailwind */
   }
-  const isLg = useLg();
+  const isLg = useDesktop();
 
   return (
     <Sheet key={isLg ? "desktop-close" : "mobile-open"}>

@@ -1,7 +1,10 @@
 import { ReviewSummary } from "@/app/(shared)/_types/productReview";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import React from "react";
-import { ReviewPaginationAction } from "../utis/reviewPaginationReducer";
+import {
+  ReviewPaginationAction,
+  ReviewPaginationState,
+} from "../utis/reviewPaginationReducer";
 
 const FILTER_OPTIONS = [
   { label: "With Images", value: "with-images" },
@@ -13,26 +16,42 @@ type ReviewFilter = (typeof FILTER_OPTIONS)[number]["value"];
 type ReviewFilterMultipleProps = {
   reviewSummary: Promise<ReviewSummary>;
   dispatch: React.ActionDispatch<[action: ReviewPaginationAction]>;
+  filterState: ReviewPaginationState;
 } & Pick<React.ComponentProps<typeof ToggleGroup>, "className" | "size">;
 
 export default function ReviewFilterMultiple({
   reviewSummary,
   dispatch,
+  filterState,
   ...props
 }: ReviewFilterMultipleProps) {
-  const { totalReviewsWithImages } = React.use(reviewSummary);
-  const [filter, setFilter] = React.useState<ReviewFilter[]>([]);
+  const { totalReviewsWithImages, totalReviewsWithText } =
+    React.use(reviewSummary);
 
   const getFilterCount = (value: ReviewFilter) => {
     if (value === "with-images") return totalReviewsWithImages;
-    return 0;
+    return totalReviewsWithText;
+  };
+
+  const getSelectedFilters = (state: ReviewPaginationState): ReviewFilter[] => {
+    const filters: ReviewFilter[] = [];
+
+    if (state.hasImages) {
+      filters.push("with-images");
+    }
+
+    if (state.hasReviews) {
+      filters.push("with-reviews");
+    }
+
+    return filters;
   };
 
   return (
     <ToggleGroup
       type="multiple"
       variant="outline"
-      value={filter}
+      value={getSelectedFilters(filterState)}
       onValueChange={(value: ReviewFilter[]) => {
         if (value.includes("with-images")) {
           dispatch({
@@ -48,17 +67,15 @@ export default function ReviewFilterMultiple({
 
         if (value.includes("with-reviews")) {
           dispatch({
-            type: "SET_HAS_TEXT",
+            type: "SET_HAS_REVIEWS",
             value: true,
           });
         } else {
           dispatch({
-            type: "SET_HAS_TEXT",
+            type: "SET_HAS_REVIEWS",
             value: false,
           });
         }
-
-        setFilter(value);
       }}
       {...props}
     >

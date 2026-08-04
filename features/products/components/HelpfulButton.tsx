@@ -1,12 +1,11 @@
 "use client";
 
 import { Review } from "@/app/(shared)/_types/productReview";
+import { ReviewPaginationState } from "@/features/product-reviews/utis/reviewPaginationReducer";
 import { cn } from "@/lib/utils";
 import { ThumbsUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 import useThumbsUp from "../../product-reviews/hooks/useThumbsUp";
-import { ReviewFilter } from "../../product-reviews/utis/reviewFilter";
-import { ReviewPaginationState } from "@/features/product-reviews/utis/reviewPaginationReducer";
 
 type ThumbsUpButtonProps = {
   review: Review;
@@ -14,7 +13,7 @@ type ThumbsUpButtonProps = {
   isLikedByUser: boolean;
   productId: string;
   filterState: ReviewPaginationState;
-};
+} & Pick<React.ComponentProps<"button">, "className">;
 
 export default function HelpfulButton({
   review,
@@ -22,6 +21,7 @@ export default function HelpfulButton({
   isLikedByUser,
   filterState,
   productId,
+  className,
 }: ThumbsUpButtonProps) {
   const router = useRouter();
   const { mutate } = useThumbsUp({
@@ -39,7 +39,10 @@ export default function HelpfulButton({
 
   return (
     <button
-      className="ms-auto flex flex-none flex-row-reverse items-end gap-1 md:ms-0 md:flex-row"
+      className={cn(
+        "ms-auto flex flex-none flex-row-reverse items-end gap-1 md:ms-0 md:flex-row",
+        className
+      )}
       onClick={handleOnClick}
     >
       <ThumbsUp

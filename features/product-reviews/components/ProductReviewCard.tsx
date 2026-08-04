@@ -10,13 +10,13 @@ import maskName from "@/lib/maskName";
 import { cn } from "@/lib/utils";
 import { Ellipsis } from "lucide-react";
 import React from "react";
+import ButtonPrimitive from "../../../components/ui/ButtonPrimitive";
 import HelpfulButton from "../../products/components/HelpfulButton";
 import formatDate from "../utis/formatDate";
 import { ReviewPaginationState } from "../utis/reviewPaginationReducer";
 import ImageWithSkeleton from "./ImageWithSkeleton";
 import RatingStars from "./RatingStars";
-import ReviewDetailDialog from "./ReviewDetailDialog";
-import ThumbnailButton from "./ThumbnailButton";
+import ReviewDetailModal from "./ReviewDetailModal";
 
 type ProductReviewCardProps = {
   review: Review;
@@ -33,13 +33,13 @@ export default function ProductReviewCard({
   isAuthenticated,
   className,
 }: ProductReviewCardProps) {
-  const [dialogState, setDialogState] = React.useState({
+  const [modalState, setModalState] = React.useState({
     openDialog: false,
     current: 0,
   });
 
-  const setDialogOpen = (open: boolean) =>
-    setDialogState((prev) => ({
+  const setModalOpen = (open: boolean) =>
+    setModalState((prev) => ({
       ...prev,
       openDialog: open,
     }));
@@ -86,7 +86,7 @@ export default function ProductReviewCard({
           >
             <Ellipsis className="size-full md:rotate-90" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="z-105 md:z-50">
             <DropdownMenuItem>Report</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -104,10 +104,10 @@ export default function ProductReviewCard({
             const remainingCount = totalImages - 3;
             return (
               <div key={index} className="relative">
-                <ThumbnailButton
+                <ButtonPrimitive
                   key={index}
                   onClick={() =>
-                    setDialogState({ openDialog: true, current: index })
+                    setModalState({ openDialog: true, current: index })
                   }
                   className="size-16 cursor-zoom-in border-0 md:size-19"
                   asChild
@@ -121,7 +121,7 @@ export default function ProductReviewCard({
                       className: "object-cover",
                     }}
                   />
-                </ThumbnailButton>
+                </ButtonPrimitive>
                 {shouldShowOverlay && (
                   <>
                     <span className="absolute inset-0 z-10 flex items-center justify-center text-xs font-normal text-white">
@@ -136,10 +136,10 @@ export default function ProductReviewCard({
         </div>
       )}
 
-      <ReviewDetailDialog
-        current={dialogState.current}
-        open={dialogState.openDialog}
-        setOpen={setDialogOpen}
+      <ReviewDetailModal
+        current={modalState.current}
+        open={modalState.openDialog}
+        setOpen={setModalOpen}
         review={review}
         filterState={filterState}
         isAuthenticated={isAuthenticated}

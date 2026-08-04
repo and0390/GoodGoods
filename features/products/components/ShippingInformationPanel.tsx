@@ -11,15 +11,18 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import useLg from "@/product-reviews/hooks/useLg";
+import useAutoCloseOnBreakpoint from "@/hooks/useAutoCloseOnBreakpoint";
 import { Truck } from "lucide-react";
+import React from "react";
 import ShippingButton from "./ShippingButton";
 
 export default function ShippingInformationPanel() {
-  const isLg = useLg();
+  const [open, setOpen] = React.useState(false);
+
+  useAutoCloseOnBreakpoint(open, setOpen, "desktop");
 
   return (
-    <Sheet key={isLg ? "desktop-close" : "mobile-open"}>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger
         className="flex items-center gap-2 px-3 py-3 md:px-0"
         asChild

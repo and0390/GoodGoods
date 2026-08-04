@@ -42,7 +42,7 @@ export default function FavoriteButton({
           isFavorited && "fill-red-600 text-red-600"
         )}
       />
-      <p className="hidden text-base font-normal text-card-foreground uppercase lg:block">
+      <p className="hidden text-base font-normal text-card-foreground lg:block">
         Favorite{" "}
         <span className="text-muted-foreground">
           ({formatCount(favoriteCount)})

@@ -3,11 +3,11 @@ import { cn } from "@/lib/utils";
 
 export default function ProductReviewsPreviewSkeleton() {
   return (
-    <div className="flex flex-col gap-3 p-3">
+    <div className="flex flex-col gap-3 py-3 lg:px-3">
       <div className="flex w-full justify-between">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2.5">
-            <Skeleton className="size-10 rounded-full" />
+            <Skeleton className="size-8 rounded-full md:size-10" />
             <Skeleton className="h-4 w-[50px]" />
           </div>
           <Skeleton className="h-[18px] w-[116px]" />

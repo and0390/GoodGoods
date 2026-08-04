@@ -11,7 +11,7 @@ import useReviewFilter from "../hooks/useReviewFilter";
 import ProductReviewListSkeleton from "./ProductReviewListSkeleton";
 import ProductReviewsContent from "./ProductReviewsContent";
 import ProductReviewSummary from "./ProductReviewsSummary";
-import ReviewFilters from "./ReviewFilters";
+import ReviewFilterSingle, { getSelectedFilter } from "./ReviewFilterSingle2";
 
 function ProductReviewSummarySkeleton() {
   return (
@@ -90,10 +90,46 @@ export default function ProductReviewsDesktop({
       >
         <ProductReviewSummary reviewSummary={reviewSummary} />
 
-        <ReviewFilters
-          className="mb-4"
-          dispatch={dispatch}
+        <ReviewFilterSingle
+          className="mb-3"
+          size="lg"
           reviewSummary={reviewSummary}
+          value={getSelectedFilter(filterState)}
+          onValueChange={(value) => {
+            if (value === "") return;
+
+            dispatch({
+              type: "RESET_STATE",
+            });
+
+            if (value === "all") {
+              dispatch({
+                type: "SET_RATING",
+                rating: null,
+              });
+            } else if (value === "with-images") {
+              dispatch({
+                type: "SET_HAS_IMAGES",
+                value: true,
+              });
+            } else if (value === "with-reviews") {
+              dispatch({
+                type: "SET_HAS_REVIEWS",
+                value: true,
+              });
+            } else {
+              const rating = (
+                ["5-stars", "4-stars", "3-stars", "2-stars", "1-stars"] as const
+              ).find((rating) => rating === value);
+
+              if (rating) {
+                dispatch({
+                  type: "SET_RATING",
+                  rating,
+                });
+              }
+            }
+          }}
         />
       </Suspense>
 

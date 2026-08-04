@@ -3,14 +3,23 @@ import { PaginatedReview, Review } from "../_types/productReview";
 
 export const LIMIT_PER_PAGE = 5;
 
-export default async function getPaginatedProductReview(
-  productId: string,
-  userId: string | null,
-  rating: number | null,
-  withImages: boolean,
-  page: number = 1,
-  limit: number = LIMIT_PER_PAGE
-): Promise<PaginatedReview> {
+export default async function getPaginatedProductReview({
+  productId,
+  userId,
+  rating = null,
+  withImages = false,
+  withReviews = false,
+  limit = LIMIT_PER_PAGE,
+  page = 1,
+}: {
+  productId: string;
+  userId: string | null;
+  rating?: number | null;
+  withImages?: boolean;
+  page?: number;
+  limit?: number;
+  withReviews?: boolean;
+}): Promise<PaginatedReview> {
   const skip = (page - 1) * limit;
 
   const totalReviews = await prisma.review.count({
@@ -37,8 +46,9 @@ export default async function getPaginatedProductReview(
       productId,
       rating: rating ?? undefined,
       imageUrls: withImages ? { isEmpty: false } : undefined,
+      content: withReviews ? { not: null } : undefined,
     },
-    skip,
+    skip: 1,
     take: limit,
     select: {
       id: true,

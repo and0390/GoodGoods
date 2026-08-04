@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export default function ThumbnailButton({
+export default function ButtonPrimitive({
   className,
   ...props
 }: React.ComponentProps<typeof Button>) {
@@ -12,8 +12,6 @@ export default function ThumbnailButton({
         "relative isolate inline-block size-auto translate-y-0 overflow-hidden rounded-sm bg-transparent p-0 transition-none! hover:bg-transparent",
         className
       )}
-      variant="default"
-      size="default"
     />
   );
 }

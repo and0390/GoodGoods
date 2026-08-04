@@ -4,22 +4,29 @@ import { RatingDistribution, ReviewSummary } from "../_types/productReview";
 export default async function getProductReviewSummary(
   productId: string
 ): Promise<ReviewSummary> {
-  const [aggregateRating, groupByRating, totalReviewsWithMedia] =
-    await Promise.all([
-      prisma.review.aggregate({
-        where: { productId },
-        _avg: { rating: true },
-        _count: { _all: true },
-      }),
-      prisma.review.groupBy({
-        where: { productId },
-        by: ["rating"],
-        _count: { _all: true },
-      }),
-      prisma.review.count({
-        where: { productId, imageUrls: { isEmpty: false } },
-      }),
-    ]);
+  const [
+    aggregateRating,
+    groupByRating,
+    totalReviewsWithImage,
+    totalReviewsWithText,
+  ] = await Promise.all([
+    prisma.review.aggregate({
+      where: { productId },
+      _avg: { rating: true },
+      _count: { _all: true },
+    }),
+    prisma.review.groupBy({
+      where: { productId },
+      by: ["rating"],
+      _count: { _all: true },
+    }),
+    prisma.review.count({
+      where: { productId, imageUrls: { isEmpty: false } },
+    }),
+    prisma.review.count({
+      where: { productId, content: { not: null } },
+    }),
+  ]);
 
   const ratingDistribution = groupByRating.reduce<RatingDistribution>(
     (acc, item) => {
@@ -32,7 +39,8 @@ export default async function getProductReviewSummary(
   return {
     avgRating: aggregateRating._avg.rating ?? 0,
     totalReviews: aggregateRating._count._all,
-    totalReviewsWithImages: totalReviewsWithMedia,
+    totalReviewsWithText: totalReviewsWithText,
+    totalReviewsWithImages: totalReviewsWithImage,
     ratingDistribution,
   };
 }

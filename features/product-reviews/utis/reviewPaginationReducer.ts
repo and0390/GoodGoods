@@ -1,30 +1,30 @@
 import { ReviewRating } from "./reviewFilter";
 
-export const DEFAULT_STATE = {
-  page: 1,
-  hasImages: false,
-  hasText: false,
-  rating: null,
-} as const;
-
 export type ReviewPaginationState = {
-  rating: ReviewRating;
+  rating: ReviewRating | null;
   page: number;
   hasImages: boolean;
-  hasText: boolean;
+  hasReviews: boolean;
 };
+
+export const DEFAULT_STATE: ReviewPaginationState = {
+  page: 1,
+  hasImages: false,
+  hasReviews: false,
+  rating: null,
+} as const;
 
 export type ReviewPaginationAction =
   | {
       type: "SET_RATING";
-      rating: ReviewRating;
+      rating: ReviewRating | null;
     }
   | {
       type: "SET_HAS_IMAGES";
       value: boolean;
     }
   | {
-      type: "SET_HAS_TEXT";
+      type: "SET_HAS_REVIEWS";
       value: boolean;
     }
   | {
@@ -40,9 +40,6 @@ export type ReviewPaginationAction =
     }
   | {
       type: "RESET_STATE";
-    }
-  | {
-      type: "RESET_PAGE";
     };
 
 export function reviewPaginationReducer(
@@ -62,10 +59,10 @@ export function reviewPaginationReducer(
         hasImages: action.value,
       };
 
-    case "SET_HAS_TEXT":
+    case "SET_HAS_REVIEWS":
       return {
         ...state,
-        hasText: action.value,
+        hasReviews: action.value,
       };
 
     case "SET_PAGE":

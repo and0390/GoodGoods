@@ -9,15 +9,18 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
+  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Skeleton } from "@/components/ui/skeleton";
+import useAutoCloseOnBreakpoint from "@/hooks/useAutoCloseOnBreakpoint";
 import formatCount from "@/lib/formatCount";
 import { cn } from "@/lib/utils";
 import { ChevronRight, Star, X } from "lucide-react";
 import React, { Suspense } from "react";
+import { PortalContainerProvider } from "../context/PortalContainerContext";
 import useProductReviews from "../hooks/useProductReviews";
 import useReviewFilter from "../hooks/useReviewFilter";
 import formatRating from "../utis/formatRating";
@@ -31,7 +34,12 @@ import ProductReviewError from "./ProductReviewError";
 import ProductReviewsPreviewSkeleton from "./ProductReviewPreviewSkeleton";
 import ProductReviewSummary from "./ProductReviewsSummary";
 import ReviewFilterMultiple from "./ReviewFilterMutiple";
-import ReviewFilters from "./ReviewFilters";
+import ReviewFilterSingle, { getSelectedFilter } from "./ReviewFilterSingle2";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { fetcher } from "@/app/(shared)/_lib/api";
+import { apiSchema } from "@/app/(shared)/_lib/apiSchema";
+// import ReviewFilterSingle from "./ReviewFilterSingle";
+import { useInView } from "react-intersection-observer";
 
 type ProductReviewPreview = {
   productId: string;
@@ -98,33 +106,78 @@ function ProductReviewCardList({
 }: ProductReviewCardListProps) {
   const initialData = React.use(paginatedReview);
 
-  const { data, isSuccess, isPlaceholderData, refetch } = useProductReviews({
-    filterState,
-    initialData,
-    productId,
+  const {
+    data,
+    isPending,
+    isSuccess,
+    isFetchingNextPage,
+    fetchNextPage,
+    refetch,
+    hasNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["products", productId, "reviews", "infinite", filterState],
+    queryFn: async ({ pageParam, signal }) => {
+      const params = new URLSearchParams();
+
+      params.set("page", pageParam.toString());
+
+      const { body } = apiSchema.parse(
+        await fetcher.get(
+          `/api/products/${productId}/reviews?${params.toString()}`,
+          {
+            signal,
+          }
+        )
+      );
+      return body as PaginatedReview;
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      return lastPage.pagination.hasNextPage
+        ? lastPage.pagination.currentPage + 1
+        : undefined;
+    },
   });
 
-  return isPlaceholderData ? (
+  const { ref, inView } = useInView();
+
+  React.useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  return isPending ? (
     Array.from({ length: 3 }).map((_, index) => {
       return <ProductReviewsPreviewSkeleton key={index} />;
     })
   ) : isSuccess ? (
-    data.reviews.length > 0 ? (
-      data.reviews.map((review, index) => {
-        return (
-          <ProductReviewCard
-            className="px-0"
-            key={index}
-            filterState={filterState}
-            isAuthenticated={isAuthenticated}
-            productId={productId}
-            review={review}
-          />
-        );
-      })
-    ) : (
-      <ProductReviewEmpty filterState={filterState} />
-    )
+    <>
+      {data.pages
+        .flatMap((item) => item.reviews)
+        .map((review, index) => {
+          return (
+            <ProductReviewCard
+              className="px-0"
+              key={index}
+              filterState={filterState}
+              isAuthenticated={isAuthenticated}
+              productId={productId}
+              review={review}
+            />
+          );
+        })}
+
+      {isFetchingNextPage ? (
+        <div className="mb-3 w-full text-center text-sm">Loading ....</div>
+      ) : hasNextPage ? (
+        <div ref={ref} />
+      ) : (
+        <div className="mb-3 w-full text-center text-sm">
+          You&apos;ve reached the end of this review
+        </div>
+      )}
+    </>
   ) : (
     <ProductReviewError refetch={refetch} />
   );
@@ -135,64 +188,124 @@ type ProductReviewsDrawerContentProps = {
   productId: string;
   paginatedReview: Promise<PaginatedReview>;
   isAuthenticated: boolean;
-};
+} & React.ComponentProps<typeof DrawerContent>;
 
 function ProductReviewsDrawerContent({
   reviewSummary,
   isAuthenticated,
   paginatedReview,
   productId,
+  className,
+  ...props
 }: ProductReviewsDrawerContentProps) {
   const [filterState, dispatch] = useReviewFilter();
 
+  const [portalContainer, setPortalContainer] =
+    React.useState<HTMLDivElement | null>(null);
+
   return (
-    <div className="flex h-full flex-col overflow-y-auto px-4">
-      <ProductReviewSummary reviewSummary={reviewSummary} />
+    <DrawerContent
+      className={cn(
+        "z-100 mt-0! h-dvh max-h-dvh! [&_[data-slot=dropdown-menu-content]]:z-105",
+        className
+      )}
+      {...props}
+    >
+      <DrawerHeader className="relative">
+        <DrawerClose asChild className="absolute top-2 left-2">
+          <Button variant="ghost" size="icon-lg" className="size-9">
+            <X className="size-full" />
+          </Button>
+        </DrawerClose>
+        <DrawerTitle>Ratings & Reviews</DrawerTitle>
+        <DrawerDescription className="sr-only">
+          Ratings And Review Drawer
+        </DrawerDescription>
+      </DrawerHeader>
+      <div
+        className="flex h-full flex-col overflow-y-auto px-4"
+        ref={setPortalContainer}
+      >
+        <PortalContainerProvider container={portalContainer}>
+          <ProductReviewSummary reviewSummary={reviewSummary} />
 
-      <div className="flex flex-col gap-2">
-        <ReviewFilters
-          className="flex-wrap [&>#with-images]:hidden"
-          dispatch={dispatch}
-          showAll={false}
-          size="sm"
-          reviewSummary={reviewSummary}
-        />
-        <ReviewFilterMultiple
-          size="sm"
-          dispatch={dispatch}
-          reviewSummary={reviewSummary}
-        />
+          <div className="flex flex-col gap-2">
+            <ReviewFilterSingle
+              className="flex-wrap [&>#all]:hidden [&>#with-images]:hidden [&>#with-reviews]:hidden"
+              value={getSelectedFilter(filterState)}
+              onValueChange={(value) => {
+                if (value === "") {
+                  dispatch({
+                    type: "SET_RATING",
+                    rating: null,
+                  });
+
+                  return;
+                }
+
+                const rating = (
+                  [
+                    "5-stars",
+                    "4-stars",
+                    "3-stars",
+                    "2-stars",
+                    "1-stars",
+                  ] as const
+                ).find((rating) => rating === value);
+
+                if (rating) {
+                  dispatch({
+                    type: "SET_RATING",
+                    rating,
+                  });
+                }
+              }}
+              size="sm"
+              reviewSummary={reviewSummary}
+            />
+            <ReviewFilterMultiple
+              size="sm"
+              filterState={filterState}
+              dispatch={dispatch}
+              reviewSummary={reviewSummary}
+            />
+          </div>
+
+          <ProductReviewCardList
+            filterState={filterState}
+            isAuthenticated={isAuthenticated}
+            productId={productId}
+            paginatedReview={paginatedReview}
+          />
+        </PortalContainerProvider>
       </div>
-
-      <ProductReviewCardList
-        filterState={filterState}
-        isAuthenticated={isAuthenticated}
-        productId={productId}
-        paginatedReview={paginatedReview}
-      />
-    </div>
+    </DrawerContent>
   );
 }
 
-type ProductReviewsHeaderProps = {
+type ProductReviewsDrawerProps = {
   reviewSummary: Promise<ReviewSummary>;
   productId: string;
   paginatedReview: Promise<PaginatedReview>;
   isAuthenticated: boolean;
 };
 
-function ProductReviewsHeader({
+function ProductReviewsDrawer({
   reviewSummary,
   isAuthenticated,
   paginatedReview,
   productId,
-}: ProductReviewsHeaderProps) {
+}: ProductReviewsDrawerProps) {
   const { avgRating, totalReviews } = React.use(reviewSummary);
 
+  const [open, setOpen] = React.useState(false);
+
+  useAutoCloseOnBreakpoint(open, setOpen, "desktop");
+
   return (
-    <Drawer direction="bottom">
+    <Drawer direction="bottom" open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button className="flex h-fit w-full items-center justify-start gap-1 rounded-none border-x-0 border-t-0 border-b border-border bg-card p-3 hover:bg-card">
+        <Button className="flex h-fit w-full items-center justify-start gap-1 border-x-0 border-t-0 border-b border-border bg-card p-3 hover:bg-card">
           <h2 className="text-lg font-semibold text-card-foreground">
             {formatRating(avgRating)}
           </h2>
@@ -204,22 +317,13 @@ function ProductReviewsHeader({
         </Button>
       </DrawerTrigger>
 
-      <DrawerContent className="z-100 mt-0! h-dvh max-h-dvh!">
-        <DrawerHeader>
-          <DrawerClose asChild className="absolute top-2 left-2">
-            <Button variant="ghost" size="icon-lg" className="size-9">
-              <X className="size-full" />
-            </Button>
-          </DrawerClose>
-          <DrawerTitle>Review Detail</DrawerTitle>
-        </DrawerHeader>
-        <ProductReviewsDrawerContent
-          isAuthenticated={isAuthenticated}
-          paginatedReview={paginatedReview}
-          productId={productId}
-          reviewSummary={reviewSummary}
-        />
-      </DrawerContent>
+      <ProductReviewsDrawerContent
+        key={open ? "a" : "b"}
+        isAuthenticated={isAuthenticated}
+        paginatedReview={paginatedReview}
+        productId={productId}
+        reviewSummary={reviewSummary}
+      />
     </Drawer>
   );
 }
@@ -245,7 +349,7 @@ export default function ProductReviewsCompact({
         name="review summary compact"
         fallback={<ProductReviewsHeaderSkeleton />}
       >
-        <ProductReviewsHeader
+        <ProductReviewsDrawer
           reviewSummary={reviewSummary}
           isAuthenticated={isAuthenticated}
           productId={productId}

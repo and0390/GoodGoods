@@ -3,10 +3,9 @@ export type ReviewRating =
   | "4-stars"
   | "3-stars"
   | "2-stars"
-  | "1-stars"
-  | null;
+  | "1-stars";
 
-export function getRatingFromFilter(rating: NonNullable<ReviewRating>) {
+export function getRatingFromFilter(rating: ReviewRating) {
   switch (rating) {
     case "1-stars":
       return 1;

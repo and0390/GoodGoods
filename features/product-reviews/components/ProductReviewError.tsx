@@ -1,14 +1,11 @@
-import { PaginatedReview } from "@/app/(shared)/_types/productReview";
-import { IconExclamationCircle } from "@tabler/icons-react";
-import { QueryObserverResult, RefetchOptions } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { IconExclamationCircle } from "@tabler/icons-react";
+import { RefetchOptions } from "@tanstack/react-query";
 
 export default function ProductReviewError({
   refetch,
 }: {
-  refetch: (
-    options?: RefetchOptions | undefined
-  ) => Promise<QueryObserverResult<NoInfer<PaginatedReview>, Error>>;
+  refetch: (options?: RefetchOptions | undefined) => void;
 }) {
   return (
     <div className="mb-6 flex h-full w-full flex-col items-center justify-center gap-3 md:h-72">

@@ -1,6 +1,7 @@
 "use client";
 
 import { ProductDetail } from "@/app/(shared)/_types/product";
+import ButtonPrimitive from "@/components/ui/ButtonPrimitive";
 import {
   Carousel,
   CarouselApi,
@@ -10,10 +11,9 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import ImageWithSkeleton from "@/features/product-reviews/components/ImageWithSkeleton";
-import ThumbnailButton from "@/features/product-reviews/components/ThumbnailButton";
+import useAutoCloseOnBreakpoint from "@/hooks/useAutoCloseOnBreakpoint";
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import React from "react";
 
 const preloadGalleryDialog = () => import("./ProductGalleryDialog");
@@ -27,6 +27,8 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
   const [api, setApi] = React.useState<CarouselApi>();
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [dialogOpen, setDialogOpen] = React.useState(false);
+
+  useAutoCloseOnBreakpoint(dialogOpen, setDialogOpen, "mobile");
 
   React.useEffect(() => {
     if (!api) return;
@@ -63,7 +65,7 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
                   key={index}
                   className="basis-1/5 cursor-zoom-in pl-1"
                 >
-                  <ThumbnailButton
+                  <ButtonPrimitive
                     type="button"
                     className={cn(
                       isActiveIndex ? "border-primary" : "border-border"
@@ -92,7 +94,7 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
                         priority: index === 0,
                       }}
                     />
-                  </ThumbnailButton>
+                  </ButtonPrimitive>
                 </CarouselItem>
               );
             })}

@@ -34,7 +34,10 @@ export default function RootLayout({
         <ThemeProvider>
           <QueryProvider>
             <TooltipProvider>{children}</TooltipProvider>
-            <Toaster position="top-center" offset={130} />
+            <Toaster
+              position="bottom-center"
+              mobileOffset="calc(var(--bottom-bar-safe-height) + 8px)"
+            />
           </QueryProvider>
         </ThemeProvider>
       </body>

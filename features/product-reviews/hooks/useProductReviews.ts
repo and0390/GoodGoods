@@ -18,13 +18,13 @@ export default function useProductReviews({
   filterState: ReviewPaginationState;
   initialData: PaginatedReview;
 }) {
-  const { hasImages, hasText, page, rating } = filterState;
+  const { hasImages, hasReviews, page, rating } = filterState;
 
   const hasInitialValue =
     rating === DEFAULT_STATE.rating &&
     hasImages === DEFAULT_STATE.hasImages &&
     page === DEFAULT_STATE.page &&
-    hasText === DEFAULT_STATE.hasText;
+    hasReviews === DEFAULT_STATE.hasReviews;
 
   return useQuery({
     queryKey: reviewKeys.list(productId, filterState),
@@ -38,6 +38,12 @@ export default function useProductReviews({
         params.set("withImages", "true");
       } else {
         params.set("withImages", "false");
+      }
+
+      if (hasReviews) {
+        params.set("withReviews", "true");
+      } else {
+        params.set("withReviews", "false");
       }
 
       if (rating) {
