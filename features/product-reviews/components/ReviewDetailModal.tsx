@@ -43,7 +43,7 @@ import HelpfulButton from "../../products/components/HelpfulButton";
 import { PortalContainerProvider } from "../context/PortalContainerContext";
 import useCarouselState from "../hooks/useCarouselState";
 import formatDate from "../utis/formatDate";
-import { ReviewPaginationState } from "../utis/reviewPaginationReducer";
+import { ReviewState } from "../utis/reviewReducer";
 import ImageWithSkeleton from "./ImageWithSkeleton";
 import RatingStars from "./RatingStars";
 
@@ -52,7 +52,7 @@ type ReviewDetailModalProps = {
   setOpen: (open: boolean) => void;
   current: number;
   review: Review;
-  filterState: ReviewPaginationState;
+  filterState: ReviewState;
   isAuthenticated: boolean;
   productId: string;
 };
@@ -99,7 +99,7 @@ type ReviewDetailDialogProps = {
   setOpen: (open: boolean) => void;
   current: number;
   review: Review;
-  filterState: ReviewPaginationState;
+  filterState: ReviewState;
   isAuthenticated: boolean;
   productId: string;
 };
@@ -246,7 +246,7 @@ type ReviewDetailDrawerProps = {
   setOpen: (open: boolean) => void;
   open: boolean;
   review: Review;
-  filterState: ReviewPaginationState;
+  filterState: ReviewState;
   isAuthenticated: boolean;
   productId: string;
 };

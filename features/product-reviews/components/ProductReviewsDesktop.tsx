@@ -11,7 +11,7 @@ import useReviewFilter from "../hooks/useReviewFilter";
 import ProductReviewListSkeleton from "./ProductReviewListSkeleton";
 import ProductReviewsContent from "./ProductReviewsContent";
 import ProductReviewSummary from "./ProductReviewsSummary";
-import ReviewFilterSingle, { getSelectedFilter } from "./ReviewFilterSingle2";
+import ReviewFilterSingle, { getSelectedFilter } from "./ReviewFilterSingle";
 
 function ProductReviewSummarySkeleton() {
   return (

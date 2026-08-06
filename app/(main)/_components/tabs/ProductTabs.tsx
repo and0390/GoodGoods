@@ -6,6 +6,8 @@ import { headers } from "next/headers";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { ProductPreview } from "@/app/(shared)/_types/product";
+import { Masonry } from "masonic";
+import ProductMasonry from "@/features/home/components/ProductMasonry";
 
 const ForYouTab = async ({
   className,
@@ -50,23 +52,24 @@ export const ProductTabs = async () => {
   }));
 
   return (
-    <Tabs className="" defaultValue="forYou">
+    <Tabs defaultValue="forYou">
       <TabsList
         variant="line"
-        className="sticky top-25 z-30 h-13! w-full justify-start border-b bg-muted"
+        className="sticky top-[68px] z-30 w-full justify-start border-b border-border bg-card [&>[data-slot=tabs-trigger]]:group-data-horizontal/tabs:after:-bottom-0.5"
       >
-        <div className="container mx-auto h-full">
-          <ForYouTab />
-          <TabsTrigger value="mall" className="flex-none">
-            Mall
-          </TabsTrigger>
-          <TabsTrigger value="yourProducts" className="flex-none">
-            Your Products
-          </TabsTrigger>
-        </div>
+        {/* <div className="container mx-auto h-full"> */}
+        <ForYouTab />
+        <TabsTrigger value="mall" className="flex-none">
+          Mall
+        </TabsTrigger>
+        <TabsTrigger value="yourProducts" className="flex-none">
+          Your Products
+        </TabsTrigger>
+        {/* </div> */}
       </TabsList>
       <TabsContent value="forYou" className="container mx-auto px-1">
-        <ProductGrid products={extendedProducts} />
+        {/* <ProductGrid products={extendedProducts} /> */}
+        <ProductMasonry products={extendedProducts} />
       </TabsContent>
       <TabsContent value="mall" className="container mx-auto px-1">
         <ProductGrid products={extendedProducts} />

@@ -18,5 +18,6 @@ export const getBanners = unstable_cache(
 
 export const CarouselBanner = async () => {
   const banners = await getBanners();
+
   return <CarouselBannerClient bannerList={banners} />;
 };

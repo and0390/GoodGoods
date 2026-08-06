@@ -11,6 +11,7 @@ const reviewQuerySchema = z.object({
   rating: z.coerce.number().int().min(1).max(5).nullable(),
   withImages: z.stringbool().default(false),
   withReviews: z.stringbool().default(false),
+  order: z.enum(["asc", "desc"]).default("asc"),
 });
 
 export async function GET(
@@ -30,6 +31,7 @@ export async function GET(
       rating: searchParams.get("rating"),
       withImages: searchParams.get("withImages") ?? undefined,
       withReviews: searchParams.get("withImages") ?? undefined,
+      order: searchParams.get("order") ?? undefined,
     });
 
     if (!queryResult.success) {
@@ -44,7 +46,8 @@ export async function GET(
       );
     }
 
-    const { limit, page, rating, withImages, withReviews } = queryResult.data;
+    const { limit, page, rating, withImages, withReviews, order } =
+      queryResult.data;
 
     const body = await getPaginatedProductReview({
       productId: id,
@@ -54,6 +57,7 @@ export async function GET(
       limit,
       page,
       withReviews,
+      order,
     });
 
     return NextResponse.json(

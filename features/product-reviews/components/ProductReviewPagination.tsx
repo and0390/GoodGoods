@@ -3,7 +3,7 @@ import {
   Pagination as ReviewPagination,
   ReviewSummary,
 } from "@/app/(shared)/_types/productReview";
-import { ReviewPaginationAction } from "../utis/reviewPaginationReducer";
+import { ReviewAction } from "../utis/reviewReducer";
 import getPaginationItems from "../services/getPaginationItems";
 import {
   Pagination,
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/pagination";
 
 type ProductReviewPaginationProps = {
-  paginationDispatch: React.ActionDispatch<[action: ReviewPaginationAction]>;
+  paginationDispatch: React.ActionDispatch<[action: ReviewAction]>;
   pagination: ReviewPagination;
 };
 

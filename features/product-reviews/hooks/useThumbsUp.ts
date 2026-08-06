@@ -1,16 +1,35 @@
-import { useMutation } from "@tanstack/react-query";
-import { reviewKeys } from "../utis/reviewKeys";
-import { PaginatedReview } from "@/app/(shared)/_types/productReview";
-import toggleThumbsUp from "../../products/actions/toggleThumbsUp";
+import { PaginatedReview, Review } from "@/app/(shared)/_types/productReview";
 import { toastWithButton } from "@/components/ui/toastWithButton";
-import { ReviewPaginationState } from "../utis/reviewPaginationReducer";
+import { executeSafeAction } from "@/lib/safeTransition";
+import { InfiniteData, useMutation } from "@tanstack/react-query";
+import toggleThumbsUp from "../../products/actions/toggleThumbsUp";
+import { reviewKeys } from "../utis/reviewKeys";
+import { ReviewState } from "../utis/reviewReducer";
+
+const toggleReviewHelpful = (reviews: Review[], reviewId: string) => {
+  return reviews.map((review) => {
+    const isCurrentReview = review.id === reviewId;
+
+    return {
+      ...review,
+      isLikedByUser: isCurrentReview
+        ? !review.isLikedByUser
+        : review.isLikedByUser,
+      helpfulCount: isCurrentReview
+        ? review.isLikedByUser
+          ? review.helpfulCount - 1
+          : review.helpfulCount + 1
+        : review.helpfulCount,
+    };
+  });
+};
 
 export default function useThumbsUp({
   productId,
   filterState,
 }: {
   productId: string;
-  filterState: ReviewPaginationState;
+  filterState: ReviewState;
 }) {
   const queryKey = reviewKeys.list(productId, filterState);
   return useMutation({
@@ -18,74 +37,93 @@ export default function useThumbsUp({
       await context.client.cancelQueries({
         queryKey,
       });
-      const prevReview = context.client.getQueryData<PaginatedReview>(queryKey);
 
-      context.client.setQueryData<PaginatedReview>(queryKey, (data) => {
-        if (!data) return data;
+      const previousQueries = context.client.getQueriesData<
+        PaginatedReview | InfiniteData<PaginatedReview, number>
+      >({ queryKey: reviewKeys.reviews(productId) });
 
-        const updatedReviews = data.reviews.map((review) => {
-          const isCurrentReview = review.id === reviewId;
+      context.client.setQueriesData<
+        PaginatedReview | InfiniteData<PaginatedReview, number>
+      >({ queryKey: reviewKeys.reviews(productId) }, (oldData) => {
+        if (!oldData) return oldData;
 
+        if ("pages" in oldData) {
           return {
-            ...review,
-            isLikedByUser: isCurrentReview
-              ? !review.isLikedByUser
-              : review.isLikedByUser,
-            helpfulCount: isCurrentReview
-              ? review.isLikedByUser
-                ? review.helpfulCount - 1
-                : review.helpfulCount + 1
-              : review.helpfulCount,
+            ...oldData,
+            pages: oldData.pages.map((item) => ({
+              ...item,
+              reviews: toggleReviewHelpful(item.reviews, reviewId),
+            })),
           };
-        });
+        }
 
         return {
-          ...data,
-          reviews: updatedReviews,
+          ...oldData,
+          reviews: toggleReviewHelpful(oldData.reviews, reviewId),
         };
       });
 
-      return { prevReview, reviewId };
+      return { previousQueries, reviewId };
     },
     mutationFn: async (reviewId: string) => {
-      return await toggleThumbsUp(reviewId);
+      return await executeSafeAction(toggleThumbsUp(reviewId));
     },
     onSuccess: (res, reviewId, onMutateResult, context) => {
-      const { data, serverError } = res;
-      if (serverError) {
-        toastWithButton({
-          message: serverError,
-          type: "error",
-        });
-      } else if (data) {
-        context.client.setQueryData<PaginatedReview>(queryKey, (oldReview) => {
-          if (!oldReview) return oldReview;
+      context.client.setQueriesData<
+        PaginatedReview | InfiniteData<PaginatedReview, number>
+      >({ queryKey: reviewKeys.reviews(productId) }, (oldData) => {
+        if (!oldData) return oldData;
 
-          const updatedReviews = oldReview.reviews.map((review) => {
+        if ("pages" in oldData) {
+          return {
+            ...oldData,
+            pages: oldData.pages.map((item) => ({
+              ...item,
+              reviews: item.reviews.map((review) => {
+                const isCurrentReview = review.id === reviewId;
+                return {
+                  ...review,
+                  isLikedByUser: isCurrentReview
+                    ? res.isLikedByUser
+                    : review.isLikedByUser,
+                  helpfulCount: isCurrentReview
+                    ? res.helpfulCount
+                    : review.helpfulCount,
+                };
+              }),
+            })),
+          };
+        }
+
+        return {
+          ...oldData,
+          reviews: oldData.reviews.map((review) => {
             const isCurrentReview = review.id === reviewId;
             return {
               ...review,
               isLikedByUser: isCurrentReview
-                ? data.isLikedByUser
+                ? res.isLikedByUser
                 : review.isLikedByUser,
               helpfulCount: isCurrentReview
-                ? data.helpfulCount
+                ? res.helpfulCount
                 : review.helpfulCount,
             };
-          });
-
-          return {
-            ...oldReview,
-            reviews: updatedReviews,
-          };
-        });
-      }
+          }),
+        };
+      });
+      // }
     },
     onError: (err, newReview, onMutateResult, context) => {
-      context.client.setQueryData(
-        ["products", productId, "reviews", filterState],
-        onMutateResult?.prevReview
-      );
+      console.warn(err);
+
+      onMutateResult?.previousQueries.forEach(([queryKey, data]) => {
+        context.client.setQueryData(queryKey, data);
+      });
+
+      toastWithButton({
+        type: "error",
+        message: "Failed to give a thumbs up. Please try again later.",
+      });
     },
   });
 }

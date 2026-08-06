@@ -1,10 +1,7 @@
 import { ReviewSummary } from "@/app/(shared)/_types/productReview";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import React from "react";
-import {
-  ReviewPaginationAction,
-  ReviewPaginationState,
-} from "../utis/reviewPaginationReducer";
+import { ReviewAction, ReviewState } from "../utis/reviewReducer";
 
 const FILTER_OPTIONS = [
   { label: "With Images", value: "with-images" },
@@ -15,8 +12,8 @@ type ReviewFilter = (typeof FILTER_OPTIONS)[number]["value"];
 
 type ReviewFilterMultipleProps = {
   reviewSummary: Promise<ReviewSummary>;
-  dispatch: React.ActionDispatch<[action: ReviewPaginationAction]>;
-  filterState: ReviewPaginationState;
+  dispatch: React.ActionDispatch<[action: ReviewAction]>;
+  filterState: ReviewState;
 } & Pick<React.ComponentProps<typeof ToggleGroup>, "className" | "size">;
 
 export default function ReviewFilterMultiple({
@@ -33,7 +30,7 @@ export default function ReviewFilterMultiple({
     return totalReviewsWithText;
   };
 
-  const getSelectedFilters = (state: ReviewPaginationState): ReviewFilter[] => {
+  const getSelectedFilters = (state: ReviewState): ReviewFilter[] => {
     const filters: ReviewFilter[] = [];
 
     if (state.hasImages) {

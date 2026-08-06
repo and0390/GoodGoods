@@ -1,20 +1,20 @@
 import { ReviewRating } from "./reviewFilter";
 
-export type ReviewPaginationState = {
+export type ReviewState = {
   rating: ReviewRating | null;
   page: number;
   hasImages: boolean;
   hasReviews: boolean;
 };
 
-export const DEFAULT_STATE: ReviewPaginationState = {
+export const DEFAULT_STATE: ReviewState = {
   page: 1,
   hasImages: false,
   hasReviews: false,
   rating: null,
 } as const;
 
-export type ReviewPaginationAction =
+export type ReviewAction =
   | {
       type: "SET_RATING";
       rating: ReviewRating | null;
@@ -42,10 +42,10 @@ export type ReviewPaginationAction =
       type: "RESET_STATE";
     };
 
-export function reviewPaginationReducer(
-  state: ReviewPaginationState,
-  action: ReviewPaginationAction
-): ReviewPaginationState {
+export function reviewReducer(
+  state: ReviewState,
+  action: ReviewAction
+): ReviewState {
   switch (action.type) {
     case "SET_RATING":
       return {

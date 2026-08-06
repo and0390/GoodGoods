@@ -11,6 +11,7 @@ export default async function getPaginatedProductReview({
   withReviews = false,
   limit = LIMIT_PER_PAGE,
   page = 1,
+  order = "asc",
 }: {
   productId: string;
   userId: string | null;
@@ -19,6 +20,7 @@ export default async function getPaginatedProductReview({
   page?: number;
   limit?: number;
   withReviews?: boolean;
+  order?: "asc" | "desc";
 }): Promise<PaginatedReview> {
   const skip = (page - 1) * limit;
 
@@ -48,8 +50,9 @@ export default async function getPaginatedProductReview({
       imageUrls: withImages ? { isEmpty: false } : undefined,
       content: withReviews ? { not: null } : undefined,
     },
-    skip: 1,
+    skip,
     take: limit,
+    orderBy: { createdAt: order },
     select: {
       id: true,
       rating: true,

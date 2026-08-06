@@ -4,7 +4,7 @@ import { ReviewSummary } from "@/app/(shared)/_types/productReview";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import React from "react";
 import { getRatingFromFilter } from "../utis/reviewFilter";
-import { ReviewPaginationAction } from "../utis/reviewPaginationReducer";
+import { ReviewState } from "../utis/reviewReducer";
 
 export const FILTER_OPTIONS = [
   { label: "all", value: "all" },
@@ -14,26 +14,27 @@ export const FILTER_OPTIONS = [
   { label: "2 Stars", value: "2-stars" },
   { label: "1 Stars", value: "1-stars" },
   { label: "With Images", value: "with-images" },
+  { label: "With Reviews", value: "with-reviews" },
 ] as const;
 
 type ReviewFilter = (typeof FILTER_OPTIONS)[number]["value"];
 
 type ReviewFilterSingleProps = {
   reviewSummary: Promise<ReviewSummary>;
-  dispatch: React.ActionDispatch<[action: ReviewPaginationAction]>;
-  showAll?: boolean;
+  value: ReviewFilter;
+  onValueChange: (value: ReviewFilter | "") => void;
 } & Pick<React.ComponentProps<typeof ToggleGroup>, "size" | "className">;
 
 export default function ReviewFilterSingle({
   reviewSummary,
-  dispatch,
-  showAll = true,
   ...props
 }: ReviewFilterSingleProps) {
-  const { ratingDistribution, totalReviews, totalReviewsWithImages } =
-    React.use(reviewSummary);
-
-  const [filter, setFilter] = React.useState<ReviewFilter>("all");
+  const {
+    ratingDistribution,
+    totalReviews,
+    totalReviewsWithImages,
+    totalReviewsWithText,
+  } = React.use(reviewSummary);
 
   const getFilterCount = (item: ReviewFilter) => {
     switch (item) {
@@ -41,56 +42,27 @@ export default function ReviewFilterSingle({
         return totalReviews;
       case "with-images":
         return totalReviewsWithImages;
+      case "with-reviews":
+        return totalReviewsWithText;
       default:
         return ratingDistribution[getRatingFromFilter(item)];
     }
   };
 
   return (
-    <ToggleGroup
-      type="single"
-      variant="outline"
-      size="lg"
-      value={filter}
-      onValueChange={(nextValue: ReviewFilter | "") => {
-        if (nextValue === "" && showAll) return;
-
-        const value: ReviewFilter = nextValue === "" ? "all" : nextValue;
-
-        if (value === "all") {
-          dispatch({
-            type: "SET_RATING",
-            rating: null,
-          });
-        } else if (value === "with-images") {
-          dispatch({
-            type: "SET_HAS_IMAGES",
-            value: true,
-          });
-        } else {
-          const rating = (
-            ["5-stars", "4-stars", "3-stars", "2-stars", "1-stars"] as const
-          ).find((rating) => rating === value);
-
-          if (rating) {
-            dispatch({
-              type: "SET_RATING",
-              rating,
-            });
-          }
-        }
-
-        setFilter(value);
-      }}
-      {...props}
-    >
-      {FILTER_OPTIONS.filter((item) => showAll || item.value !== "all").map(
-        ({ label, value }, index) => (
-          <ToggleGroupItem value={value} id={value} key={index}>
-            {label} ({getFilterCount(value)})
-          </ToggleGroupItem>
-        )
-      )}
+    <ToggleGroup type="single" variant="outline" size="lg" {...props}>
+      {FILTER_OPTIONS.map(({ label, value }, index) => (
+        <ToggleGroupItem value={value} id={value} key={index}>
+          {label} ({getFilterCount(value)})
+        </ToggleGroupItem>
+      ))}
     </ToggleGroup>
   );
+}
+
+export function getSelectedFilter(state: ReviewState): ReviewFilter {
+  if (state.rating) return state.rating;
+  if (state.hasImages) return "with-images";
+  if (state.hasReviews) return "with-reviews";
+  return "all";
 }

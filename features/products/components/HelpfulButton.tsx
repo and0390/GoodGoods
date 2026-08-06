@@ -1,7 +1,7 @@
 "use client";
 
 import { Review } from "@/app/(shared)/_types/productReview";
-import { ReviewPaginationState } from "@/features/product-reviews/utis/reviewPaginationReducer";
+import { ReviewState } from "@/features/product-reviews/utis/reviewReducer";
 import { cn } from "@/lib/utils";
 import { ThumbsUp } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -12,7 +12,7 @@ type ThumbsUpButtonProps = {
   isAuthenticated: boolean;
   isLikedByUser: boolean;
   productId: string;
-  filterState: ReviewPaginationState;
+  filterState: ReviewState;
 } & Pick<React.ComponentProps<"button">, "className">;
 
 export default function HelpfulButton({

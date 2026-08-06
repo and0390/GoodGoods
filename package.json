@@ -28,6 +28,7 @@
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "lucide-react": "^1.14.0",
+    "masonic": "^4.1.0",
     "next": "16.1.7",
     "next-cloudinary": "^6.17.5",
     "next-safe-action": "^8.5.4",

@@ -13,7 +13,7 @@ import React from "react";
 import ButtonPrimitive from "../../../components/ui/ButtonPrimitive";
 import HelpfulButton from "../../products/components/HelpfulButton";
 import formatDate from "../utis/formatDate";
-import { ReviewPaginationState } from "../utis/reviewPaginationReducer";
+import { ReviewState } from "../utis/reviewReducer";
 import ImageWithSkeleton from "./ImageWithSkeleton";
 import RatingStars from "./RatingStars";
 import ReviewDetailModal from "./ReviewDetailModal";
@@ -21,7 +21,7 @@ import ReviewDetailModal from "./ReviewDetailModal";
 type ProductReviewCardProps = {
   review: Review;
   productId: string;
-  filterState: ReviewPaginationState;
+  filterState: ReviewState;
   isAuthenticated: boolean;
   className?: string;
 };

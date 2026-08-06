@@ -18,28 +18,32 @@ import { Skeleton } from "@/components/ui/skeleton";
 import useAutoCloseOnBreakpoint from "@/hooks/useAutoCloseOnBreakpoint";
 import formatCount from "@/lib/formatCount";
 import { cn } from "@/lib/utils";
-import { ChevronRight, Star, X } from "lucide-react";
+import { ChevronRight, LoaderCircle, Star, X } from "lucide-react";
 import React, { Suspense } from "react";
-import { PortalContainerProvider } from "../context/PortalContainerContext";
+import {
+  PortalContainerProvider,
+  usePortalContainer,
+} from "../context/PortalContainerContext";
 import useProductReviews from "../hooks/useProductReviews";
 import useReviewFilter from "../hooks/useReviewFilter";
 import formatRating from "../utis/formatRating";
-import {
-  DEFAULT_STATE,
-  ReviewPaginationState,
-} from "../utis/reviewPaginationReducer";
+import { DEFAULT_STATE, ReviewState } from "../utis/reviewReducer";
 import ProductReviewCard from "./ProductReviewCard";
 import ProductReviewEmpty from "./ProductReviewEmpty";
 import ProductReviewError from "./ProductReviewError";
 import ProductReviewsPreviewSkeleton from "./ProductReviewPreviewSkeleton";
 import ProductReviewSummary from "./ProductReviewsSummary";
 import ReviewFilterMultiple from "./ReviewFilterMutiple";
-import ReviewFilterSingle, { getSelectedFilter } from "./ReviewFilterSingle2";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import ReviewFilterSingle, { getSelectedFilter } from "./ReviewFilterSingle";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { fetcher } from "@/app/(shared)/_lib/api";
 import { apiSchema } from "@/app/(shared)/_lib/apiSchema";
 // import ReviewFilterSingle from "./ReviewFilterSingle";
 import { useInView } from "react-intersection-observer";
+import { getRatingFromFilter } from "../utis/reviewFilter";
+import shouldUseInitialData from "../utis/shouldHaveInitialData";
+import buildReviewParams from "../utis/buildReviewParams";
+import { reviewKeys } from "../utis/reviewKeys";
 
 type ProductReviewPreview = {
   productId: string;
@@ -92,9 +96,8 @@ function ProductReviewsHeaderSkeleton() {
 }
 
 type ProductReviewCardListProps = {
-  paginatedReview: Promise<PaginatedReview>;
   productId: string;
-  filterState: ReviewPaginationState;
+  filterState: ReviewState;
   isAuthenticated: boolean;
 };
 
@@ -102,9 +105,10 @@ function ProductReviewCardList({
   filterState,
   isAuthenticated,
   productId,
-  paginatedReview,
 }: ProductReviewCardListProps) {
-  const initialData = React.use(paginatedReview);
+  const { page, ...rest } = filterState;
+
+  const queryClient = useQueryClient();
 
   const {
     data,
@@ -115,11 +119,9 @@ function ProductReviewCardList({
     refetch,
     hasNextPage,
   } = useInfiniteQuery({
-    queryKey: ["products", productId, "reviews", "infinite", filterState],
+    queryKey: reviewKeys.infinite(productId, rest),
     queryFn: async ({ pageParam, signal }) => {
-      const params = new URLSearchParams();
-
-      params.set("page", pageParam.toString());
+      const params = buildReviewParams({ ...rest, page: pageParam });
 
       const { body } = apiSchema.parse(
         await fetcher.get(
@@ -137,9 +139,23 @@ function ProductReviewCardList({
         ? lastPage.pagination.currentPage + 1
         : undefined;
     },
+    initialData: shouldUseInitialData(rest)
+      ? () => {
+          const cached = queryClient.getQueryData<PaginatedReview>(
+            reviewKeys.list(productId, { ...rest, page })
+          );
+
+          if (!cached) return undefined;
+
+          return {
+            pages: [cached],
+            pageParams: [1],
+          };
+        }
+      : undefined,
   });
 
-  const { ref, inView } = useInView();
+  const { ref, inView } = useInView({});
 
   React.useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
@@ -147,18 +163,20 @@ function ProductReviewCardList({
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+  const reviews = data?.pages.flatMap((item) => item.reviews) ?? [];
+
   return isPending ? (
     Array.from({ length: 3 }).map((_, index) => {
       return <ProductReviewsPreviewSkeleton key={index} />;
     })
   ) : isSuccess ? (
     <>
-      {data.pages
-        .flatMap((item) => item.reviews)
-        .map((review, index) => {
+      {reviews.length > 0 ? (
+        reviews.map((review, index) => {
+          const isLastIndex = index === reviews.length - 1;
           return (
             <ProductReviewCard
-              className="px-0"
+              className={cn("px-0", isLastIndex && "pb-0")}
               key={index}
               filterState={filterState}
               isAuthenticated={isAuthenticated}
@@ -166,17 +184,15 @@ function ProductReviewCardList({
               review={review}
             />
           );
-        })}
-
-      {isFetchingNextPage ? (
-        <div className="mb-3 w-full text-center text-sm">Loading ....</div>
-      ) : hasNextPage ? (
-        <div ref={ref} />
+        })
       ) : (
-        <div className="mb-3 w-full text-center text-sm">
-          You&apos;ve reached the end of this review
-        </div>
+        <ProductReviewEmpty filterState={filterState} />
       )}
+      <div className="flex w-full items-center justify-center py-2" ref={ref}>
+        {isFetchingNextPage && (
+          <LoaderCircle className="size-8 animate-spin text-primary" />
+        )}
+      </div>
     </>
   ) : (
     <ProductReviewError refetch={refetch} />
@@ -275,7 +291,6 @@ function ProductReviewsDrawerContent({
             filterState={filterState}
             isAuthenticated={isAuthenticated}
             productId={productId}
-            paginatedReview={paginatedReview}
           />
         </PortalContainerProvider>
       </div>
@@ -318,7 +333,7 @@ function ProductReviewsDrawer({
       </DrawerTrigger>
 
       <ProductReviewsDrawerContent
-        key={open ? "a" : "b"}
+        key={open ? "a" : "b"} //umount when closed
         isAuthenticated={isAuthenticated}
         paginatedReview={paginatedReview}
         productId={productId}

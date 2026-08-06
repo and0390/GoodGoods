@@ -1,11 +1,8 @@
 "use client";
 
 import React from "react";
-import {
-  reviewPaginationReducer,
-  DEFAULT_STATE,
-} from "../utis/reviewPaginationReducer";
+import { reviewReducer, DEFAULT_STATE } from "../utis/reviewReducer";
 
 export default function useReviewFilter() {
-  return React.useReducer(reviewPaginationReducer, DEFAULT_STATE);
+  return React.useReducer(reviewReducer, DEFAULT_STATE);
 }

@@ -5,13 +5,16 @@ import React from "react";
 export default function useQuantityInputGroup({
   min,
   max,
-  onChangeValue,
 }: {
   min: number;
   max: number;
-  onChangeValue?: (value: number, isOverMax: boolean) => void;
 }) {
   const [inputValue, setInputValue] = React.useState<string>(min.toString());
+  const [quantityState, setQuantityState] = React.useState({
+    quantity: min,
+    isOverMax: false,
+  });
+
   const currentQuantity = Number(inputValue);
   const inputRef = React.useRef<HTMLInputElement | null>(null);
 
@@ -21,7 +24,8 @@ export default function useQuantityInputGroup({
   const triggerChange = (value: number) => {
     const clampedValue = Math.max(min, Math.min(max, value));
     setInputValue(clampedValue.toString());
-    onChangeValue?.(clampedValue, value > max);
+    // onChangeValue?.(clampedValue, value > max);
+    setQuantityState({ quantity: clampedValue, isOverMax: value > max });
   };
 
   const handleOnChange = (
@@ -60,5 +64,6 @@ export default function useQuantityInputGroup({
     handleIncrement,
     handleDecrement,
     handleKeyDown,
+    ...quantityState,
   };
 }

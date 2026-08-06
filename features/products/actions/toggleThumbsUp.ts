@@ -7,9 +7,10 @@ import prisma from "@/lib/prisma";
 import { actionClient } from "@/lib/safe-action";
 import { createId } from "@paralleldrive/cuid2";
 import "server-only";
+import z from "zod";
 
 const toggleThumbsUp = actionClient
-  .inputSchema(idSchema)
+  .inputSchema(z.string())
   .action(async ({ ctx, parsedInput: reviewId }) => {
     const [result] = await prisma.$queryRawTyped(
       toggleReviewThumbsUp(createId(), ctx.user.id, reviewId)

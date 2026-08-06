@@ -1,10 +1,10 @@
 import { IconPencilSearch } from "@tabler/icons-react";
-import { ReviewPaginationState } from "../utis/reviewPaginationReducer";
+import { ReviewState } from "../utis/reviewReducer";
 
 export default function ProductReviewEmpty({
   filterState,
 }: {
-  filterState: ReviewPaginationState;
+  filterState: ReviewState;
 }) {
   const { rating } = filterState;
 

@@ -4,10 +4,9 @@ import { PaginatedReview } from "@/app/(shared)/_types/productReview";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getRatingFromFilter } from "../utis/reviewFilter";
 import { reviewKeys } from "../utis/reviewKeys";
-import {
-  DEFAULT_STATE,
-  ReviewPaginationState,
-} from "../utis/reviewPaginationReducer";
+import { DEFAULT_STATE, ReviewState } from "../utis/reviewReducer";
+import buildReviewParams from "../utis/buildReviewParams";
+import shouldUseInitialData from "../utis/shouldHaveInitialData";
 
 export default function useProductReviews({
   productId,
@@ -15,41 +14,21 @@ export default function useProductReviews({
   initialData,
 }: {
   productId: string;
-  filterState: ReviewPaginationState;
+  filterState: ReviewState;
   initialData: PaginatedReview;
 }) {
   const { hasImages, hasReviews, page, rating } = filterState;
-
-  const hasInitialValue =
-    rating === DEFAULT_STATE.rating &&
-    hasImages === DEFAULT_STATE.hasImages &&
-    page === DEFAULT_STATE.page &&
-    hasReviews === DEFAULT_STATE.hasReviews;
 
   return useQuery({
     queryKey: reviewKeys.list(productId, filterState),
 
     queryFn: async ({ signal }) => {
-      const params = new URLSearchParams();
-
-      params.set("page", page.toString());
-
-      if (hasImages) {
-        params.set("withImages", "true");
-      } else {
-        params.set("withImages", "false");
-      }
-
-      if (hasReviews) {
-        params.set("withReviews", "true");
-      } else {
-        params.set("withReviews", "false");
-      }
-
-      if (rating) {
-        const numericRating = getRatingFromFilter(rating);
-        params.set("rating", numericRating.toString());
-      }
+      const params = buildReviewParams({
+        hasImages,
+        hasReviews,
+        page,
+        rating,
+      });
 
       const { body } = apiSchema.parse(
         await fetcher.get(`/api/products/${productId}/reviews?${params}`, {
@@ -59,10 +38,15 @@ export default function useProductReviews({
 
       return body as PaginatedReview;
     },
-    initialData: hasInitialValue ? initialData : undefined,
+    initialData: shouldUseInitialData({
+      hasImages,
+      hasReviews,
+      rating,
+      page,
+    })
+      ? initialData
+      : undefined,
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false,
-    retry: false,
-    refetchOnMount: false,
   });
 }

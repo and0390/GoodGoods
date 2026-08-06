@@ -3,10 +3,7 @@
 import { PaginatedReview } from "@/app/(shared)/_types/productReview";
 import React from "react";
 import useProductReviews from "../hooks/useProductReviews";
-import {
-  ReviewPaginationAction,
-  ReviewPaginationState,
-} from "../utis/reviewPaginationReducer";
+import { ReviewAction, ReviewState } from "../utis/reviewReducer";
 import ProductReviewCard from "./ProductReviewCard";
 import ProductReviewEmpty from "./ProductReviewEmpty";
 import ProductReviewError from "./ProductReviewError";
@@ -14,11 +11,11 @@ import ProductReviewListSkeleton from "./ProductReviewListSkeleton";
 import ProductReviewPagination from "./ProductReviewPagination";
 
 type ProductReviewsContentProps = {
-  filterState: ReviewPaginationState;
+  filterState: ReviewState;
   paginatedReview: Promise<PaginatedReview>;
   productId: string;
   isAuthenticated: boolean;
-  paginationDispatch: React.ActionDispatch<[action: ReviewPaginationAction]>;
+  paginationDispatch: React.ActionDispatch<[action: ReviewAction]>;
 };
 
 export default function ProductReviewsContent({

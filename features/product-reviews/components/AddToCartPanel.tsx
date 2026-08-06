@@ -29,6 +29,7 @@ import useAddToCart from "@/app/(main)/cart/_hooks/useAddToCart";
 import AddToCartButton from "@/features/products/components/AddToCartButton";
 import { useMediaQuery } from "usehooks-ts";
 import useDesktop from "../../../hooks/useDesktop";
+import QuantityInputGroup from "@/features/products/components/QuantityInputGroup";
 
 type AddToCartPanelProps = {
   product: ProductDetail;
@@ -41,11 +42,6 @@ export default function AddToCartPanel({
 }: AddToCartPanelProps) {
   const { name, stock, price, imageUrls } = product;
 
-  const [{ quantity, isOverStock }, setQuantityState] = React.useState({
-    quantity: 1,
-    isOverStock: false,
-  });
-
   const {
     inputRef,
     inputValue,
@@ -56,11 +52,11 @@ export default function AddToCartPanel({
     handleOnChange,
     isMaxReached,
     isMinReached,
+    isOverMax: isOverStock,
+    quantity,
   } = useQuantityInputGroup({
     min: 1,
     max: stock,
-    onChangeValue: (quantity, isOverStock) =>
-      setQuantityState({ quantity, isOverStock }),
   });
 
   {
@@ -108,41 +104,20 @@ export default function AddToCartPanel({
           <label htmlFor="quantityInput" className="text-sm font-normal">
             Quantity
           </label>
-          <InputGroup className="size-fit hover:border-input has-disabled:bg-transparent has-disabled:opacity-100 dark:has-disabled:bg-input/30 dark:has-disabled:opacity-100">
-            <InputGroupInput
-              ref={inputRef}
-              className="h-7 w-8 py-0 text-center text-xs"
-              value={inputValue}
-              id="quantityInput"
-              onChange={handleOnChange}
-              onBlur={handleOnBlur}
-              onKeyDown={handleKeyDown}
-              aria-invalid={isOverStock}
-              aria-describedby={isOverStock ? "stockError" : undefined}
-            />
-            <InputGroupAddon align="inline-start" className="py-0">
-              <InputGroupButton
-                aria-label="decrease quantity"
-                title="decrease"
-                className="size-7"
-                onClick={handleDecrement}
-                disabled={isMinReached}
-              >
-                <Minus />
-              </InputGroupButton>
-            </InputGroupAddon>
-            <InputGroupAddon align="inline-end" className="py-0">
-              <InputGroupButton
-                aria-label="increase quantity"
-                title="increase"
-                className="size-7"
-                onClick={handleIncrement}
-                disabled={isMaxReached}
-              >
-                <Plus />
-              </InputGroupButton>
-            </InputGroupAddon>
-          </InputGroup>
+
+          <QuantityInputGroup
+            className="[&_button]:size-7 [&>input]:h-7 [&>input]:w-8"
+            handleDecrement={handleDecrement}
+            handleIncrement={handleIncrement}
+            handleInputOnBlur={handleOnBlur}
+            handleInputOnChange={handleOnChange}
+            handleInputOnKeyDown={handleKeyDown}
+            inputRef={inputRef}
+            inputValue={inputValue}
+            isMaxReached={isMaxReached}
+            isMinReached={isMinReached}
+            isOverMax={isOverStock}
+          />
         </div>
 
         <SheetFooter>
