@@ -15,7 +15,7 @@ import { formatCurrency } from "@/lib/utils";
 import { Ellipsis, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import useAddToCart from "../_hooks/useAddToCart";
+import useAddToCart from "../../../../features/cart/hooks/useAddToCart";
 import useAddToFavorites from "../_hooks/useAddToFavorites";
 
 type ProductCardProps = {
@@ -51,7 +51,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         <div className="flex flex-col p-2">
           <h2 className="mb-1.5 truncate text-sm">{product.name}</h2>
           <p className="mb-1.5 text-sm font-semibold">
-            {formatCurrency(product.price)}
+            {formatCurrency(product.basePrice)}
           </p>
           <div className="mb-1.5 flex items-center gap-1 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">

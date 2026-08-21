@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  PaginatedReview,
+  ReviewsWithPagination,
   Review,
   ReviewSummary,
 } from "@/app/(shared)/_types/productReview";
@@ -10,7 +10,7 @@ import ProductReviewsDesktop from "./ProductReviewsDesktop";
 
 type ProductReviewsProps = {
   productId: string;
-  paginatedReview: Promise<PaginatedReview>;
+  paginatedReview: Promise<ReviewsWithPagination>;
   reviewSummary: Promise<ReviewSummary>;
   isAuthenticated: boolean;
 };

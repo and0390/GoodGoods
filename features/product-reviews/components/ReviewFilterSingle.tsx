@@ -3,8 +3,8 @@
 import { ReviewSummary } from "@/app/(shared)/_types/productReview";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import React from "react";
-import { getRatingFromFilter } from "../utis/reviewFilter";
-import { ReviewState } from "../utis/reviewReducer";
+import { getRatingFromFilter } from "../utils/reviewFilter";
+import { ReviewState } from "../utils/reviewReducer";
 
 export const FILTER_OPTIONS = [
   { label: "all", value: "all" },

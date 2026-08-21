@@ -8,27 +8,24 @@ import React from "react";
 import { RiShoppingCart2Line } from "react-icons/ri";
 
 type CartIconWithBadgeProps = {
-  cartPromise: Promise<Cart>;
+  cartPromise: Promise<Cart> | null;
 };
 
 const CartIconWithBadge = ({ cartPromise }: CartIconWithBadgeProps) => {
-  const initialCart = React.use(cartPromise);
+  const initialCart = cartPromise && React.use(cartPromise);
 
   const { data: cart } = useCartQuery({
     gcTime: Infinity,
-    initialData: initialCart,
+    initialData: initialCart ?? undefined,
+    enabled: !!initialCart,
   });
-
-  if (cart.totalQuantity === 0) {
-    return <RiShoppingCart2Line className="size-5" />;
-  }
 
   return (
     <div className="relative">
       <RiShoppingCart2Line className="size-6 rounded-full" />
-      <Badge className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 px-1">
-        {cart.totalQuantity}
-      </Badge>
+      <div className="absolute top-0 right-0 min-w-4 translate-x-1/2 -translate-y-1/2 rounded-sm bg-primary px-1.5 text-xs text-primary-foreground">
+        {cart?.totalQuantity ?? 0}
+      </div>
     </div>
   );
 };

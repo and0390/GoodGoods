@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { RatingDistribution, ReviewSummary } from "../_types/productReview";
+import getReviewAggregate from "@/features/product-reviews/repository/getReviewAggregate";
 
 export default async function getProductReviewSummary(
   productId: string
@@ -10,11 +11,7 @@ export default async function getProductReviewSummary(
     totalReviewsWithImage,
     totalReviewsWithText,
   ] = await Promise.all([
-    prisma.review.aggregate({
-      where: { productId },
-      _avg: { rating: true },
-      _count: { _all: true },
-    }),
+    getReviewAggregate(productId),
     prisma.review.groupBy({
       where: { productId },
       by: ["rating"],

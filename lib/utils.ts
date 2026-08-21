@@ -17,7 +17,9 @@ export function formatCurrency(
     currency,
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(amount);
+  })
+    .format(amount)
+    .replace(/\s/g, "");
 }
 
 export const formatSecondsToMMSS = (seconds: number) => {

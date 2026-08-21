@@ -36,7 +36,7 @@ export type Pagination = {
   hasPrevPage: boolean;
 };
 
-export type PaginatedReview = {
+export type ReviewsWithPagination = {
   reviews: Review[];
   pagination: Pagination;
 };

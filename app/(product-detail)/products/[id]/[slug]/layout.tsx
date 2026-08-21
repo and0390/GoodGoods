@@ -1,5 +1,5 @@
 import { MainFooter } from "@/app/(main)/_components/MainFooter";
-import MainNav from "@/app/(main)/_components/MainNav";
+import MainNav from "@/features/home/components/MainNav";
 import React from "react";
 import ProductCompactNav from "../../../../../features/products/components/ProductCompactNav";
 

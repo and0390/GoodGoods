@@ -1,10 +1,13 @@
-import { PaginatedReview, Review } from "@/app/(shared)/_types/productReview";
+import {
+  ReviewsWithPagination,
+  Review,
+} from "@/app/(shared)/_types/productReview";
 import { toastWithButton } from "@/components/ui/toastWithButton";
-import { executeSafeAction } from "@/lib/safeTransition";
+import { executeSafeAction } from "@/lib/safeActionWrappers";
 import { InfiniteData, useMutation } from "@tanstack/react-query";
 import toggleThumbsUp from "../../products/actions/toggleThumbsUp";
-import { reviewKeys } from "../utis/reviewKeys";
-import { ReviewState } from "../utis/reviewReducer";
+import { reviewKeys } from "../utils/reviewKeys";
+import { ReviewState } from "../utils/reviewReducer";
 
 const toggleReviewHelpful = (reviews: Review[], reviewId: string) => {
   return reviews.map((review) => {
@@ -39,11 +42,11 @@ export default function useThumbsUp({
       });
 
       const previousQueries = context.client.getQueriesData<
-        PaginatedReview | InfiniteData<PaginatedReview, number>
+        ReviewsWithPagination | InfiniteData<ReviewsWithPagination, number>
       >({ queryKey: reviewKeys.reviews(productId) });
 
       context.client.setQueriesData<
-        PaginatedReview | InfiniteData<PaginatedReview, number>
+        ReviewsWithPagination | InfiniteData<ReviewsWithPagination, number>
       >({ queryKey: reviewKeys.reviews(productId) }, (oldData) => {
         if (!oldData) return oldData;
 
@@ -70,7 +73,7 @@ export default function useThumbsUp({
     },
     onSuccess: (res, reviewId, onMutateResult, context) => {
       context.client.setQueriesData<
-        PaginatedReview | InfiniteData<PaginatedReview, number>
+        ReviewsWithPagination | InfiniteData<ReviewsWithPagination, number>
       >({ queryKey: reviewKeys.reviews(productId) }, (oldData) => {
         if (!oldData) return oldData;
 

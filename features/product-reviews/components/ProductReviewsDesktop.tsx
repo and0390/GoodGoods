@@ -1,6 +1,6 @@
 "use client";
 import {
-  PaginatedReview,
+  ReviewsWithPagination,
   ReviewSummary,
 } from "@/app/(shared)/_types/productReview";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -51,7 +51,7 @@ function ReviewFiltersSkeleton() {
 }
 
 type ProductReviewsDesktop = {
-  paginatedReview: Promise<PaginatedReview>;
+  paginatedReview: Promise<ReviewsWithPagination>;
   productId: string;
   reviewSummary: Promise<ReviewSummary>;
   isAuthenticated: boolean;

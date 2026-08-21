@@ -1,11 +1,10 @@
-import { ProductPreview } from "./product";
+import { ProductCartItem } from "./product";
 
 export type CartItem = {
-  product: ProductPreview;
+  product: ProductCartItem;
   id: string;
-  isFavorited: boolean;
+  isFavoritedByUser: boolean;
   isQuantityAdjusted: boolean;
-
   quantity: number;
 };
 
@@ -14,6 +13,4 @@ export type Cart = {
   userId: string;
   items: CartItem[];
   totalQuantity: number;
-  updatedItems: string[];
-  deletedItems: string[];
 };

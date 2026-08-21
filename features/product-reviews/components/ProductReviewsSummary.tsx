@@ -1,7 +1,7 @@
 import { ReviewSummary } from "@/app/(shared)/_types/productReview";
 import { Star } from "lucide-react";
 import React from "react";
-import formatRating from "../utis/formatRating";
+import formatRating from "../utils/formatRating";
 import formatCount from "@/lib/formatCount";
 import { cn } from "@/lib/utils";
 

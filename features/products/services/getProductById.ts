@@ -2,6 +2,15 @@ import { ProductDetail } from "@/app/(shared)/_types/product";
 import prisma from "@/lib/prisma";
 import "server-only";
 import getProductBreadcrumbs from "./getProductBreadCrumbs";
+import {
+  WHERE_ACTIVE_PROMOTIONS,
+  MIN_PROMOTION_FIELDS_TO_COMPUTE,
+} from "@/features/home/utils/promotionQuery";
+import getDistinctCategoryIds, {
+  getCategoryHierarchyIds,
+} from "@/features/home/utils/categoryHierarchy";
+import getCategoryPromotionsGroupedById from "@/features/home/repository/getCategoryPromotionsGroupedById";
+import sortPromotion from "../utils/sortPromotion";
 
 export default async function getProductById(
   productId: string,
@@ -19,6 +28,18 @@ export default async function getProductById(
       stock: true,
       sold: true,
       favoriteCount: true,
+      promotions: {
+        where: {
+          products: { some: { id: productId } },
+          ...WHERE_ACTIVE_PROMOTIONS,
+          source: "VOUCHER",
+          scope: "PRODUCT",
+        },
+        select: {
+          id: true,
+          ...MIN_PROMOTION_FIELDS_TO_COMPUTE,
+        },
+      },
       category: {
         select: {
           id: true,
@@ -29,6 +50,9 @@ export default async function getProductById(
               id: true,
               name: true,
               slug: true,
+              parent: {
+                select: { id: true, parent: { select: { id: true } } },
+              },
             },
           },
           attributeTemplates: {
@@ -56,6 +80,23 @@ export default async function getProductById(
 
   if (!rawProduct) return rawProduct;
 
+  const categoryVouchers = await prisma.promotion.findMany({
+    where: {
+      ...WHERE_ACTIVE_PROMOTIONS,
+      scope: "CATEGORY",
+      source: "VOUCHER",
+    },
+    select: {
+      id: true,
+      ...MIN_PROMOTION_FIELDS_TO_COMPUTE,
+    },
+  });
+
+  const sortedVoucher = sortPromotion(
+    [...rawProduct.promotions, ...categoryVouchers],
+    rawProduct.price
+  );
+
   const breadcrumbs = await getProductBreadcrumbs(
     rawProduct.category.id,
     rawProduct.name,
@@ -74,7 +115,7 @@ export default async function getProductById(
     imageUrls: rawProduct.imageUrls,
     name: rawProduct.name,
     sold: rawProduct.sold,
-    price: rawProduct.price,
+    basePrice: rawProduct.price,
     slug: rawProduct.slug,
     stock: rawProduct.stock,
     isFavorited,
@@ -82,5 +123,6 @@ export default async function getProductById(
     categories: breadcrumbs,
     description: rawProduct.description,
     specifications,
+    vouchers: sortedVoucher,
   };
 }

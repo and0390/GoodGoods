@@ -1,12 +1,12 @@
 import { fetcher } from "@/app/(shared)/_lib/api";
 import { apiSchema } from "@/app/(shared)/_lib/apiSchema";
-import { PaginatedReview } from "@/app/(shared)/_types/productReview";
+import { ReviewsWithPagination } from "@/app/(shared)/_types/productReview";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { getRatingFromFilter } from "../utis/reviewFilter";
-import { reviewKeys } from "../utis/reviewKeys";
-import { DEFAULT_STATE, ReviewState } from "../utis/reviewReducer";
-import buildReviewParams from "../utis/buildReviewParams";
-import shouldUseInitialData from "../utis/shouldHaveInitialData";
+import { getRatingFromFilter } from "../utils/reviewFilter";
+import { reviewKeys } from "../utils/reviewKeys";
+import { DEFAULT_STATE, ReviewState } from "../utils/reviewReducer";
+import buildReviewParams from "../utils/buildReviewParams";
+import shouldUseInitialData from "../utils/shouldHaveInitialData";
 
 export default function useProductReviews({
   productId,
@@ -15,7 +15,7 @@ export default function useProductReviews({
 }: {
   productId: string;
   filterState: ReviewState;
-  initialData: PaginatedReview;
+  initialData: ReviewsWithPagination;
 }) {
   const { hasImages, hasReviews, page, rating } = filterState;
 
@@ -36,7 +36,7 @@ export default function useProductReviews({
         })
       );
 
-      return body as PaginatedReview;
+      return body as ReviewsWithPagination;
     },
     initialData: shouldUseInitialData({
       hasImages,

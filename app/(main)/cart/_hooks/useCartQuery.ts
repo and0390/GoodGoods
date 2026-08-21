@@ -11,42 +11,41 @@ import {
   UseQueryResult,
 } from "@tanstack/react-query";
 
-type DefinedInitialDataOptionsWithoutKey<TError, TData> = Omit<
+type DefinedInitialDataOptionCart<TError, TData> = Pick<
   DefinedInitialDataOptions<Cart, TError, TData, string[]>,
-  "queryKey"
+  "enabled" | "initialData"
 >;
-type UndefinedInitialDataOptionsWithoutKey<TError, TData> = Omit<
+type UndefinedInitialDataOptionsCart<TError, TData> = Pick<
   UndefinedInitialDataOptions<Cart, TError, TData, string[]>,
-  "queryKey"
+  "enabled" | "initialData"
 >;
-type UseQueryOptionsWithoutKey<TError, TData> = Omit<
+type UseQueryOptionsCart<TError, TData> = Pick<
   UseQueryOptions<Cart, TError, TData, string[]>,
-  "queryKey"
+  "enabled" | "initialData"
 >;
 
-export function useCartQuery<TError = DefaultError, TData = Cart>(
-  options: DefinedInitialDataOptionsWithoutKey<TError, TData>
-): DefinedUseQueryResult<NoInfer<TData>, TError>;
+export function useCartQuery<TError = DefaultError>(
+  options: DefinedInitialDataOptionCart<TError, Cart>
+): DefinedUseQueryResult<NoInfer<Cart>, TError>;
 
-export function useCartQuery<TError = DefaultError, TData = Cart>(
-  options: UndefinedInitialDataOptionsWithoutKey<TError, TData>
-): UseQueryResult<NoInfer<TData>, TError>;
+export function useCartQuery<TError = DefaultError>(
+  options: UndefinedInitialDataOptionsCart<TError, Cart>
+): UseQueryResult<NoInfer<Cart>, TError>;
 
-export function useCartQuery<TError = DefaultError, TData = Cart>(
-  options: UseQueryOptionsWithoutKey<TError, TData>
-): UseQueryResult<NoInfer<TData>, TError>;
+export function useCartQuery<TError = DefaultError>(
+  options: UseQueryOptionsCart<TError, Cart>
+): UseQueryResult<NoInfer<Cart>, TError>;
 
-export function useCartQuery<TError = DefaultError, TData = Cart>(
+export function useCartQuery<TError = DefaultError>(
   options:
-    | UseQueryOptionsWithoutKey<TError, TData>
-    | DefinedInitialDataOptionsWithoutKey<TError, TData>
-    | UndefinedInitialDataOptionsWithoutKey<TError, TData>
+    | UseQueryOptionsCart<TError, Cart>
+    | DefinedInitialDataOptionCart<TError, Cart>
+    | UndefinedInitialDataOptionsCart<TError, Cart>
 ):
-  | UseQueryResult<NoInfer<TData>, TError>
-  | UseQueryResult<NoInfer<TData>, TError>
-  | DefinedUseQueryResult<NoInfer<TData>, TError> {
-  return useQuery<Cart, TError, TData, string[]>({
-    ...options,
+  | UseQueryResult<NoInfer<Cart>, TError>
+  | UseQueryResult<NoInfer<Cart>, TError>
+  | DefinedUseQueryResult<NoInfer<Cart>, TError> {
+  return useQuery<Cart, TError, Cart, string[]>({
     queryKey: ["cart"],
     queryFn: async ({ signal }) => {
       const { body } = apiSchema.parse(
@@ -58,5 +57,6 @@ export function useCartQuery<TError = DefaultError, TData = Cart>(
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
+    ...options,
   });
 }

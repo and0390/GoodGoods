@@ -3,7 +3,7 @@
 import React from "react";
 import toggleFavorite from "../actions/toggleFavorite";
 import { toastWithButton } from "@/components/ui/toastWithButton";
-import safeAction from "@/lib/safeTransition";
+import safeAction from "@/lib/safeActionWrappers";
 
 export default function useFavorite({
   favoriteCount,

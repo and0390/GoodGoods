@@ -5,6 +5,7 @@ import { resend } from "./resend";
 import ResetPasswordEmail from "@/emails/ResetPasswordEmail";
 // If your Prisma file is located elsewhere, you can change the path
 import prisma from "./prisma";
+import mergeAnonFeedToUser from "@/features/auth/server/mergeAnonFeedToUser";
 export const auth = betterAuth({
   appName: "GoodGoods",
   database: prismaAdapter(prisma, {
@@ -31,6 +32,15 @@ export const auth = betterAuth({
     user: {
       create: {
         after: async (user) => {
+          try {
+            await mergeAnonFeedToUser(user.id);
+          } catch (err) {
+            console.error(
+              "[BetterAuth databaseHooks] Failed to merge anon feed:",
+              err
+            );
+          }
+
           try {
             await prisma.cart.create({
               data: {

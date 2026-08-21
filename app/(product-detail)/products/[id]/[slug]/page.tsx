@@ -1,16 +1,11 @@
 import { getSessionCached } from "@/app/(shared)/_lib/getSessionCached";
-import { Category } from "@/app/(shared)/_types/category";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import { Prisma } from "@/app/generated/prisma/client";
 import { buttonVariants } from "@/components/ui/button";
 import AddToCartPanel from "@/features/product-reviews/components/AddToCartPanel";
 import ProductDescription from "@/features/product-reviews/components/ProductDescription";
+import Breadcrumbs from "@/features/products/components/BreadCrumbs";
+import { getAnonId } from "@/lib/anonId";
+import prisma from "@/lib/prisma";
 import { cn } from "@/lib/utils";
 import ProductReviewsStreamer from "@/product-reviews/components/ProductReviewsStreamer";
 import ProductHeroHorizontal from "@/product/components/ProductHeroHorizontal";
@@ -18,49 +13,32 @@ import ProductHeroVertical from "@/product/components/ProductHeroVertical";
 import getProductById from "@/product/services/getProductById";
 import { IconMessage2 } from "@tabler/icons-react";
 import { notFound } from "next/navigation";
-import React from "react";
-
-type ProductBreadcrumbsProps = {
-  categories: Category[];
-} & React.ComponentProps<typeof Breadcrumb>;
-
-const ProductBreadcrumbs = ({
-  categories,
-  ...props
-}: ProductBreadcrumbsProps) => {
-  return (
-    <Breadcrumb {...props}>
-      <BreadcrumbList>
-        {categories.map((cat, index, arr) => {
-          const isLast = index === arr.length - 1;
-          return (
-            <React.Fragment key={cat.id}>
-              <BreadcrumbItem>
-                {isLast ? (
-                  <BreadcrumbPage>{cat.name}</BreadcrumbPage>
-                ) : (
-                  <BreadcrumbLink href={cat.slug}>{cat.name}</BreadcrumbLink>
-                )}
-              </BreadcrumbItem>
-              {!isLast && <BreadcrumbSeparator />}
-            </React.Fragment>
-          );
-        })}
-      </BreadcrumbList>
-    </Breadcrumb>
-  );
-};
 
 type ProductPageProps = {
   params: Promise<{ id: string; slug: string }>;
 };
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const { id } = await params;
+  const { id: productId } = await params;
 
   const session = await getSessionCached();
+  const anonId = session ? null : await getAnonId();
 
-  const product = await getProductById(id, session?.user.id ?? null);
+  const product = await getProductById(productId, session?.user.id ?? null);
+
+  const data: Prisma.UserProductViewUncheckedCreateInput = session
+    ? {
+        userId: session.user.id,
+        productId,
+      }
+    : {
+        anonymousId: anonId,
+        productId,
+      };
+
+  await prisma.userProductView.create({
+    data,
+  });
 
   if (!product) {
     notFound();
@@ -68,10 +46,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <div className="relative container mx-auto flex w-full flex-1 flex-col gap-4 pb-[72px] lg:mb-6 lg:pb-0">
-      <ProductBreadcrumbs
-        categories={product.categories}
-        className="hidden pt-4 lg:block"
-      />
+      <Breadcrumbs className="mt-4" categories={product.categories} />
 
       <ProductHeroHorizontal
         isAuthenticated={!!session}
@@ -93,7 +68,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <p className="flex-none basis-[240px] text-sm font-normal text-muted-foreground">
               Category
             </p>
-            <ProductBreadcrumbs categories={product.categories} />
+            <Breadcrumbs categories={product.categories} />
           </div>
           {product.specifications.map((spec, index) => (
             <div className="flex items-center" key={index}>

@@ -5,6 +5,7 @@ import useFavorite from "../hooks/useFavorite";
 import { cn } from "@/lib/utils";
 import formatCount from "@/lib/formatCount";
 import { useRouter } from "next/navigation";
+import { ButtonPrimitive2 } from "@/components/ui/ButtonPrimitive";
 
 type FavoriteButtonProps = {
   favoriteCount: number;
@@ -27,7 +28,7 @@ export default function FavoriteButton({
   const router = useRouter();
 
   return (
-    <button
+    <ButtonPrimitive2
       type="button"
       onClick={
         isAuthenticated ? handleToggleFavorite : () => router.push("/login")
@@ -48,6 +49,6 @@ export default function FavoriteButton({
           ({formatCount(favoriteCount)})
         </span>
       </p>
-    </button>
+    </ButtonPrimitive2>
   );
 }

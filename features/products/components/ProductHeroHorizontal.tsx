@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import formatCount from "@/lib/formatCount";
 import { cn, formatCurrency } from "@/lib/utils";
 import { Star } from "lucide-react";
-import formatRating from "../../product-reviews/utis/formatRating";
+import formatRating from "../../product-reviews/utils/formatRating";
 import ProductGallery from "./ProductGallery";
 import FavoriteButton from "./FavoriteButton";
 import ProductPurchaseSection from "./ProductPurchaseSection";
@@ -101,7 +101,7 @@ export default function ProductHeroHorizontal({
         </Suspense>
 
         <p className="my-6 text-3xl font-semibold text-red-700">
-          {formatCurrency(product.price)}
+          {formatCurrency(product.basePrice)} test
         </p>
 
         <ProductPurchaseSection

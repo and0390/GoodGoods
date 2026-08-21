@@ -21,7 +21,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@/cart/*": ["./app/(main)/cart/*"],
+      "@/cart/*": ["./features/cart/*"],
       "@/shared/*": ["./app/(shared)/*"],
       "@/product/*": ["./features/products/*"],
       "@/product-reviews/*": ["./features/product-reviews/*"]

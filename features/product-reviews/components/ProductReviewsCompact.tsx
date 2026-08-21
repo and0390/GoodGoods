@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  PaginatedReview,
+  ReviewsWithPagination,
   ReviewSummary,
 } from "@/app/(shared)/_types/productReview";
 import { Button } from "@/components/ui/button";
@@ -26,8 +26,8 @@ import {
 } from "../context/PortalContainerContext";
 import useProductReviews from "../hooks/useProductReviews";
 import useReviewFilter from "../hooks/useReviewFilter";
-import formatRating from "../utis/formatRating";
-import { DEFAULT_STATE, ReviewState } from "../utis/reviewReducer";
+import formatRating from "../utils/formatRating";
+import { DEFAULT_STATE, ReviewState } from "../utils/reviewReducer";
 import ProductReviewCard from "./ProductReviewCard";
 import ProductReviewEmpty from "./ProductReviewEmpty";
 import ProductReviewError from "./ProductReviewError";
@@ -40,15 +40,15 @@ import { fetcher } from "@/app/(shared)/_lib/api";
 import { apiSchema } from "@/app/(shared)/_lib/apiSchema";
 // import ReviewFilterSingle from "./ReviewFilterSingle";
 import { useInView } from "react-intersection-observer";
-import { getRatingFromFilter } from "../utis/reviewFilter";
-import shouldUseInitialData from "../utis/shouldHaveInitialData";
-import buildReviewParams from "../utis/buildReviewParams";
-import { reviewKeys } from "../utis/reviewKeys";
+import { getRatingFromFilter } from "../utils/reviewFilter";
+import shouldUseInitialData from "../utils/shouldHaveInitialData";
+import buildReviewParams from "../utils/buildReviewParams";
+import { reviewKeys } from "../utils/reviewKeys";
 
 type ProductReviewPreview = {
   productId: string;
   isAuthenticated: boolean;
-  paginatedReview: Promise<PaginatedReview>;
+  paginatedReview: Promise<ReviewsWithPagination>;
 };
 
 function ProductReviewsPreview({
@@ -131,7 +131,7 @@ function ProductReviewCardList({
           }
         )
       );
-      return body as PaginatedReview;
+      return body as ReviewsWithPagination;
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
@@ -141,7 +141,7 @@ function ProductReviewCardList({
     },
     initialData: shouldUseInitialData(rest)
       ? () => {
-          const cached = queryClient.getQueryData<PaginatedReview>(
+          const cached = queryClient.getQueryData<ReviewsWithPagination>(
             reviewKeys.list(productId, { ...rest, page })
           );
 
@@ -202,7 +202,7 @@ function ProductReviewCardList({
 type ProductReviewsDrawerContentProps = {
   reviewSummary: Promise<ReviewSummary>;
   productId: string;
-  paginatedReview: Promise<PaginatedReview>;
+  paginatedReview: Promise<ReviewsWithPagination>;
   isAuthenticated: boolean;
 } & React.ComponentProps<typeof DrawerContent>;
 
@@ -301,7 +301,7 @@ function ProductReviewsDrawerContent({
 type ProductReviewsDrawerProps = {
   reviewSummary: Promise<ReviewSummary>;
   productId: string;
-  paginatedReview: Promise<PaginatedReview>;
+  paginatedReview: Promise<ReviewsWithPagination>;
   isAuthenticated: boolean;
 };
 
@@ -348,7 +348,7 @@ type ProductReviewsCompact = {
   reviewSummary: Promise<ReviewSummary>;
   isAuthenticated: boolean;
   className?: string;
-  paginatedReview: Promise<PaginatedReview>;
+  paginatedReview: Promise<ReviewsWithPagination>;
 };
 
 export default function ProductReviewsCompact({

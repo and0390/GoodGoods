@@ -25,7 +25,7 @@ export default async function CartPage() {
           id: rawProduct.id,
           imageUrl: rawProduct.imageUrls[0],
           name: rawProduct.name,
-          price: rawProduct.price,
+          basePrice: rawProduct.price,
           slug: rawProduct.slug,
           stock: rawProduct.stock,
         };

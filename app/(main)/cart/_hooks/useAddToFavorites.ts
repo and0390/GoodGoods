@@ -37,9 +37,9 @@ export default function useAddToFavorites() {
 
         const updatedItems = oldCart.items.map((item) =>
           item.product.id === productId
-            ? item.isFavorited
+            ? item.isFavoritedByUser
               ? item
-              : { ...item, isFavorited: !item.isFavorited }
+              : { ...item, isFavoritedByUser: !item.isFavoritedByUser }
             : item
         );
         return {

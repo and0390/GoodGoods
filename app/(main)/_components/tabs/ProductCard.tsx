@@ -11,7 +11,7 @@ import { formatCurrency } from "@/lib/utils";
 import { Dot, Ellipsis, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { AddToCartDropdownItem } from "./AddToCartDropdownItem";
+import { AddToCartDropdownItem } from "../../../../features/cart/components/AddToCartDropdownItem";
 import { ProductPreview } from "@/app/(shared)/_types/product";
 
 export type ProductCardProps = {
@@ -19,7 +19,7 @@ export type ProductCardProps = {
 };
 
 export const ProductCard = ({ product }: ProductCardProps) => {
-  const { id, imageUrl, name, price, slug } = product;
+  const { id, imageUrl, name, basePrice: price, slug } = product;
   return (
     <div className="relative transition-all duration-200 ease-out hover:-translate-y-1">
       <Link href={`/products/${id}/${slug}`} className="absolute inset-0 z-10">

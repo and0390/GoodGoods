@@ -1,5 +1,5 @@
 import { IconPencilSearch } from "@tabler/icons-react";
-import { ReviewState } from "../utis/reviewReducer";
+import { ReviewState } from "../utils/reviewReducer";
 
 export default function ProductReviewEmpty({
   filterState,

@@ -1,7 +1,7 @@
 import { ReviewSummary } from "@/app/(shared)/_types/productReview";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import React from "react";
-import { ReviewAction, ReviewState } from "../utis/reviewReducer";
+import { ReviewAction, ReviewState } from "../utils/reviewReducer";
 
 const FILTER_OPTIONS = [
   { label: "With Images", value: "with-images" },

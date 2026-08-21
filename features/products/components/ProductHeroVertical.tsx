@@ -31,7 +31,7 @@ export default function ProductHeroVertical({
         <div className="flex flex-col gap-3 p-3 md:p-0">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold text-red-700 md:text-3xl">
-              {formatCurrency(product.price)}
+              {formatCurrency(product.basePrice)}
             </h2>
             <div className="flex items-center gap-2">
               <p className="text-sm font-normal text-muted-foreground">

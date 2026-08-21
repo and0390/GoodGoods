@@ -1,9 +1,9 @@
 "use client";
 
-import { PaginatedReview } from "@/app/(shared)/_types/productReview";
+import { ReviewsWithPagination } from "@/app/(shared)/_types/productReview";
 import React from "react";
 import useProductReviews from "../hooks/useProductReviews";
-import { ReviewAction, ReviewState } from "../utis/reviewReducer";
+import { ReviewAction, ReviewState } from "../utils/reviewReducer";
 import ProductReviewCard from "./ProductReviewCard";
 import ProductReviewEmpty from "./ProductReviewEmpty";
 import ProductReviewError from "./ProductReviewError";
@@ -12,7 +12,7 @@ import ProductReviewPagination from "./ProductReviewPagination";
 
 type ProductReviewsContentProps = {
   filterState: ReviewState;
-  paginatedReview: Promise<PaginatedReview>;
+  paginatedReview: Promise<ReviewsWithPagination>;
   productId: string;
   isAuthenticated: boolean;
   paginationDispatch: React.ActionDispatch<[action: ReviewAction]>;

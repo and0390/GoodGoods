@@ -42,8 +42,8 @@ import ButtonPrimitive from "../../../components/ui/ButtonPrimitive";
 import HelpfulButton from "../../products/components/HelpfulButton";
 import { PortalContainerProvider } from "../context/PortalContainerContext";
 import useCarouselState from "../hooks/useCarouselState";
-import formatDate from "../utis/formatDate";
-import { ReviewState } from "../utis/reviewReducer";
+import formatDate from "../utils/formatDate";
+import { ReviewState } from "../utils/reviewReducer";
 import ImageWithSkeleton from "./ImageWithSkeleton";
 import RatingStars from "./RatingStars";
 

@@ -25,10 +25,10 @@ import {
 import { Minus, Plus } from "lucide-react";
 import React, { useEffect } from "react";
 import useQuantityInputGroup from "@/features/products/hooks/useQuantityInputGroup";
-import useAddToCart from "@/app/(main)/cart/_hooks/useAddToCart";
+import useAddToCart from "@/features/cart/hooks/useAddToCart";
 import AddToCartButton from "@/features/products/components/AddToCartButton";
 import { useMediaQuery } from "usehooks-ts";
-import useDesktop from "../../../hooks/useDesktop";
+import useIsDesktop from "../../../hooks/useDesktop";
 import QuantityInputGroup from "@/features/products/components/QuantityInputGroup";
 
 type AddToCartPanelProps = {
@@ -40,7 +40,7 @@ export default function AddToCartPanel({
   product,
   isAuthenticated,
 }: AddToCartPanelProps) {
-  const { name, stock, price, imageUrls } = product;
+  const { name, stock, basePrice: price, imageUrls } = product;
 
   const {
     inputRef,
@@ -62,7 +62,7 @@ export default function AddToCartPanel({
   {
     /* lg tailwind */
   }
-  const isLg = useDesktop();
+  const isLg = useIsDesktop();
 
   return (
     <Sheet key={isLg ? "desktop-close" : "mobile-open"}>

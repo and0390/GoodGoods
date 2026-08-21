@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { PaginatedReview, Review } from "../_types/productReview";
+import { ReviewsWithPagination, Review } from "../_types/productReview";
 
 export const LIMIT_PER_PAGE = 5;
 
@@ -21,7 +21,7 @@ export default async function getPaginatedProductReview({
   limit?: number;
   withReviews?: boolean;
   order?: "asc" | "desc";
-}): Promise<PaginatedReview> {
+}): Promise<ReviewsWithPagination> {
   const skip = (page - 1) * limit;
 
   const totalReviews = await prisma.review.count({

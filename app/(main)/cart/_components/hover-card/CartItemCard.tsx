@@ -1,7 +1,8 @@
 import { CartItem } from "@/app/(shared)/_types/cart";
-import { Button } from "@/components/ui/button";
+import { ButtonPrimitive2 } from "@/components/ui/ButtonPrimitive";
+import { ImageWithSkeleton2 } from "@/features/product-reviews/components/ImageWithSkeleton";
+import DiscountBadge from "@/features/products/components/DiscountBadge";
 import { cn, formatCurrency } from "@/lib/utils";
-import Image from "next/image";
 import Link from "next/link";
 import { ComponentProps } from "react";
 
@@ -15,43 +16,48 @@ const CartItemCard = ({
   ...props
 }: CartPreviewItemProps) => {
   const { quantity } = cartItem;
-  const { id, imageUrl, price, name } = cartItem.product;
+  const { id, imageUrl, basePrice, name, slug, promotion } = cartItem.product;
+
   return (
     <div
       className={cn(
-        "grid w-full grid-cols-[56px_auto_min-content] grid-rows-[auto_auto] gap-x-2.5",
+        "flex w-full gap-3 [&_[data-slot=skeleton]]:rounded-sm [&>div]:first:flex-none",
         className
       )}
       {...props}
     >
-      <div className="row-span-2">
-        <Image
+      <div className="relative flex-none">
+        <ImageWithSkeleton2
           src={imageUrl}
-          alt="Product"
-          width={56}
-          height={56}
-          className="aspect-square w-full rounded-sm"
+          alt={`${name} preview`}
+          width={60}
+          height={60}
+          className="aspect-square size-[60px] overflow-hidden rounded-sm object-cover"
         />
+        {promotion && <DiscountBadge value={promotion.discountPercent} />}
       </div>
-      <div className="min-w-0">
-        <Button variant="plain" size="fit" asChild>
-          <Link href={`/products/${id}`} className="truncate p-0! text-sm">
-            {name}
-          </Link>
-        </Button>
-      </div>
-      <div className="col-start-2 row-start-2 self-start">
-        <span className="text-sm text-muted-foreground">variant</span>
-      </div>
-      <div className="col-start-3 row-start-1 flex min-w-0 items-center gap-1 justify-self-end text-sm font-semibold">
-        <span>{quantity}</span>
-        <span>x</span>
-        <span className="truncate text-sm">{formatCurrency(price)}</span>
-      </div>
-      <div className="col-start-3 self-start justify-self-end">
-        <span className="text-sm text-muted-foreground">
-          {formatCurrency(quantity * price)}
-        </span>
+      <div className="flex min-w-0 flex-1 flex-col items-end justify-start">
+        <div className="flex w-full min-w-0 items-start justify-between gap-3">
+          <ButtonPrimitive2 asChild>
+            <Link
+              href={`/products/${id}/${slug}`}
+              className="max-w-[50%] truncate p-0! text-base"
+            >
+              {name}
+            </Link>
+          </ButtonPrimitive2>
+
+          <div className="col-start-3 row-start-1 flex flex-none items-center gap-1 justify-self-end truncate text-base font-bold">
+            {quantity} x{" "}
+            {formatCurrency(promotion ? promotion.finalPrice : basePrice)}
+          </div>
+        </div>
+
+        {promotion && (
+          <span className="text-sm text-muted-foreground line-through">
+            {formatCurrency(basePrice)}
+          </span>
+        )}
       </div>
     </div>
   );

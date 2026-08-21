@@ -1,82 +1,103 @@
+"use client";
+
+import { ProductsWithCursor } from "@/app/(shared)/_types/product";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ProductGrid } from "./ProductGrid";
-import prisma from "@/lib/prisma";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { cn } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
-import { ProductPreview } from "@/app/(shared)/_types/product";
-import { Masonry } from "masonic";
-import ProductMasonry from "@/features/home/components/ProductMasonry";
+import ProductTabContent from "@/features/home/components/ProductTabContent";
+import ProductTabSkeleton from "@/features/home/components/ProductTabSkeleton";
+import { categories } from "@/prisma/categorySeed";
+import React, { Suspense } from "react";
 
-const ForYouTab = async ({
-  className,
-  ...props
-}: Omit<React.ComponentProps<typeof TabsTrigger>, "value">) => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+const TAB_ITEMS = [
+  {
+    label: `For `,
+    value: "for-you",
+  },
+  {
+    label: "Men T-Shirts",
+    value: "cat-fashion-men-tshirts",
+  },
+  {
+    label: "Women's Dresses",
+    value: "cat-fashion-women-dresses",
+  },
+  {
+    label: "Android",
+    value: "cat-mobile-android",
+  },
+] as const;
 
-  const name = session ? session.user.name : "You";
-
-  return (
-    <TabsTrigger
-      value="forYou"
-      className={cn("relative flex-none", className)}
-      {...props}
-    >
-      For {name}
-    </TabsTrigger>
-  );
+type ProductTabsProps = {
+  productsForYou: Promise<ProductsWithCursor>;
+  session: { name: string } | null;
+  isDesktopDevice: boolean;
 };
 
-export const ProductTabs = async () => {
-  const products = await prisma.product.findMany().then((rawProducts) => {
-    const products = rawProducts.map((rawProduct): ProductPreview => {
-      return {
-        id: rawProduct.id,
-        imageUrl: rawProduct.imageUrls[0],
-        name: rawProduct.name,
-        price: rawProduct.price,
-        slug: rawProduct.slug,
-        stock: rawProduct.stock,
-      };
+export default function ProductTabs({
+  productsForYou,
+  isDesktopDevice,
+  session,
+}: ProductTabsProps) {
+  const name = session ? session.name : "You";
+  const isAuthenticated = !!session;
+  const [category, setCategory] = React.useState("for-you");
+
+  const contentRef = React.useRef<HTMLDivElement>(null);
+
+  const handleScroll = () => {
+    requestAnimationFrame(() => {
+      contentRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     });
-
-    return products;
-  });
-
-  const extendedProducts = products.map((product) => ({
-    ...product,
-    rating: 0,
-  }));
+  };
 
   return (
-    <Tabs defaultValue="forYou">
-      <TabsList
-        variant="line"
-        className="sticky top-[68px] z-30 w-full justify-start border-b border-border bg-card [&>[data-slot=tabs-trigger]]:group-data-horizontal/tabs:after:-bottom-0.5"
-      >
-        {/* <div className="container mx-auto h-full"> */}
-        <ForYouTab />
-        <TabsTrigger value="mall" className="flex-none">
-          Mall
-        </TabsTrigger>
-        <TabsTrigger value="yourProducts" className="flex-none">
-          Your Products
-        </TabsTrigger>
-        {/* </div> */}
-      </TabsList>
-      <TabsContent value="forYou" className="container mx-auto px-1">
-        {/* <ProductGrid products={extendedProducts} /> */}
-        <ProductMasonry products={extendedProducts} />
-      </TabsContent>
-      <TabsContent value="mall" className="container mx-auto px-1">
-        <ProductGrid products={extendedProducts} />
-      </TabsContent>
-      <TabsContent value="yourProducts" className="container mx-auto px-1">
-        <ProductGrid products={extendedProducts} />
-      </TabsContent>
+    <Tabs value={category} onValueChange={setCategory}>
+      <div className="sticky top-[calc(--spacing(9)+--spacing(7))] z-30 no-scrollbar border-0">
+        <TabsList
+          ref={contentRef}
+          variant="line"
+          className="no-scrollbar h-fit! w-full scroll-mt-[calc(--spacing(9)+--spacing(7))] justify-start overflow-x-auto border-b border-border bg-card md:w-full lg:top-[calc(--spacing(10)+--spacing(7)+--spacing(8)+--spacing(9))] lg:scroll-mt-[calc(--spacing(10)+--spacing(7)+--spacing(8)+--spacing(9))] lg:[&_[data-slot=tabs-trigger]]:text-base [&>[data-slot=tabs-trigger]]:h-9 [&>[data-slot=tabs-trigger]]:group-data-horizontal/tabs:after:-bottom-0.5"
+        >
+          <div className="container mx-auto flex h-full flex-nowrap items-start border-0 px-4 lg:px-8">
+            <div className="flex">
+              {TAB_ITEMS.map((item) => {
+                return (
+                  <TabsTrigger
+                    className="md:py-3"
+                    key={item.value}
+                    value={item.value}
+                    onClick={handleScroll}
+                  >
+                    {item.value === "for-you" ? item.label + name : item.label}
+                  </TabsTrigger>
+                );
+              })}
+            </div>
+          </div>
+        </TabsList>
+      </div>
+
+      {TAB_ITEMS.map((item) => {
+        return (
+          <TabsContent
+            key={item.value}
+            value={item.value}
+            className="container mx-auto px-4 lg:px-8"
+          >
+            <Suspense fallback={<ProductTabSkeleton />}>
+              <ProductTabContent
+                hasInitialData={item.value === "for-you" ? true : false}
+                category={item.value}
+                productWithCursor={productsForYou}
+                isDesktopDevice={isDesktopDevice}
+                isAuthenticated={isAuthenticated}
+              />
+            </Suspense>
+          </TabsContent>
+        );
+      })}
     </Tabs>
   );
-};
+}

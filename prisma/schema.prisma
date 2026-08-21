@@ -9,19 +9,21 @@ datasource db {
 }
 
 model User {
-  id            String          @id
+  id            String            @id
   name          String
-  email         String          @unique
-  emailVerified Boolean         @default(false)
+  email         String            @unique
+  emailVerified Boolean           @default(false)
   image         String?
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
   accounts      Account[]
   cart          Cart?
   sessions      Session[]
   favorites     Favorite[]
   reviews       Review[]
   reviewHelpful ReviewHelpful[]
+  orders        Order[]
+  views         UserProductView[]
 
   @@map("user")
 }
@@ -105,7 +107,7 @@ model Product {
   sold   Int @default(0)
   weight Int
 
-  favoriteCount Int      @default(0)
+  favoriteCount Int @default(0)
 
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id])
@@ -116,7 +118,35 @@ model Product {
   reviews        Review[]
 
   cartItems CartItem[]
+  views     UserProductView[]
   favorites Favorite[]
+
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin)
+}
+
+model UserProductView {
+  id          String  @id @default(cuid())
+  userId      String?
+  anonymousId String?
+
+  productId String
+  viewedAt  DateTime @default(now())
+
+  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([userId, viewedAt])
+  @@index([productId])
+}
+
+model SearchLog {
+  id        String   @id @default(cuid())
+  query     String
+  userId    String?
+  createdAt DateTime @default(now())
+
+  @@index([query])
+  @@index([createdAt])
 }
 
 model Cart {
@@ -141,10 +171,10 @@ model Banner {
 }
 
 model Favorite {
-  id            String   @id @default(cuid())
-  productId     String
-  userId        String
-  createdAt     DateTime @default(now())
+  id        String   @id @default(cuid())
+  productId String
+  userId    String
+  createdAt DateTime @default(now())
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -168,10 +198,12 @@ model Category {
 
   attributeTemplates CategoryAttribute[]
 
-  products Product[]
+  products   Product[]
+  promotions Promotion[]
 
   @@index([parentId])
   @@index([slug])
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin)
 }
 
 model CategoryAttribute {
@@ -207,6 +239,17 @@ enum DiscountType {
   FIXED_AMOUNT
 }
 
+enum PromotionSource {
+  VOUCHER
+  FLASH_SALE
+}
+
+enum PromotionScope {
+  PRODUCT
+  CATEGORY
+  PLATFORM_WIDE
+}
+
 model Promotion {
   id          String  @id @default(cuid())
   name        String
@@ -217,13 +260,20 @@ model Promotion {
   usageLimit  Int?
   usedCount   Int
 
-  type DiscountType
+  type  DiscountType
+  scope PromotionScope @default(PRODUCT)
 
   startDate DateTime
   endDate   DateTime
   isActive  Boolean  @default(true)
 
+  source PromotionSource
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
   products  Product[]
+  orders    Order[]
   createdAt DateTime  @default(now())
 }
 
@@ -260,4 +310,62 @@ model ReviewHelpful {
   createdAt DateTime @default(now())
 
   @@unique([userId, reviewId])
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  PROCESSING
+  SHIPPED
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+model Order {
+  id          String @id @default(cuid())
+  orderNumber String @unique @db.VarChar(20)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  status OrderStatus
+
+  subtotal    Int
+  shippingFee Int
+  discount    Int        @default(0)
+  promotionId String?
+  promotion   Promotion? @relation(fields: [promotionId], references: [id], onDelete: SetNull)
+
+  promoCode         String?
+  appliedPromotions Json?
+
+  totalAmount Int
+
+  items OrderItem[]
+
+  shippingAddress Json
+
+  createdAt   DateTime  @default(now())
+  paidAt      DateTime?
+  completedAt DateTime?
+  cancelledAt DateTime?
+
+  @@index([userId, status])
+}
+
+model OrderItem {
+  id      String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  productId    String
+  productName  String
+  productImage String
+
+  quantity   Int
+  price      Int
+  totalPrice Int
+
+  @@index([orderId])
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import useAddToCart from "@/app/(main)/cart/_hooks/useAddToCart";
+import useAddToCart from "@/features/cart/hooks/useAddToCart";
 import { ProductPreview } from "@/app/(shared)/_types/product";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";

@@ -44,7 +44,7 @@ export default function useToggleFavorite(productId: string) {
 
         const updatedItems = oldCart.items.map((item) =>
           item.product.id === productId
-            ? { ...item, isFavorited: !item.isFavorited }
+            ? { ...item, isFavoritedByUser: !item.isFavoritedByUser }
             : item
         );
 

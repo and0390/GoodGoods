@@ -1,9 +1,9 @@
 import {
-  PaginatedReview,
+  ReviewsWithPagination,
   Pagination as ReviewPagination,
   ReviewSummary,
 } from "@/app/(shared)/_types/productReview";
-import { ReviewAction } from "../utis/reviewReducer";
+import { ReviewAction } from "../utils/reviewReducer";
 import getPaginationItems from "../services/getPaginationItems";
 import {
   Pagination,

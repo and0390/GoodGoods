@@ -13,14 +13,15 @@ export default async function getProductBreadcrumbs(
   );
 
   const orderedBreadcrumbs = ancestors
-    .map((cat) => {
-      const category: Category = {
-        id: cat.id!,
-        name: cat.name!,
-        slug: `/${cat.slug!}`,
+    .map((cat): Category | null => {
+      if (!cat.id || !cat.name || !cat.slug) return null;
+      return {
+        id: cat.id,
+        name: cat.name,
+        slug: `/${cat.slug}`,
       };
-      return category;
     })
+    .filter((cat): cat is Category => Boolean(cat))
     .reverse();
 
   return [

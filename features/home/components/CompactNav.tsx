@@ -1,16 +1,11 @@
 import { getSessionCached } from "@/app/(shared)/_lib/getSessionCached";
 import { Button } from "@/components/ui/button";
 import ButtonPrimitive from "@/components/ui/ButtonPrimitive";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from "@/components/ui/input-group";
 import { cn } from "@/lib/utils";
 import { IconMessage2, IconShoppingCart } from "@tabler/icons-react";
-import { LogIn, SearchIcon } from "lucide-react";
+import { LogIn } from "lucide-react";
 import Link from "next/link";
+import HeaderSearchStreamer from "./HeaderSearchStreamer";
 
 function AuthenticatedActions() {
   return (
@@ -52,19 +47,7 @@ export default function CompactNav({
       )}
       {...props}
     >
-      <InputGroup className="h-9 p-1 has-[[data-slot=input-group-control]:focus-visible]:ring-0">
-        <InputGroupInput placeholder="Search on GoodGoods" className="h-7" />
-        <InputGroupAddon align="inline-end" className="p-0 has-[>button]:mr-0">
-          <InputGroupButton
-            size="icon-sm"
-            variant="default"
-            className="size-7 rounded-full border-0"
-          >
-            <SearchIcon />
-            <span className="sr-only">search</span>
-          </InputGroupButton>
-        </InputGroupAddon>
-      </InputGroup>
+      <HeaderSearchStreamer />
 
       <HeaderActions />
     </header>

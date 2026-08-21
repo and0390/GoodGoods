@@ -1,7 +1,7 @@
 "use client";
 
 import { Review } from "@/app/(shared)/_types/productReview";
-import { ReviewState } from "@/features/product-reviews/utis/reviewReducer";
+import { ReviewState } from "@/features/product-reviews/utils/reviewReducer";
 import { cn } from "@/lib/utils";
 import { ThumbsUp } from "lucide-react";
 import { useRouter } from "next/navigation";

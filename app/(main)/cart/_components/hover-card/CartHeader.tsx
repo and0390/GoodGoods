@@ -19,10 +19,12 @@ const CartHeader = ({ totalQuantity }: CartHoverCardHeaderProps) => {
   const displayTotalQuantity = totalQuantity && totalQuantity > 0;
   return (
     <div className="flex items-center justify-between p-3">
-      <div className="flex items-center gap-1 text-lg font-semibold">
-        <span>Your cart</span>
+      <div className="flex items-center gap-1">
+        <span className="text-xl font-bold">Your cart</span>
         {displayTotalQuantity && (
-          <span className="text-muted-foreground">({totalQuantity})</span>
+          <span className="text-lg font-semibold text-muted-foreground">
+            ({totalQuantity})
+          </span>
         )}
       </div>
       <Button variant="link" asChild className="px-0">

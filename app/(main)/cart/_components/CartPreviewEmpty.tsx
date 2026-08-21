@@ -33,7 +33,7 @@ export const CartPreviewEmpty = ({
       className={cn("flex h-78 w-full items-center justify-center", className)}
       {...props}
     >
-      <div className={gridVariants({ variant, size })}>
+      <div className="">
         <div className="icon-container">
           <TbShoppingCartSearch className="icon text-primary" />
         </div>
